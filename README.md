@@ -14,16 +14,23 @@
 | Stitch project | _TODO_                                                   |
 | Project board  | _TODO_                                                   |
 | Team Loom      | _TODO_                                                   |
-| PRD            | _TODO_                                                   |
+| PRD            | [docs/PRD.md](docs/PRD.md)                               |
 | Designs        | _TODO_                                                   |
-| Implementation | [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) _(TODO: add file)_ |
+| Implementation | [docs/Implementation plan.md](docs/Implementation%20plan.md) |
+
+## 📋 Project Documentation
+
+We use the Product Requirements Document (PRD) as our single source of truth for features, business logic and database schemas. Make sure the PRD is updated and approved before editing any core code.
+
+- **[Product Requirements Document (PRD)](docs/PRD.md)**: core specification, user stories, screen flows, data model and compliance rules.
+- **[Implementation Plan](docs/Implementation%20plan.md)**: step-by-step build sequence, tech stack configuration and automated testing definitions.
 
 ## 👥 Team & Roles
 
 | Name    | GitHub                                                       | Role(s)                        | Main features built |
 | ------- | ------------------------------------------------------------ | ------------------------------ | ------ |
 | Mpho    | [@mpho09](https://github.com/mpho09)                         | Tech Lead, Backend Dev         | _TODO_ |
-| Joy     | [@jjmolomo-tech17](https://github.com/jjmolomo-tech17)       | Product Owner, Frontend Dev    | _TODO_ |
+| Joy     | [@jjmolomo17-tech](https://github.com/jjmolomo17-tech)       | Product Owner, Frontend Dev    | _TODO_ |
 | Refilwe | [@Ref-DevSa](https://github.com/Ref-DevSa)                   | Frontend Dev, Designer         | _TODO_ |
 | Elias   | [@eliasmtisie4321](https://github.com/eliasmtisie4321)       | QA, DevOps                     | _TODO_ |
 | Kabelo  | [@kabelomathapo6-lab](https://github.com/kabelomathapo6-lab) | Designer, Frontend Dev         | _TODO_ |
