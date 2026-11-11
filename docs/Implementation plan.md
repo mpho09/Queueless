@@ -1,4 +1,4 @@
-# MASTER.md — Queueless Build Plan
+# Implementation plan.md — Queueless Build Plan
 Built from PRD version v1.0
 
 ## 1. Summary and Scope
