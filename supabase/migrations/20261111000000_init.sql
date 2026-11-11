@@ -1,0 +1,2 @@
+-- Initial migration. Add Queueless tables here or in new migration files
+-- (create them with: npx supabase migration new <name>).
