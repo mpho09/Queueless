@@ -26,7 +26,7 @@
 | Joy     | [@jjmolomo-tech17](https://github.com/jjmolomo-tech17)       | Product Owner, Frontend Dev    | _TODO_ |
 | Refilwe | [@Ref-DevSa](https://github.com/Ref-DevSa)                   | Frontend Dev, Designer         | _TODO_ |
 | Elias   | [@eliasmtisie4321](https://github.com/eliasmtisie4321)       | QA, DevOps                     | _TODO_ |
-| Kabelo  | [@kabelomathapo6-lab](https://github.com/kabelomathapo6-lab) | _TODO_                         | _TODO_ |
+| Kabelo  | [@kabelomathapo6-lab](https://github.com/kabelomathapo6-lab) | Designer, Frontend Dev         | _TODO_ |
 
 ## ✨ Features
 
