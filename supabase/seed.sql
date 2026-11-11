@@ -1,0 +1,1 @@
+-- Seed data loaded by `npm run db:reset`. Test data only — never real user data.
