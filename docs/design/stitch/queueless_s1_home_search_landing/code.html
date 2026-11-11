@@ -1,0 +1,1415 @@
+<!DOCTYPE html><html lang="en-ZA"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queueless - S1 Home (Search Landing)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    /* Design Tokens from Queueless Design System Sheet */
+    :root {
+      --color-primary: #0B7A6B;
+      --color-primary-pressed: #085A4F;
+      --color-savings: #2E7D32;
+      --color-bg: #FFFFFF;
+      --color-surface-soft: #F9F9F9;
+      --color-surface-hover: #F0F4F3;
+      --color-text-main: #1A1A1A;
+      --color-text-muted: #5F6368;
+      --color-border: #E0E0E0;
+      
+      --color-amber: #B26A00;
+      --color-amber-bg: #FFF8E1;
+      --color-amber-border: #FFE082;
+
+      --color-red: #C62828;
+      --color-red-bg: #FFEBEE;
+      --color-red-border: #FFCDD2;
+
+      --color-green: #2E7D32;
+      --color-green-bg: #E8F5E9;
+      --color-green-border: #C8E6C9;
+
+      --color-grey-pill-bg: #F1F3F4;
+      --color-grey-pill-text: #5F6368;
+      
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: #E5E7EB;
+      color: var(--color-text-main);
+      padding: 24px 16px 60px;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .meta-bar {
+      max-width: 1480px;
+      margin: 0 auto 20px;
+      padding: 12px 18px;
+      background: #FFFFFF;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .meta-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-main);
+    }
+    .meta-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .meta-tag {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #F1F3F4;
+      color: var(--color-text-muted);
+    }
+    .meta-tag.highlight {
+      background: #E8F5E9;
+      color: var(--color-savings);
+    }
+
+    /* Multi-frame responsive showcase container */
+    .showcase-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 32px;
+      max-width: 1540px;
+      margin: 0 auto;
+    }
+
+    .frame-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .frame-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .state-pill {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: #E5E7EB;
+      color: #4B5563;
+      letter-spacing: 0.5px;
+    }
+    .state-pill.active {
+      background: #E0F2FE;
+      color: #0369A1;
+    }
+
+    /* Fixed 360px Mobile Frame */
+    .mobile-frame {
+      width: 360px;
+      background-color: var(--color-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      border: 1px solid #D1D5DB;
+      display: flex;
+      flex-direction: column;
+      min-height: 740px;
+      position: relative;
+    }
+
+    /* Global Header */
+    .global-header {
+      height: 56px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--color-border);
+      background-color: #FFFFFF;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-primary);
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--color-text-main);
+      position: relative;
+      touch-action: manipulation;
+    }
+    .icon-btn:hover {
+      background-color: #F5F5F5;
+    }
+    .icon-btn:active {
+      background-color: #E0E0E0;
+    }
+
+    .badge-counter {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background-color: var(--color-primary);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .badge-counter.zero {
+      background-color: var(--color-text-muted);
+    }
+
+    /* Offline Banner */
+    .offline-banner {
+      background-color: var(--color-text-muted);
+      color: #FFFFFF;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    /* Screen Main Content */
+    .screen-body {
+      flex: 1;
+      padding: 16px 16px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Greeting Line */
+    .greeting-line {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text-main);
+      margin-bottom: 16px;
+      line-height: 1.25;
+      letter-spacing: -0.2px;
+    }
+
+    /* Suburb Selector */
+    .suburb-group {
+      margin-bottom: 16px;
+    }
+    .suburb-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-main);
+      margin-bottom: 4px;
+    }
+    .suburb-select-container {
+      position: relative;
+    }
+    .suburb-select {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      padding: 0 36px 0 12px;
+      font-family: var(--font-family);
+      font-size: 16px;
+      color: var(--color-text-main);
+      background-color: #FFFFFF;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    .suburb-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      border-width: 2px;
+      padding-left: 11px;
+    }
+    .select-arrow {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--color-text-muted);
+    }
+    .suburb-hint {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Search Bar with button */
+    .search-block {
+      margin-bottom: 24px;
+    }
+    .search-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-icon-inside {
+      position: absolute;
+      left: 14px;
+      color: var(--color-text-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      height: 52px;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      padding: 0 12px 0 42px;
+      font-family: var(--font-family);
+      font-size: 16px;
+      color: var(--color-text-main);
+      background-color: #FFFFFF;
+      transition: border-color 0.15s;
+    }
+    .search-input::placeholder {
+      color: #757575;
+      font-size: 15px;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      border-width: 2px;
+      padding-left: 41px;
+    }
+    .search-btn-wrapper {
+      margin-top: 10px;
+    }
+    .btn-capsule-primary {
+      width: 100%;
+      min-height: 48px;
+      background-color: var(--color-primary);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 24px;
+      font-family: var(--font-family);
+      font-size: 16px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.15s;
+      text-decoration: none;
+      touch-action: manipulation;
+    }
+    .btn-capsule-primary:hover {
+      background-color: #086659;
+    }
+    .btn-capsule-primary:active {
+      background-color: var(--color-primary-pressed);
+    }
+
+    /* Section Headers */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-text-main);
+      margin-bottom: 10px;
+    }
+
+    /* Section: Active Basket */
+    .basket-section {
+      margin-bottom: 24px;
+    }
+    .basket-card {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .basket-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .basket-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .basket-highlight-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-text-main);
+      line-height: 1.35;
+    }
+    .basket-highlight-text .store-name {
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+    .basket-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-savings);
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+    }
+    .view-basket-link {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      min-height: 44px;
+      color: var(--color-primary);
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      touch-action: manipulation;
+      gap: 4px;
+      padding: 0 4px;
+      margin-left: -4px;
+    }
+    .view-basket-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Empty Basket Block */
+    .empty-basket-box {
+      background: #F9FAFB;
+      border: 1px dashed var(--color-border);
+      border-radius: 8px;
+      padding: 16px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .empty-basket-icon {
+      color: var(--color-text-muted);
+      flex-shrink: 0;
+    }
+    .empty-basket-text {
+      font-size: 15px;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+
+    /* Section: Nearby Stores */
+    .stores-section {
+      margin-bottom: 24px;
+    }
+    .store-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .store-row {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s;
+      touch-action: manipulation;
+    }
+    .store-row:hover {
+      background-color: var(--color-surface-hover);
+      border-color: #B2DFDB;
+    }
+    .store-row:active {
+      background-color: #E0F2F1;
+    }
+    .store-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .store-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .store-suburb {
+      font-size: 14px;
+      color: var(--color-text-muted);
+    }
+
+    /* Queue Badges (Pill style: Icon + Text) */
+    .queue-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.2;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .queue-badge.red {
+      background-color: var(--color-red-bg);
+      color: var(--color-red);
+      border: 1px solid var(--color-red-border);
+    }
+    .queue-badge.green {
+      background-color: var(--color-green-bg);
+      color: var(--color-green);
+      border: 1px solid var(--color-green-border);
+    }
+    .queue-badge.amber {
+      background-color: var(--color-amber-bg);
+      color: var(--color-amber);
+      border: 1px solid var(--color-amber-border);
+    }
+    .queue-badge svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    /* Footer */
+    .screen-footer {
+      margin-top: auto;
+      padding: 12px 0 16px;
+      text-align: center;
+    }
+    .footer-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      text-decoration: underline;
+      touch-action: manipulation;
+    }
+    .footer-link:hover {
+      color: var(--color-text-main);
+    }
+
+    /* Bottom Tab Bar */
+    .bottom-tab-bar {
+      height: 60px;
+      min-height: 60px;
+      background-color: #FFFFFF;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
+    }
+    .tab-item {
+      flex: 1;
+      height: 100%;
+      min-height: 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      text-decoration: none;
+      color: var(--color-text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: color 0.15s;
+    }
+    .tab-item.active {
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+    .tab-item:active {
+      background-color: #F9FAFB;
+    }
+    .tab-icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Skeleton Loading Styles */
+    .skeleton-box {
+      background: linear-gradient(90deg, #EEEEEE 25%, #E0E0E0 37%, #EEEEEE 63%);
+      background-size: 400% 100%;
+      animation: skeleton-pulse 1.4s ease infinite;
+      border-radius: 4px;
+    }
+    @keyframes skeleton-pulse {
+      0% { background-position: 100% 50%; }
+      100% { background-position: 0 50%; }
+    }
+    .skeleton-card {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .skeleton-store-row {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Accessibility focus ring */
+    button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Metadata Bar -->
+  <style>
+  .suburb-hint {
+    font-size: 16px !important;
+  }
+  .suburb-label {
+    font-size: 16px !important;
+  }
+  .search-input::placeholder {
+    font-size: 16px !important;
+  }
+  .view-basket-link {
+    font-size: 16px !important;
+  }
+  .empty-basket-text {
+    font-size: 16px !important;
+  }
+  .store-suburb {
+    font-size: 14px !important;
+  }
+  .queue-badge {
+    font-size: 13px !important;
+    border-radius: 9999px !important;
+    font-weight: 600 !important;
+  }
+  .footer-link {
+    font-size: 14px !important;
+  }
+</style><div class="meta-bar">
+    <div>
+      <div class="meta-title">Queueless — S1 Home (Search Landing)</div>
+      <div style="font-size: 13px; color: var(--color-text-muted); margin-top: 2px;">
+        360px mobile width layout • Inter 16px min body • South Africa (en-ZA) • WCAG ≥4.5:1
+      </div>
+    </div>
+    <div class="meta-tags">
+      <span class="meta-tag highlight">Mobile-First 360px</span>
+      <span class="meta-tag">≥44×44px Targets</span>
+      <span class="meta-tag">Currency R1,234.50</span>
+      <span class="meta-tag">4 UI States Complete</span>
+    </div>
+  </div>
+
+  <!-- Showcase Multi-State Container -->
+  <div class="showcase-container">
+
+    <!-- ============================================== -->
+    <!-- FRAME 1: DEFAULT STATE -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span>Frame 1: Default State</span>
+        <span class="state-pill active">Primary</span>
+      </div>
+
+      <div class="mobile-frame" aria-label="Queueless S1 Home Default Screen">
+        
+        <!-- 1. Global Header -->
+        <header class="global-header">
+          <a href="#home" class="header-logo" aria-label="Queueless Home">Queueless</a>
+          <div class="header-actions">
+            <!-- Profile Icon (Opens S6) -->
+            <button class="icon-btn" aria-label="Profile (opens S6)" title="Profile (S6)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </button>
+            <!-- Basket Icon with badge "0" -->
+            <button class="icon-btn" aria-label="Shopping Basket with 0 items" title="View Basket">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="badge-counter">3</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Screen Content -->
+        <main class="screen-body">
+
+          <!-- 2. Greeting line -->
+          <h1 class="greeting-line">Find the cheapest store near you.</h1>
+
+          <!-- 3. Suburb selector -->
+          <div class="suburb-group">
+            <label class="suburb-label" for="suburb-select-default">Your suburb</label>
+            <div class="suburb-select-container">
+              <select id="suburb-select-default" class="suburb-select" aria-describedby="suburb-hint-default">
+                <option value="Hatfield" selected="">Hatfield</option>
+                <option value="Arcadia">Arcadia</option>
+                <option value="Benoni">Benoni</option>
+              </select>
+              <div class="select-arrow" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div id="suburb-hint-default" class="suburb-hint">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              Showing stores in Hatfield
+            </div>
+          </div>
+
+          <!-- 4. Large search bar (6px radius, 52px tall) + Search Button -->
+          <div class="search-block">
+            <div class="search-input-wrapper">
+              <span class="search-icon-inside" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <input type="search" class="search-input" placeholder="Search a product, e.g. White Sugar 2kg" aria-label="Search a product">
+            </div>
+            <div class="search-btn-wrapper">
+              <button type="button" class="btn-capsule-primary">
+                Search
+              </button>
+            </div>
+          </div>
+
+          <!-- 5. Section "Your active basket" -->
+          <section class="basket-section" aria-labelledby="basket-sec-title">
+            <h2 id="basket-sec-title" class="section-title">Your active basket</h2>
+            <div class="basket-card">
+              <div class="basket-summary-row">
+                <div class="basket-info">
+                  <span class="basket-highlight-text">
+                    3 items • Cheapest at <span class="store-name">Shoprite Hatfield</span>
+                  </span>
+                </div>
+                <div class="basket-price" aria-label="Total price: R98.97">
+                  R98.97
+                </div>
+              </div>
+              <a href="#basket" class="view-basket-link" role="button">
+                <span>View basket</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </a>
+            </div>
+          </section>
+
+          <!-- 6. Section "Nearby stores" -->
+          <section class="stores-section" aria-labelledby="stores-sec-title">
+            <h2 id="stores-sec-title" class="section-title">Nearby stores</h2>
+            <div class="store-list" role="list">
+
+              <!-- Shoprite Hatfield - Long Line (Red) -->
+              <a href="#store-details" class="store-row" role="listitem" title="Open Shoprite Hatfield store details (S3)">
+                <div class="store-meta">
+                  <span class="store-name">Shoprite Hatfield</span>
+                  <span class="store-suburb">Hatfield</span>
+                </div>
+                <div class="queue-badge red" aria-label="Queue status: Long Line (30+ Mins Wait)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>Long Line (30+ Mins Wait)</span>
+                </div>
+              </a>
+
+              <!-- Pick n Pay Hatfield - Short Line (Green) -->
+              <a href="#store-details" class="store-row" role="listitem" title="Open Pick n Pay Hatfield store details (S3)">
+                <div class="store-meta">
+                  <span class="store-name">Pick n Pay Hatfield</span>
+                  <span class="store-suburb">Hatfield</span>
+                </div>
+                <div class="queue-badge green" aria-label="Queue status: Short Line (under 10 Mins Wait)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 14 10"></polyline>
+                  </svg>
+                  <span>Short Line (under 10 Mins Wait)</span>
+                </div>
+              </a>
+
+              <!-- Checkers Hatfield - Moderate Line (Amber) -->
+              <a href="#store-details" class="store-row" role="listitem" title="Open Checkers Hatfield store details (S3)">
+                <div class="store-meta">
+                  <span class="store-name">Checkers Hatfield</span>
+                  <span class="store-suburb">Hatfield</span>
+                </div>
+                <div class="queue-badge amber" aria-label="Queue status: Moderate Line (10-30 Mins Wait)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 15 15"></polyline>
+                  </svg>
+                  <span>Moderate Line (10–30 Mins Wait)</span>
+                </div>
+              </a>
+
+            </div>
+          </section>
+
+          <!-- 7. Footer link: Privacy Notice -->
+          <footer class="screen-footer">
+            <a href="#privacy" class="footer-link">Privacy Notice</a>
+          </footer>
+
+        </main>
+
+        <!-- 8. Bottom Tab Bar (Home Active) -->
+        <nav class="bottom-tab-bar" aria-label="Main Navigation">
+          <a href="#home" class="tab-item active" aria-current="page">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Home</span>
+          </a>
+          <a href="#basket" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Basket</span>
+          </a>
+          <a href="#savings" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 6v12M15 9.5a3 3 0 0 0-3-2.5c-2 0-3 1-3 2.5s1 2.5 3 2.5 3 1 3 2.5-1 2.5-3 2.5a3 3 0 0 1-3-2.5"></path>
+            </svg>
+            <span>Savings</span>
+          </a>
+        </nav>
+
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- FRAME 2: LOADING STATE -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span>Frame 2: Loading State</span>
+        <span class="state-pill">Skeleton</span>
+      </div>
+
+      <div class="mobile-frame" aria-label="Queueless S1 Home Loading State">
+        
+        <!-- Global Header -->
+        <header class="global-header">
+          <a href="#home" class="header-logo">Queueless</a>
+          <div class="header-actions">
+            <button class="icon-btn" aria-label="Profile">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </button>
+            <button class="icon-btn" aria-label="Basket">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="badge-counter">3</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Screen Content -->
+        <main class="screen-body">
+
+          <h1 class="greeting-line">Find the cheapest store near you.</h1>
+
+          <!-- Suburb Selector -->
+          <div class="suburb-group">
+            <label class="suburb-label" for="suburb-select-loading">Your suburb</label>
+            <div class="suburb-select-container">
+              <select id="suburb-select-loading" class="suburb-select">
+                <option selected="">Hatfield</option>
+              </select>
+              <div class="select-arrow" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="suburb-hint">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              Showing stores in Hatfield
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="search-block">
+            <div class="search-input-wrapper">
+              <span class="search-icon-inside" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <input type="search" class="search-input" placeholder="Search a product, e.g. White Sugar 2kg" disabled="">
+            </div>
+            <div class="search-btn-wrapper">
+              <button type="button" class="btn-capsule-primary" disabled="" style="opacity: 0.7;">
+                Search
+              </button>
+            </div>
+          </div>
+
+          <!-- Skeleton Active Basket -->
+          <section class="basket-section">
+            <h2 class="section-title">Your active basket</h2>
+            <div class="skeleton-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div class="skeleton-box" style="width: 170px; height: 18px;"></div>
+                <div class="skeleton-box" style="width: 70px; height: 22px;"></div>
+              </div>
+              <div class="skeleton-box" style="width: 90px; height: 16px;"></div>
+            </div>
+          </section>
+
+          <!-- Skeleton Nearby Stores -->
+          <section class="stores-section">
+            <h2 class="section-title">Nearby stores</h2>
+            <div class="store-list">
+              <div class="skeleton-store-row">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <div class="skeleton-box" style="width: 130px; height: 16px;"></div>
+                  <div class="skeleton-box" style="width: 70px; height: 12px;"></div>
+                </div>
+                <div class="skeleton-box" style="width: 110px; height: 26px; border-radius: 13px;"></div>
+              </div>
+              <div class="skeleton-store-row">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <div class="skeleton-box" style="width: 145px; height: 16px;"></div>
+                  <div class="skeleton-box" style="width: 70px; height: 12px;"></div>
+                </div>
+                <div class="skeleton-box" style="width: 125px; height: 26px; border-radius: 13px;"></div>
+              </div>
+              <div class="skeleton-store-row">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <div class="skeleton-box" style="width: 120px; height: 16px;"></div>
+                  <div class="skeleton-box" style="width: 70px; height: 12px;"></div>
+                </div>
+                <div class="skeleton-box" style="width: 130px; height: 26px; border-radius: 13px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Footer link -->
+          <footer class="screen-footer">
+            <a href="#privacy" class="footer-link">Privacy Notice</a>
+          </footer>
+
+        </main>
+
+        <!-- Bottom Tab Bar -->
+        <nav class="bottom-tab-bar">
+          <a href="#home" class="tab-item active">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Home</span>
+          </a>
+          <a href="#basket" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Basket</span>
+          </a>
+          <a href="#savings" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 6v12M15 9.5a3 3 0 0 0-3-2.5c-2 0-3 1-3 2.5s1 2.5 3 2.5 3 1 3 2.5-1 2.5-3 2.5a3 3 0 0 1-3-2.5"></path>
+            </svg>
+            <span>Savings</span>
+          </a>
+        </nav>
+
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- FRAME 3: EMPTY BASKET STATE -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span>Frame 3: Empty Basket State</span>
+        <span class="state-pill">Zero Basket</span>
+      </div>
+
+      <div class="mobile-frame" aria-label="Queueless S1 Home Empty Basket Screen">
+        
+        <!-- Global Header -->
+        <header class="global-header">
+          <a href="#home" class="header-logo">Queueless</a>
+          <div class="header-actions">
+            <button class="icon-btn" aria-label="Profile">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </button>
+            <button class="icon-btn" aria-label="Basket with 0 items">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="badge-counter">3</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Screen Content -->
+        <main class="screen-body">
+
+          <h1 class="greeting-line">Find the cheapest store near you.</h1>
+
+          <!-- Suburb Selector -->
+          <div class="suburb-group">
+            <label class="suburb-label" for="suburb-select-empty">Your suburb</label>
+            <div class="suburb-select-container">
+              <select id="suburb-select-empty" class="suburb-select">
+                <option value="Hatfield" selected="">Hatfield</option>
+                <option value="Arcadia">Arcadia</option>
+                <option value="Benoni">Benoni</option>
+              </select>
+              <div class="select-arrow" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="suburb-hint">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              Showing stores in Hatfield
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="search-block">
+            <div class="search-input-wrapper">
+              <span class="search-icon-inside" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <input type="search" class="search-input" placeholder="Search a product, e.g. White Sugar 2kg">
+            </div>
+            <div class="search-btn-wrapper">
+              <button type="button" class="btn-capsule-primary">
+                Search
+              </button>
+            </div>
+          </div>
+
+          <!-- Section "Your active basket" - Empty state replace -->
+          <section class="basket-section" aria-labelledby="basket-sec-title-empty">
+            <h2 id="basket-sec-title-empty" class="section-title">Your active basket</h2>
+            <div class="empty-basket-box">
+              <svg class="empty-basket-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              <div class="empty-basket-text">
+                Your basket is empty. Search for a product to start.
+              </div>
+            </div>
+          </section>
+
+          <!-- Section Nearby Stores -->
+          <section class="stores-section">
+            <h2 class="section-title">Nearby stores</h2>
+            <div class="store-list" role="list">
+              <a href="#store-details" class="store-row" role="listitem">
+                <div class="store-meta">
+                  <span class="store-name">Shoprite Hatfield</span>
+                  <span class="store-suburb">Hatfield</span>
+                </div>
+                <div class="queue-badge red">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>Long Line (30+ Mins Wait)</span>
+                </div>
+              </a>
+              <a href="#store-details" class="store-row" role="listitem">
+                <div class="store-meta">
+                  <span class="store-name">Pick n Pay Hatfield</span>
+                  <span class="store-suburb">Hatfield</span>
+                </div>
+                <div class="queue-badge green">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 14 10"></polyline>
+                  </svg>
+                  <span>Short Line (under 10 Mins Wait)</span>
+                </div>
+              </a>
+              <a href="#store-details" class="store-row" role="listitem">
+                <div class="store-meta">
+                  <span class="store-name">Checkers Hatfield</span>
+                  <span class="store-suburb">Hatfield</span>
+                </div>
+                <div class="queue-badge amber">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 15 15"></polyline>
+                  </svg>
+                  <span>Moderate Line (10–30 Mins Wait)</span>
+                </div>
+              </a>
+            </div>
+          </section>
+
+          <!-- Footer link -->
+          <footer class="screen-footer">
+            <a href="#privacy" class="footer-link">Privacy Notice</a>
+          </footer>
+
+        </main>
+
+        <!-- Bottom Tab Bar -->
+        <nav class="bottom-tab-bar">
+          <a href="#home" class="tab-item active">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Home</span>
+          </a>
+          <a href="#basket" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Basket</span>
+          </a>
+          <a href="#savings" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 6v12M15 9.5a3 3 0 0 0-3-2.5c-2 0-3 1-3 2.5s1 2.5 3 2.5 3 1 3 2.5-1 2.5-3 2.5a3 3 0 0 1-3-2.5"></path>
+            </svg>
+            <span>Savings</span>
+          </a>
+        </nav>
+
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- FRAME 4: OFFLINE STATE -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span>Frame 4: Offline State</span>
+        <span class="state-pill">Cached Data</span>
+      </div>
+
+      <div class="mobile-frame" aria-label="Queueless S1 Home Offline Screen">
+        
+        <!-- Global Header -->
+        <header class="global-header">
+          <a href="#home" class="header-logo">Queueless</a>
+          <div class="header-actions">
+            <button class="icon-btn" aria-label="Profile">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </button>
+            <button class="icon-btn" aria-label="Basket with 3 items">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="badge-counter">3</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Offline Banner under header -->
+        <div class="offline-banner" role="status" aria-live="polite">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+            <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+            <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+            <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+            <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+          </svg>
+          <span>You're offline. Changes will not be saved.</span>
+        </div>
+
+        <!-- Screen Content -->
+        <main class="screen-body">
+
+          <h1 class="greeting-line">Find the cheapest store near you.</h1>
+
+          <!-- Suburb Selector -->
+          <div class="suburb-group">
+            <label class="suburb-label" for="suburb-select-offline">Your suburb</label>
+            <div class="suburb-select-container">
+              <select id="suburb-select-offline" class="suburb-select">
+                <option value="Hatfield" selected="">Hatfield</option>
+                <option value="Arcadia">Arcadia</option>
+                <option value="Benoni">Benoni</option>
+              </select>
+              <div class="select-arrow" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="suburb-hint">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              Showing stores in Hatfield (Cached)
+            </div>
+          </div>
+
+          <!-- Search Bar (works on cached data) -->
+          <div class="search-block">
+            <div class="search-input-wrapper">
+              <span class="search-icon-inside" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <input type="search" class="search-input" placeholder="Search a product, e.g. White Sugar 2kg" value="Clover Full Cream Milk">
+            </div>
+            <div class="search-btn-wrapper">
+              <button type="button" class="btn-capsule-primary" title="Search works on cached data while offline">
+                Search (Offline)
+              </button>
+            </div>
+          </div>
+
+          <!-- Section "Your active basket" -->
+          <section class="basket-section">
+            <h2 class="section-title">Your active basket</h2>
+            <div class="basket-card">
+              <div class="basket-summary-row">
+                <div class="basket-info">
+                  <span class="basket-highlight-text">
+                    3 items • Cheapest at <span class="store-name">Shoprite Hatfield</span>
+                  </span>
+                </div>
+                <div class="basket-price">
+                  R98.97
+                </div>
+              </div>
+              <a href="#basket" class="view-basket-link">
+                <span>View basket</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </a>
+            </div>
+          </section>
+
+          <!-- Section Nearby Stores with cached timestamp info -->
+          <section class="stores-section">
+            <h2 class="section-title">Nearby stores</h2>
+            <div class="store-list" role="list">
+              <a href="#store-details" class="store-row" role="listitem">
+                <div class="store-meta">
+                  <span class="store-name">Shoprite Hatfield</span>
+                  <span class="store-suburb">Hatfield • Cached 12 Mar 14:05</span>
+                </div>
+                <div class="queue-badge red">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>Long Line (30+ Mins Wait)</span>
+                </div>
+              </a>
+              <a href="#store-details" class="store-row" role="listitem">
+                <div class="store-meta">
+                  <span class="store-name">Pick n Pay Hatfield</span>
+                  <span class="store-suburb">Hatfield • Cached 12 Mar 14:05</span>
+                </div>
+                <div class="queue-badge green">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 14 10"></polyline>
+                  </svg>
+                  <span>Short Line (under 10 Mins Wait)</span>
+                </div>
+              </a>
+              <a href="#store-details" class="store-row" role="listitem">
+                <div class="store-meta">
+                  <span class="store-name">Checkers Hatfield</span>
+                  <span class="store-suburb">Hatfield • Cached 12 Mar 14:05</span>
+                </div>
+                <div class="queue-badge amber">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 15 15"></polyline>
+                  </svg>
+                  <span>Moderate Line (10–30 Mins Wait)</span>
+                </div>
+              </a>
+            </div>
+          </section>
+
+          <!-- Footer link -->
+          <footer class="screen-footer">
+            <a href="#privacy" class="footer-link">Privacy Notice</a>
+          </footer>
+
+        </main>
+
+        <!-- Bottom Tab Bar -->
+        <nav class="bottom-tab-bar">
+          <a href="#home" class="tab-item active">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Home</span>
+          </a>
+          <a href="#basket" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Basket</span>
+          </a>
+          <a href="#savings" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 6v12M15 9.5a3 3 0 0 0-3-2.5c-2 0-3 1-3 2.5s1 2.5 3 2.5 3 1 3 2.5-1 2.5-3 2.5a3 3 0 0 1-3-2.5"></path>
+            </svg>
+            <span>Savings</span>
+          </a>
+        </nav>
+
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+
+</body></html>

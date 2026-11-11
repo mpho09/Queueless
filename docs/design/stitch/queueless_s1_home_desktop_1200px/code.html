@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queueless — S1 Home (Search Landing) Desktop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              teal: '#0B7A6B',
+              green: '#2E7D32',
+              charcoal: '#1A1A1A',
+              amber: '#B26A00',
+              red: '#C62828',
+              grey: '#5F6368',
+              blue: '#1565C0',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #1A1A1A;
+      background-color: #FFFFFF;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .min-touch {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  </style>
+</head>
+<body class="bg-white min-h-screen flex flex-col justify-between">
+
+  <!-- Desktop & Mobile Header -->
+  <header class="border-b border-gray-200 bg-white sticky top-0 z-30">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo / Title -->
+      <div class="flex items-center gap-3">
+        <a href="#" class="text-2xl font-bold tracking-tight text-[#0B7A6B] min-touch flex items-center" aria-label="Queueless Home">
+          Queueless
+        </a>
+      </div>
+
+      <!-- Desktop Centre Navigation (Hidden below 640px) -->
+      <nav class="hidden sm:flex items-center gap-8" aria-label="Main Navigation">
+        <a href="#" class="font-semibold text-base text-[#0B7A6B] border-b-2 border-[#0B7A6B] py-2 px-1 min-touch flex items-center" aria-current="page">
+          Home
+        </a>
+        <a href="#" class="font-medium text-base text-[#5F6368] hover:text-[#1A1A1A] py-2 px-1 transition-colors min-touch flex items-center">
+          Basket
+        </a>
+        <a href="#" class="font-medium text-base text-[#5F6368] hover:text-[#1A1A1A] py-2 px-1 transition-colors min-touch flex items-center">
+          Savings
+        </a>
+      </nav>
+
+      <!-- Right Action Icons (Profile & Active Basket Badge) -->
+      <div class="flex items-center gap-2 sm:gap-4">
+        <!-- User Profile Button -->
+        <button type="button" class="min-touch w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#1A1A1A]" aria-label="User Account">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+
+        <!-- Basket Icon with Badge 3 -->
+        <a href="#" class="min-touch w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#1A1A1A] relative" aria-label="View basket with 3 items">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span class="absolute top-1.5 right-1.5 bg-[#0B7A6B] text-white text-[12px] font-bold rounded-full w-5 h-5 flex items-center justify-center ring-2 ring-white">
+            3
+          </span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Container: max-w-[1200px] centred -->
+  <main class="flex-grow w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    
+    <!-- Title / Value Proposition -->
+    <div class="mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-[#1A1A1A] tracking-tight">
+        Find the cheapest store near you.
+      </h1>
+    </div>
+
+    <!-- Search Section: Suburb Selector & Search Input in one row on desktop -->
+    <section class="bg-gray-50 border border-gray-200 rounded-xl p-5 sm:p-6 mb-10 shadow-sm" aria-label="Store and product search">
+      <form class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end" onsubmit="event.preventDefault();">
+        
+        <!-- Suburb Selector (sm: col-span-4) -->
+        <div class="sm:col-span-4 flex flex-col">
+          <label for="suburb-select" class="text-base font-semibold text-[#1A1A1A] mb-2">
+            Your suburb
+          </label>
+          <div class="relative">
+            <select id="suburb-select" class="w-full h-12 bg-white border border-gray-300 rounded-[6px] px-3.5 pr-10 text-base text-[#1A1A1A] focus:outline-none focus:border-[#0B7A6B] focus:ring-1 focus:ring-[#0B7A6B] appearance-none cursor-pointer">
+              <option value="Hatfield" selected>Hatfield</option>
+              <option value="Brooklyn">Brooklyn</option>
+              <option value="Menlyn">Menlyn</option>
+              <option value="Centurion">Centurion</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 mt-2 text-sm text-[#5F6368]">
+            <svg class="w-4 h-4 text-[#5F6368] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span>Showing stores in Hatfield</span>
+          </div>
+        </div>
+
+        <!-- Search Bar with Product Input (sm: col-span-5) -->
+        <div class="sm:col-span-5 flex flex-col">
+          <label for="product-search" class="text-base font-semibold text-[#1A1A1A] mb-2 sm:invisible">
+            Product search
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <input 
+              id="product-search" 
+              type="text" 
+              placeholder="Search a product, e.g. White Sugar"
+              class="w-full h-12 bg-white border border-gray-300 rounded-[6px] pl-11 pr-4 text-base text-[#1A1A1A] placeholder-gray-500 focus:outline-none focus:border-[#0B7A6B] focus:ring-1 focus:ring-[#0B7A6B]"
+            >
+          </div>
+        </div>
+
+        <!-- Search Action Button (sm: col-span-3) -->
+        <div class="sm:col-span-3">
+          <button 
+            type="submit" 
+            class="w-full h-12 bg-[#0B7A6B] hover:bg-[#086357] text-white font-semibold text-base rounded-[24px] px-6 flex items-center justify-center transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0B7A6B] focus:ring-offset-2"
+          >
+            Search
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- 2 Columns Grid: Left 60% Nearby Stores | Right 40% Active Basket -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left Column: Nearby Stores (60% on desktop: lg:col-span-7) -->
+      <section class="lg:col-span-7 space-y-4" aria-label="Nearby Stores">
+        <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">
+            Nearby stores
+          </h2>
+          <span class="text-sm text-[#5F6368]">
+            Updated just now
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Store 1: Shoprite Hatfield -->
+          <article class="bg-white border border-gray-200 rounded-[8px] p-4 sm:p-5 hover:border-gray-300 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+            <div>
+              <h3 class="text-lg font-bold text-[#1A1A1A] leading-snug">
+                Shoprite Hatfield
+              </h3>
+              <p class="text-sm text-[#5F6368] mt-0.5">
+                Hatfield
+              </p>
+            </div>
+            <div class="flex-shrink-0 self-start sm:self-center">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-[#C62828] bg-red-50 border border-red-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Long Line (30+ Mins Wait)</span>
+              </span>
+            </div>
+          </article>
+
+          <!-- Store 2: Pick n Pay Hatfield -->
+          <article class="bg-white border border-gray-200 rounded-[8px] p-4 sm:p-5 hover:border-gray-300 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+            <div>
+              <h3 class="text-lg font-bold text-[#1A1A1A] leading-snug">
+                Pick n Pay Hatfield
+              </h3>
+              <p class="text-sm text-[#5F6368] mt-0.5">
+                Hatfield
+              </p>
+            </div>
+            <div class="flex-shrink-0 self-start sm:self-center">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-[#2E7D32] bg-green-50 border border-green-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 14 10"></polyline>
+                </svg>
+                <span>Short Line (under 10 Mins Wait)</span>
+              </span>
+            </div>
+          </article>
+
+          <!-- Store 3: Checkers Hatfield -->
+          <article class="bg-white border border-gray-200 rounded-[8px] p-4 sm:p-5 hover:border-gray-300 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+            <div>
+              <h3 class="text-lg font-bold text-[#1A1A1A] leading-snug">
+                Checkers Hatfield
+              </h3>
+              <p class="text-sm text-[#5F6368] mt-0.5">
+                Hatfield
+              </p>
+            </div>
+            <div class="flex-shrink-0 self-start sm:self-center">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-[#B26A00] bg-amber-50 border border-amber-200">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Moderate Line (10–30 Mins Wait)</span>
+              </span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Right Column: Active Basket (40% on desktop: lg:col-span-5) -->
+      <aside class="lg:col-span-5 space-y-4" aria-label="Shopping Basket Summary">
+        <div class="pb-2 border-b border-gray-100 flex items-center justify-between">
+          <h2 class="text-xl font-bold text-[#1A1A1A]">
+            Your active basket
+          </h2>
+          <span class="inline-flex items-center justify-center bg-gray-100 text-[#5F6368] font-bold text-xs rounded-full px-2.5 py-0.5">
+            3 items
+          </span>
+        </div>
+
+        <!-- Basket Summary Card (8px radius, white surface, border) -->
+        <div class="bg-white border border-gray-200 rounded-[8px] p-6 shadow-xs">
+          
+          <div class="flex items-start justify-between gap-4 pb-5 border-b border-gray-100">
+            <div>
+              <p class="text-base font-semibold text-[#1A1A1A]">
+                3 items • Cheapest at
+              </p>
+              <p class="text-base font-bold text-[#0B7A6B] mt-0.5">
+                Shoprite Hatfield
+              </p>
+              <p class="text-xs text-[#5F6368] mt-1">
+                Prices verified today at 14:05
+              </p>
+            </div>
+            
+            <div class="text-right">
+              <span class="block text-2xl sm:text-3xl font-bold text-[#2E7D32] tracking-tight">
+                R98.97
+              </span>
+              <span class="inline-block mt-1 text-[11px] font-semibold text-[#2E7D32] bg-green-50 border border-green-200 rounded px-1.5 py-0.5">
+                Save R18.50
+              </span>
+            </div>
+          </div>
+
+          <div class="pt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <a 
+              href="#" 
+              class="inline-flex items-center gap-1.5 font-semibold text-base text-[#0B7A6B] hover:text-[#086357] transition-colors py-2 min-touch"
+            >
+              <span>View basket</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+
+            <a 
+              href="#" 
+              class="h-11 px-5 bg-[#0B7A6B] hover:bg-[#086357] text-white font-semibold text-sm rounded-[24px] inline-flex items-center justify-center transition-colors min-touch"
+            >
+              Compare Store Totals
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Informative note card matching the South African shopper context -->
+        <div class="bg-gray-50 border border-gray-200 rounded-[8px] p-4 text-xs text-[#5F6368] leading-relaxed">
+          <p class="font-medium text-[#1A1A1A] mb-1">Queue & Price Insights</p>
+          Community queue reports update automatically. Add more items to your basket to compare full grocery totals across Hatfield supermarkets.
+        </div>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- Desktop Footer with Privacy Notice Link -->
+  <footer class="border-t border-gray-200 bg-white py-6 mt-12">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="text-sm text-[#5F6368]">
+        © 2026 Queueless. All rights reserved.
+      </div>
+      <div>
+        <a href="#" class="text-sm font-medium text-[#5F6368] hover:text-[#0B7A6B] underline transition-colors min-touch inline-flex items-center">
+          Privacy Notice
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile Bottom Tab Bar (Visible only on screens <640px) -->
+  <nav class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-30" aria-label="Mobile Navigation">
+    <div class="flex items-center justify-around h-16 max-w-[480px] mx-auto px-4">
+      <a href="#" class="flex flex-col items-center justify-center min-touch text-[#0B7A6B] w-full" aria-current="page">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+        <span class="text-xs font-semibold mt-1">Home</span>
+      </a>
+      <a href="#" class="flex flex-col items-center justify-center min-touch text-[#5F6368] hover:text-[#1A1A1A] w-full">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+        <span class="text-xs font-medium mt-1">Basket</span>
+      </a>
+      <a href="#" class="flex flex-col items-center justify-center min-touch text-[#5F6368] hover:text-[#1A1A1A] w-full">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 6v12M15 9.5a3.5 3.5 0 0 0-7 0c0 2 2 3 3.5 3s3.5 1 3.5 3a3.5 3.5 0 0 1-7 0"></path>
+        </svg>
+        <span class="text-xs font-medium mt-1">Savings</span>
+      </a>
+    </div>
+  </nav>
+
+</body>
+</html>

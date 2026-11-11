@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Queueless — Account Screens</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --primary-teal: #0B7A6B;
+    --primary-teal-hover: #09685b;
+    --savings-green: #2E7D32;
+    --bg-white: #FFFFFF;
+    --text-charcoal: #1A1A1A;
+    --text-muted: #5F6368;
+    --border-light: #E0E0E0;
+    --status-amber: #B26A00;
+    --status-red: #C62828;
+    --status-red-bg: #FFEBEE;
+    --status-amber-bg: #FFF8E1;
+    --status-grey: #5F6368;
+    --live-blue: #1565C0;
+    --surface-light: #F8F9FA;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #F0F2F5;
+    color: var(--text-charcoal);
+    padding: 32px 24px 60px 24px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* Presentation Board Meta Header */
+  .board-header {
+    max-width: 1560px;
+    margin: 0 auto 28px auto;
+  }
+  .board-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-charcoal);
+    margin-bottom: 8px;
+  }
+  .spec-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .spec-tag {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: #E8F5E9;
+    color: var(--savings-green);
+    border: 1px solid #C8E6C9;
+  }
+  .spec-tag.neutral {
+    background: #ECEFF1;
+    color: #455A64;
+    border-color: #CFD8DC;
+  }
+
+  /* Grid Layout for frames */
+  .frames-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    max-width: 1560px;
+    margin: 0 auto;
+  }
+
+  .frame-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 360px;
+    flex-shrink: 0;
+  }
+
+  .frame-header-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #4A5568;
+  }
+
+  .frame-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .badge-primary { background: #E0F2F1; color: var(--primary-teal); }
+  .badge-error { background: #FFEBEE; color: var(--status-red); }
+  .badge-success { background: #E8F5E9; color: var(--savings-green); }
+
+  /* 360px Mobile Frame Screen Container */
+  .mobile-screen {
+    width: 360px;
+    min-height: 640px;
+    background: var(--bg-white);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #E2E8F0;
+  }
+
+  /* Screen Header: only "Queueless" and back arrow. No basket, no tab bar */
+  .app-header {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--border-light);
+    background: var(--bg-white);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .back-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    color: var(--text-charcoal);
+  }
+  .back-btn:hover {
+    background-color: var(--surface-light);
+  }
+
+  .header-brand {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--primary-teal);
+    letter-spacing: -0.2px;
+    margin-left: 4px;
+  }
+
+  /* Content area */
+  .screen-body {
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .screen-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-charcoal);
+    margin-bottom: 24px;
+    letter-spacing: -0.3px;
+  }
+
+  /* Form Elements */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-charcoal);
+    margin-bottom: 6px;
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .form-input {
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    border-radius: 6px;
+    border: 1px solid var(--border-light);
+    padding: 0 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--text-charcoal);
+    background: var(--bg-white);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .form-input:focus {
+    border-color: var(--primary-teal);
+    box-shadow: 0 0 0 1px var(--primary-teal);
+  }
+  .form-input.has-error {
+    border-color: var(--status-red);
+    box-shadow: 0 0 0 1px var(--status-red);
+  }
+  .form-input::placeholder {
+    color: #9E9E9E;
+  }
+
+  .input-trailing-icon {
+    position: absolute;
+    right: 2px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-radius: 4px;
+  }
+
+  .helper-text {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+  .error-text {
+    font-size: 14px;
+    color: var(--status-red);
+    margin-top: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  /* Text link helpers */
+  .forgot-link-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+    margin-bottom: 24px;
+  }
+
+  .text-link {
+    font-size: 15px;
+    color: var(--primary-teal);
+    font-weight: 600;
+    text-decoration: none;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  .text-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Capsule Buttons */
+  .btn-primary {
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    background-color: var(--primary-teal);
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease;
+    text-decoration: none;
+  }
+  .btn-primary:hover {
+    background-color: var(--primary-teal-hover);
+  }
+
+  .btn-primary:disabled, .btn-primary.disabled {
+    background-color: #E0E0E0;
+    color: #9E9E9E;
+    cursor: not-allowed;
+    border: none;
+  }
+
+  .btn-secondary {
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    background-color: #FFFFFF;
+    color: var(--primary-teal);
+    border: 1.5px solid var(--primary-teal);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease;
+    text-decoration: none;
+  }
+  .btn-secondary:hover {
+    background-color: #E0F2F1;
+  }
+
+  /* Centered secondary text and guest link */
+  .switch-mode-text {
+    text-align: center;
+    font-size: 15px;
+    color: var(--text-charcoal);
+    margin-top: 20px;
+    margin-bottom: 12px;
+  }
+
+  .guest-link-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  /* Notice / Alert Cards */
+  .alert-banner {
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .alert-banner.danger {
+    background: var(--status-red-bg);
+    border: 1px solid #FFCDD2;
+    color: var(--status-red);
+  }
+
+  .alert-banner.warning {
+    background: var(--status-amber-bg);
+    border: 1px solid #FFE082;
+    color: var(--status-amber);
+  }
+
+  .alert-banner.success {
+    background: #E8F5E9;
+    border: 1px solid #C8E6C9;
+    color: var(--savings-green);
+  }
+
+  .alert-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Checkbox Row Component (WCAG 44px min target) */
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    min-height: 44px;
+    padding: 6px 0;
+    margin-bottom: 8px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .checkbox-custom {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border-radius: 4px;
+    border: 1.5px solid #757575;
+    background: #FFFFFF;
+    margin-right: 12px;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+
+  .checkbox-custom.checked {
+    background: var(--primary-teal);
+    border-color: var(--primary-teal);
+    color: #FFFFFF;
+  }
+
+  .checkbox-label {
+    font-size: 15px;
+    color: var(--text-charcoal);
+    line-height: 1.4;
+    user-select: none;
+  }
+
+  .retailer-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 24px;
+    line-height: 1.4;
+  }
+
+  /* Email Verification Screen Details */
+  .verify-illustration {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 24px;
+  }
+
+  .mail-icon-bubble {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #E0F2F1;
+    color: var(--primary-teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .verify-desc {
+    font-size: 16px;
+    color: var(--text-charcoal);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .verify-email-bold {
+    font-weight: 700;
+    color: var(--primary-teal);
+    word-break: break-all;
+  }
+
+  .actions-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+  }
+</style>
+</head>
+<body>
+<!-- Presentation Header -->
+<div class="board-header">
+<h1 class="board-title">Queueless — Account Screens (A1–A4 &amp; States)</h1>
+<div class="spec-tags">
+<span class="spec-tag">Mobile-First 360px</span>
+<span class="spec-tag">Header: Queueless + Back Only</span>
+<span class="spec-tag">No Bottom Tab Bar</span>
+<span class="spec-tag">Touch Targets ≥44×44px</span>
+<span class="spec-tag">WCAG Contrast ≥4.5:1</span>
+<span class="spec-tag neutral">South Africa (en-ZA)</span>
+</div>
+</div>
+<!-- Frames Grid -->
+<div class="frames-grid"><!-- ============================================== -->
+<!-- SECTION A1: LOG IN SCREENS -->
+<!-- ============================================== -->
+<!-- FRAME A1: BASELINE (LOG IN) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A1 Baseline: Log in</span>
+<span class="frame-badge badge-primary">Default</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Log in</h2>
+<div class="form-group">
+<label class="form-label" for="login-email-base">Email</label>
+<div class="input-wrapper">
+<input autocomplete="email" class="form-input" id="login-email-base" placeholder="you@example.co.za" type="email"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" for="login-password-base">Password</label>
+<div class="input-wrapper">
+<input autocomplete="current-password" class="form-input" id="login-password-base" placeholder="Enter your password" type="password"/>
+<button aria-label="Toggle password visibility" class="input-trailing-icon" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+</div>
+<div class="forgot-link-wrapper">
+<a class="text-link" href="#forgot">Forgot password?</a>
+</div>
+<button class="btn-primary" type="button">Log in</button>
+<p class="switch-mode-text">
+        New to Queueless? <a class="text-link" href="#signup">Sign up</a>
+</p>
+<div class="guest-link-wrapper">
+<a class="text-link" href="#guest" style="color: var(--text-muted); font-weight: 500;">Continue as guest</a>
+</div>
+</div>
+</div>
+</div>
+<!-- FRAME A1: STATE 1 (WRONG PASSWORD) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A1 State 1: Wrong Password</span>
+<span class="frame-badge badge-error">Validation</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Log in</h2>
+<div class="form-group">
+<label class="form-label">Email</label>
+<div class="input-wrapper">
+<input class="form-input" type="email" value="tester.joy@queueless.co.za"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Password</label>
+<div class="input-wrapper">
+<input class="form-input has-error" type="password" value="wrongpassword123"/>
+<button aria-label="Toggle password visibility" class="input-trailing-icon" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+<p class="error-text">
+<svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="flex-shrink:0; margin-top:2px;" viewbox="0 0 24 24" width="16"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+<span>Incorrect email or password.</span>
+</p>
+</div>
+<div class="forgot-link-wrapper">
+<a class="text-link" href="#forgot">Forgot password?</a>
+</div>
+<button class="btn-primary" type="button">Log in</button>
+<p class="switch-mode-text">
+        New to Queueless? <a class="text-link" href="#signup">Sign up</a>
+</p>
+<div class="guest-link-wrapper">
+<a class="text-link" href="#guest" style="color: var(--text-muted); font-weight: 500;">Continue as guest</a>
+</div>
+</div>
+</div>
+</div>
+<!-- FRAME A1: STATE 2 (LOCKED) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A1 State 2: Error (Locked)</span>
+<span class="frame-badge badge-error">Rate Limited</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Log in</h2>
+<div class="alert-banner danger">
+<svg class="alert-icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+<div>
+<strong>Account locked for 15 minutes after 5 incorrect attempts.</strong>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Email</label>
+<div class="input-wrapper">
+<input class="form-input has-error" disabled="" style="background:#F5F5F5;" type="email" value="tester.joy@queueless.co.za"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Password</label>
+<div class="input-wrapper">
+<input class="form-input has-error" disabled="" style="background:#F5F5F5;" type="password" value="••••••••"/>
+<button aria-label="Toggle password visibility" class="input-trailing-icon" disabled="" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+</div>
+<div class="forgot-link-wrapper">
+<a class="text-link" href="#forgot">Forgot password?</a>
+</div>
+<button class="btn-primary disabled" disabled="" type="button">Log in</button>
+<p class="switch-mode-text">
+        New to Queueless? <a class="text-link" href="#signup">Sign up</a>
+</p>
+<div class="guest-link-wrapper">
+<a class="text-link" href="#guest" style="color: var(--text-muted); font-weight: 500;">Continue as guest</a>
+</div>
+</div>
+</div>
+</div>
+<!-- FRAME A1: STATE 3 (SESSION EXPIRED) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A1 State 3: Session Expired</span>
+<span class="frame-badge badge-error">Auth Required</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Log in</h2>
+<div class="alert-banner warning">
+<svg class="alert-icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+<div>
+<strong>Session expired. Please log in again to save your changes.</strong>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Email</label>
+<div class="input-wrapper">
+<input class="form-input" type="email" value="tester.joy@queueless.co.za"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Password</label>
+<div class="input-wrapper">
+<input class="form-input" placeholder="Enter your password" type="password"/>
+<button aria-label="Toggle password visibility" class="input-trailing-icon" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+</div>
+<div class="forgot-link-wrapper">
+<a class="text-link" href="#forgot">Forgot password?</a>
+</div>
+<button class="btn-primary" type="button">Log in</button>
+<p class="switch-mode-text">
+        New to Queueless? <a class="text-link" href="#signup">Sign up</a>
+</p>
+<div class="guest-link-wrapper">
+<a class="text-link" href="#guest" style="color: var(--text-muted); font-weight: 500;">Continue as guest</a>
+</div>
+</div>
+</div>
+</div>
+<!-- FRAME A1: STATE 7 (OFFLINE) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A1 State 7: Offline</span>
+<span class="frame-badge badge-offline">Offline</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Log in</h2>
+<div class="alert-banner offline">
+<svg class="alert-icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><line x1="1" x2="23" y1="1" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" x2="12.01" y1="20" y2="20"></line></svg>
+<div>
+<strong>You're offline. Changes will not be saved.</strong>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" for="login-email-offline">Email</label>
+<div class="input-wrapper">
+<input class="form-input" id="login-email-offline" type="email" value="tester.joy@queueless.co.za"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" for="login-password-offline">Password</label>
+<div class="input-wrapper">
+<input class="form-input" id="login-password-offline" placeholder="Enter your password" type="password"/>
+<button aria-label="Toggle password visibility" class="input-trailing-icon" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+</div>
+<div class="forgot-link-wrapper">
+<a class="text-link" href="#forgot">Forgot password?</a>
+</div>
+<button class="btn-primary disabled" disabled="" type="button">Log in</button>
+<p class="switch-mode-text">
+        New to Queueless? <a class="text-link" href="#signup">Sign up</a>
+</p>
+<div class="guest-link-wrapper">
+<a class="text-link" href="#guest" style="color: var(--text-muted); font-weight: 500;">Continue as guest</a>
+</div>
+</div>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- SECTION A2: SIGN UP SCREENS -->
+<!-- ============================================== -->
+<!-- FRAME A2: BASELINE (EMPTY CHECKBOXES, DISABLED BUTTON) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A2 Baseline: Sign up</span>
+<span class="frame-badge badge-primary">Default</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Create your account</h2>
+<div class="form-group">
+<label class="form-label" for="signup-email-base">Email</label>
+<div class="input-wrapper">
+<input autocomplete="email" class="form-input" id="signup-email-base" placeholder="you@example.co.za" type="email"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" for="signup-password-base">Password</label>
+<div class="input-wrapper">
+<input autocomplete="new-password" class="form-input" id="signup-password-base" placeholder="Create a password" type="password"/>
+<button aria-label="Toggle password visibility" class="input-trailing-icon" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+<p class="helper-text">At least 8 characters, 1 uppercase letter and 1 number</p>
+</div>
+<div aria-checked="false" class="checkbox-row" role="checkbox" tabindex="0">
+<div class="checkbox-custom"></div>
+<span class="checkbox-label">I am 16 or older</span>
+</div>
+<div aria-checked="false" class="checkbox-row" role="checkbox" style="margin-bottom: 20px;" tabindex="0">
+<div class="checkbox-custom"></div>
+<span class="checkbox-label">I agree to the <a class="text-link" href="#privacy" style="display:inline; min-height:auto; font-weight:600;">Privacy Notice</a></span>
+</div>
+<button class="btn-primary disabled" disabled="" type="button">Sign up</button>
+<p class="retailer-note">
+        Retailer? Retailer accounts are approved by our team.
+      </p>
+</div>
+</div>
+</div>
+<!-- FRAME A2: STATE 4 (PASSWORD ERROR) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A2 State 4: Password Error</span>
+<span class="frame-badge badge-error">Validation</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Create your account</h2>
+<div class="form-group">
+<label class="form-label">Email</label>
+<div class="input-wrapper">
+<input class="form-input" type="email" value="joy.shopper@queueless.co.za"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Password</label>
+<div class="input-wrapper">
+<input class="form-input has-error" type="text" value="groceries2026"/>
+<button aria-label="Hide password" class="input-trailing-icon" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" x2="23" y1="1" y2="23"></line></svg>
+</button>
+</div>
+<p class="error-text">
+<svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="flex-shrink:0; margin-top:2px;" viewbox="0 0 24 24" width="16"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+<span>Password must include at least 1 uppercase letter and 1 number</span>
+</p>
+</div>
+<div aria-checked="true" class="checkbox-row" role="checkbox" tabindex="0">
+<div class="checkbox-custom checked">
+<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewbox="0 0 24 24" width="14"><polyline points="20 6 9 17 4 12"></polyline></svg>
+</div>
+<span class="checkbox-label">I am 16 or older</span>
+</div>
+<div aria-checked="true" class="checkbox-row" role="checkbox" style="margin-bottom: 20px;" tabindex="0">
+<div class="checkbox-custom checked">
+<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewbox="0 0 24 24" width="14"><polyline points="20 6 9 17 4 12"></polyline></svg>
+</div>
+<span class="checkbox-label">I agree to the <a class="text-link" href="#privacy" style="display:inline; min-height:auto; font-weight:600;">Privacy Notice</a></span>
+</div>
+<button class="btn-primary disabled" disabled="" type="button">Sign up</button>
+<p class="retailer-note">
+        Retailer? Retailer accounts are approved by our team.
+      </p>
+</div>
+</div>
+</div>
+<!-- FRAME A2: STATE 5 (READY / VALID FORM ENABLED) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A2 State 5: Form Ready</span>
+<span class="frame-badge badge-success">Valid</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Create your account</h2>
+<div class="form-group">
+<label class="form-label">Email</label>
+<div class="input-wrapper">
+<input class="form-input" type="email" value="joy.shopper@queueless.co.za"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Password</label>
+<div class="input-wrapper">
+<input class="form-input" type="password" value="Groceries2026!"/>
+<button aria-label="Toggle password visibility" class="input-trailing-icon" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+<p class="helper-text" style="color: var(--savings-green); font-weight: 500; display: flex; align-items: center; gap: 4px;">
+<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="14"><polyline points="20 6 9 17 4 12"></polyline></svg>
+<span>Password requirements met</span>
+</p>
+</div>
+<div aria-checked="true" class="checkbox-row" role="checkbox" tabindex="0">
+<div class="checkbox-custom checked">
+<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewbox="0 0 24 24" width="14"><polyline points="20 6 9 17 4 12"></polyline></svg>
+</div>
+<span class="checkbox-label">I am 16 or older</span>
+</div>
+<div aria-checked="true" class="checkbox-row" role="checkbox" style="margin-bottom: 20px;" tabindex="0">
+<div class="checkbox-custom checked">
+<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewbox="0 0 24 24" width="14"><polyline points="20 6 9 17 4 12"></polyline></svg>
+</div>
+<span class="checkbox-label">I agree to the <a class="text-link" href="#privacy" style="display:inline; min-height:auto; font-weight:600;">Privacy Notice</a></span>
+</div>
+<button class="btn-primary" type="button">Sign up</button>
+<p class="retailer-note">
+        Retailer? Retailer accounts are approved by our team.
+      </p>
+</div>
+</div>
+</div>
+<!-- FRAME A2: STATE 7 (OFFLINE) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A2 State 7: Offline</span>
+<span class="frame-badge badge-offline">Offline</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Create your account</h2>
+<div class="alert-banner offline">
+<svg class="alert-icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><line x1="1" x2="23" y1="1" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" x2="12.01" y1="20" y2="20"></line></svg>
+<div>
+<strong>You're offline. Changes will not be saved.</strong>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" for="signup-email-offline">Email</label>
+<div class="input-wrapper">
+<input autocomplete="email" class="form-input" id="signup-email-offline" placeholder="you@example.co.za" type="email"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" for="signup-password-offline">Password</label>
+<div class="input-wrapper">
+<input autocomplete="new-password" class="form-input" id="signup-password-offline" placeholder="Create a password" type="password"/>
+<button aria-label="Toggle password visibility" class="input-trailing-icon" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+<p class="helper-text">At least 8 characters, 1 uppercase letter and 1 number</p>
+</div>
+<div aria-checked="false" class="checkbox-row" role="checkbox" tabindex="0">
+<div class="checkbox-custom"></div>
+<span class="checkbox-label">I am 16 or older</span>
+</div>
+<div aria-checked="false" class="checkbox-row" role="checkbox" style="margin-bottom: 20px;" tabindex="0">
+<div class="checkbox-custom"></div>
+<span class="checkbox-label">I agree to the <a class="text-link" href="#privacy" style="display:inline; min-height:auto; font-weight:600;">Privacy Notice</a></span>
+</div>
+<button class="btn-primary disabled" disabled="" type="button">Sign up</button>
+<p class="retailer-note">
+        Retailer? Retailer accounts are approved by our team.
+      </p>
+</div>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- SECTION A3: FORGOT / RESET PASSWORD -->
+<!-- ============================================== -->
+<!-- FRAME A3: BASELINE (RESET PASSWORD) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A3 Baseline: Reset Password</span>
+<span class="frame-badge badge-primary">Default</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Reset your password</h2>
+<p style="font-size: 15px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.45;">
+        Enter the email address associated with your Queueless account and we'll send you a recovery link.
+      </p>
+<div class="form-group" style="margin-bottom: 24px;">
+<label class="form-label" for="reset-email-base">Email</label>
+<div class="input-wrapper">
+<input autocomplete="email" class="form-input" id="reset-email-base" placeholder="you@example.co.za" type="email"/>
+</div>
+</div>
+<button class="btn-primary" type="button">Send reset link</button>
+</div>
+</div>
+</div>
+<!-- FRAME A3: STATE 6 (RESET SENT / SUCCESS) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A3 State 6: Reset Sent</span>
+<span class="frame-badge badge-success">Success</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Reset your password</h2>
+<div class="alert-banner success" style="margin-bottom: 24px;">
+<svg class="alert-icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+<div>
+<strong>Check your email. The reset link is valid for 1 hour.</strong>
+</div>
+</div>
+<div class="form-group" style="margin-bottom: 24px;">
+<label class="form-label">Email</label>
+<div class="input-wrapper">
+<input class="form-input" disabled="" style="background:#F9F9F9; color:#757575;" type="email" value="tester.joy@queueless.co.za"/>
+</div>
+</div>
+<button class="btn-secondary" type="button">Resend reset link</button>
+</div>
+</div>
+</div>
+<!-- FRAME A3: STATE 7 (OFFLINE) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A3 State 7: Offline</span>
+<span class="frame-badge badge-offline">Offline</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body">
+<h2 class="screen-title">Reset your password</h2>
+<div class="alert-banner offline">
+<svg class="alert-icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><line x1="1" x2="23" y1="1" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" x2="12.01" y1="20" y2="20"></line></svg>
+<div>
+<strong>You're offline. Changes will not be saved.</strong>
+</div>
+</div>
+<p style="font-size: 15px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.45;">
+        Enter the email address associated with your Queueless account and we'll send you a recovery link.
+      </p>
+<div class="form-group" style="margin-bottom: 24px;">
+<label class="form-label" for="reset-email-offline">Email</label>
+<div class="input-wrapper">
+<input autocomplete="email" class="form-input" id="reset-email-offline" placeholder="you@example.co.za" type="email"/>
+</div>
+</div>
+<button class="btn-primary disabled" disabled="" type="button">Send reset link</button>
+</div>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- SECTION A4: EMAIL VERIFICATION -->
+<!-- ============================================== -->
+<!-- FRAME A4: BASELINE (EMAIL VERIFICATION) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A4 Baseline: Email Verification</span>
+<span class="frame-badge badge-primary">Action Required</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body" style="align-items: center; text-align: center;">
+<div class="verify-illustration">
+<div class="mail-icon-bubble">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+</div>
+<h2 class="screen-title" style="margin-bottom: 12px; font-size: 22px;">Verify your email</h2>
+<p class="verify-desc">
+          We sent a link to <span class="verify-email-bold">tester.joy@queueless.co.za</span>.
+        </p>
+<p style="font-size: 15px; color: var(--text-muted); line-height: 1.45; max-width: 280px;">
+          Until you verify, you can browse but not save or report.
+        </p>
+</div>
+<div class="actions-stack" style="width: 100%;">
+<button class="btn-primary" type="button">Resend email</button>
+<button class="btn-secondary" type="button">Continue browsing</button>
+</div>
+</div>
+</div>
+</div>
+<!-- FRAME A4: STATE 7 (OFFLINE) -->
+<div class="frame-wrapper">
+<div class="frame-header-label">
+<span>A4 State 7: Offline</span>
+<span class="frame-badge badge-offline">Offline</span>
+</div>
+<div class="mobile-screen">
+<header class="app-header">
+<button aria-label="Go back" class="back-btn">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+</button>
+<span class="header-brand">Queueless</span>
+</header>
+<div class="screen-body" style="align-items: center; text-align: center;">
+<div class="alert-banner offline" style="width: 100%; text-align: left; margin-bottom: 12px;">
+<svg class="alert-icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><line x1="1" x2="23" y1="1" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" x2="12.01" y1="20" y2="20"></line></svg>
+<div>
+<strong>You're offline. Changes will not be saved.</strong>
+</div>
+</div>
+<div class="verify-illustration" style="margin-top: 10px;">
+<div class="mail-icon-bubble">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+</div>
+<h2 class="screen-title" style="margin-bottom: 12px; font-size: 22px;">Verify your email</h2>
+<p class="verify-desc">
+          We sent a link to <span class="verify-email-bold">tester.joy@queueless.co.za</span>.
+        </p>
+<p style="font-size: 15px; color: var(--text-muted); line-height: 1.45; max-width: 280px;">
+          Until you verify, you can browse but not save or report.
+        </p>
+</div>
+<div class="actions-stack" style="width: 100%;">
+<button class="btn-primary disabled" disabled="" type="button">Resend email</button>
+<button class="btn-secondary" type="button">Continue browsing</button>
+</div>
+</div>
+</div>
+</div></div>
+</body>
+</html>

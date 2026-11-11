@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queueless S5 Report Submission Desktop</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #F8F9FA;
+      color: #1A1A1A;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body class="bg-[#F8F9FA] text-[#1A1A1A] min-h-screen flex flex-col justify-between">
+
+  <!-- Desktop & Mobile Header -->
+  <header class="bg-white border-b border-[#E0E0E0] sticky top-0 z-50">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <!-- Left: Back Arrow + Logo -->
+      <div class="flex items-center gap-3">
+        <a href="#" aria-label="Go back" class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 text-[#1A1A1A] transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+        </a>
+        <a href="#" class="text-2xl font-bold tracking-tight text-[#0B7A6B]">
+          Queueless
+        </a>
+      </div>
+
+      <!-- Center: Desktop Navigation Links (hidden on mobile) -->
+      <nav class="hidden md:flex items-center gap-8 text-[16px] font-medium text-[#5F6368]">
+        <a href="#" class="hover:text-[#0B7A6B] py-5 transition-colors">Home</a>
+        <a href="#" class="hover:text-[#0B7A6B] py-5 transition-colors">Basket</a>
+        <a href="#" class="hover:text-[#0B7A6B] py-5 transition-colors">Savings</a>
+      </nav>
+
+      <!-- Right: User Avatar + Basket Icon with Badge 3 -->
+      <div class="flex items-center gap-2 sm:gap-4">
+        <a href="#" aria-label="User Account" class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 text-[#1A1A1A] transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+        </a>
+        <a href="#" aria-label="Shopping Basket" class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 text-[#1A1A1A] relative transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+          <span class="absolute top-2 right-1.5 bg-[#0B7A6B] text-white text-[11px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">
+            3
+          </span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow flex items-center justify-center px-4 py-8 sm:py-12">
+    <!-- Centered Form Container: max 560px wide on desktop; full width on mobile -->
+    <div class="w-full max-w-[560px] bg-white rounded-2xl md:shadow-sm md:border md:border-[#E0E0E0] p-5 sm:p-8">
+      
+      <!-- Store Header Info -->
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-[#1A1A1A] mb-1">
+          Shoprite Hatfield
+        </h1>
+        <p class="text-[16px] text-[#5F6368]">
+          Your report helps other shoppers skip long queues.
+        </p>
+      </div>
+
+      <!-- Segmented Tab: Queue vs Price -->
+      <div class="grid grid-cols-2 bg-[#F1F3F4] p-1 rounded-xl mb-6" role="tablist">
+        <button type="button" role="tab" aria-selected="true" class="py-2.5 text-[15px] font-semibold rounded-lg bg-white text-[#0B7A6B] shadow-sm flex items-center justify-center min-h-[44px] transition-all">
+          Queue
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="py-2.5 text-[15px] font-medium rounded-lg text-[#5F6368] hover:text-[#1A1A1A] flex items-center justify-center min-h-[44px] transition-all">
+          Price
+        </button>
+      </div>
+
+      <!-- 2x2 Queue Status Tiles Grid (each tile at least 120px tall) -->
+      <div class="grid grid-cols-2 gap-3.5 mb-6" role="radiogroup" aria-label="Select Queue Status">
+        
+        <!-- Tile 1: No Queue -->
+        <button type="button" role="radio" aria-checked="false" class="relative flex flex-col items-center justify-center text-center p-4 min-h-[120px] rounded-lg border border-[#E0E0E0] bg-white hover:border-[#0B7A6B] transition-all group">
+          <div class="w-9 h-9 rounded-full bg-[#E8F5E9] text-[#2E7D32] flex items-center justify-center mb-2.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <span class="text-[16px] font-semibold text-[#2E7D32]">No Queue</span>
+        </button>
+
+        <!-- Tile 2: Short Line -->
+        <button type="button" role="radio" aria-checked="false" class="relative flex flex-col items-center justify-center text-center p-4 min-h-[120px] rounded-lg border border-[#E0E0E0] bg-white hover:border-[#0B7A6B] transition-all group">
+          <div class="w-9 h-9 rounded-full bg-[#E8F5E9] text-[#2E7D32] flex items-center justify-center mb-2.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v5l3 3"></path>
+            </svg>
+          </div>
+          <span class="text-[16px] font-semibold text-[#2E7D32]">Short Line</span>
+          <span class="text-[13px] text-[#5F6368] mt-0.5">(under 10 Mins)</span>
+        </button>
+
+        <!-- Tile 3: Moderate Line -->
+        <button type="button" role="radio" aria-checked="false" class="relative flex flex-col items-center justify-center text-center p-4 min-h-[120px] rounded-lg border border-[#E0E0E0] bg-white hover:border-[#0B7A6B] transition-all group">
+          <div class="w-9 h-9 rounded-full bg-[#FFF3E0] text-[#B26A00] flex items-center justify-center mb-2.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v5l3 3"></path>
+            </svg>
+          </div>
+          <span class="text-[16px] font-semibold text-[#B26A00]">Moderate Line</span>
+          <span class="text-[13px] text-[#5F6368] mt-0.5">(10–30 Mins)</span>
+        </button>
+
+        <!-- Tile 4: Long Line (SELECTED) -->
+        <button type="button" role="radio" aria-checked="true" class="relative flex flex-col items-center justify-center text-center p-4 min-h-[120px] rounded-lg border-2 border-[#0B7A6B] bg-[#F0FAF8] shadow-sm transition-all group">
+          <!-- Selection Check Badge -->
+          <div class="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-[#0B7A6B] text-white flex items-center justify-center">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+
+          <div class="w-9 h-9 rounded-full bg-[#FFEBEE] text-[#C62828] flex items-center justify-center mb-2.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"></path>
+            </svg>
+          </div>
+          <span class="text-[16px] font-semibold text-[#C62828]">Long Line</span>
+          <span class="text-[13px] text-[#C62828] font-medium mt-0.5">(30+ Mins Wait)</span>
+        </button>
+
+      </div>
+
+      <!-- Action Button & Caption -->
+      <div class="space-y-3">
+        <button type="button" class="w-full h-12 bg-[#0B7A6B] hover:bg-[#086357] text-white text-[16px] font-semibold rounded-full min-h-[48px] shadow-sm flex items-center justify-center transition-colors">
+          Confirm
+        </button>
+        <p class="text-center text-[14px] text-[#5F6368]">
+          You can submit up to 5 queue reports per store per hour.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Desktop & Mobile Footer -->
+  <footer class="bg-white border-t border-[#E0E0E0] py-6 px-4">
+    <div class="max-w-[1200px] mx-auto flex flex-col sm:flex-row items-center justify-between text-[14px] text-[#5F6368] gap-4">
+      <div>
+        &copy; 2026 Queueless. All rights reserved.
+      </div>
+      <div>
+        <a href="#" class="hover:underline hover:text-[#1A1A1A] transition-colors">Privacy Notice</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

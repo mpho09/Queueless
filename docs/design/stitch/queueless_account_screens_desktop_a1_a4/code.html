@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queueless Account Screens Desktop (A1–A4)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #FFFFFF;
+      color: #1A1A1A;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Tab switcher for switching between A1, A2, A3, A4 previews and All View */
+    .tab-btn.active {
+      background-color: #0B7A6B;
+      color: #FFFFFF;
+    }
+    .tab-btn:not(.active) {
+      background-color: #F8F9FA;
+      color: #5F6368;
+      border: 1px solid #E0E0E0;
+    }
+
+    /* Focus visible rings */
+    input:focus-visible, button:focus-visible, a:focus-visible {
+      outline: 2px solid #0B7A6B;
+      outline-offset: 2px;
+    }
+
+    /* Custom Checkbox */
+    .custom-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid #E0E0E0;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      display: inline-grid;
+      place-content: center;
+      transition: all 0.15s ease;
+      background-color: #FFFFFF;
+    }
+    .custom-checkbox:checked {
+      background-color: #0B7A6B;
+      border-color: #0B7A6B;
+    }
+    .custom-checkbox:checked::before {
+      content: "";
+      width: 10px;
+      height: 6px;
+      border-left: 2px solid #FFFFFF;
+      border-bottom: 2px solid #FFFFFF;
+      transform: rotate(-45deg) translate(1px, -1px);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-white text-[#1A1A1A] flex flex-col justify-between">
+
+  <!-- Desktop Header: No navigation links, just Queueless brand mark and back arrow -->
+  <header class="w-full border-b border-[#E0E0E0] bg-white sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button type="button" aria-label="Go back" class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-neutral-100 text-[#1A1A1A] transition-colors -ml-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+        </button>
+        <span class="text-2xl font-bold tracking-tight text-[#0B7A6B]">Queueless</span>
+      </div>
+
+      <!-- Quick Screen Switcher for reviewing all 4 desktop accounts -->
+      <nav aria-label="Account Screen Selector" class="flex items-center gap-1.5 p-1 bg-[#F8F9FA] rounded-full border border-[#E0E0E0] text-xs font-semibold">
+        <button onclick="showScreen('all')" id="btn-all" class="tab-btn active px-3 py-1.5 rounded-full transition-all">All 4 Screens</button>
+        <button onclick="showScreen('a1')" id="btn-a1" class="tab-btn px-3 py-1.5 rounded-full transition-all">A1 Log in</button>
+        <button onclick="showScreen('a2')" id="btn-a2" class="tab-btn px-3 py-1.5 rounded-full transition-all">A2 Sign up</button>
+        <button onclick="showScreen('a3')" id="btn-a3" class="tab-btn px-3 py-1.5 rounded-full transition-all">A3 Forgot Password</button>
+        <button onclick="showScreen('a4')" id="btn-a4" class="tab-btn px-3 py-1.5 rounded-full transition-all">A4 Verify Email</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Showcase Container -->
+  <main class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1">
+    
+    <!-- Header Summary Note -->
+    <div class="text-center mb-8 max-w-2xl mx-auto">
+      <p class="text-sm font-medium text-[#5F6368] uppercase tracking-wider mb-1">Desktop Authentication Suite</p>
+      <h1 class="text-3xl font-bold text-[#1A1A1A] tracking-tight">Queueless Account Screens</h1>
+      <p class="text-sm text-[#5F6368] mt-2">
+        Centered white cards (max 440px wide, 1px border <code class="text-xs bg-[#F8F9FA] px-1.5 py-0.5 rounded border border-[#E0E0E0]">#E0E0E0</code>, 8px radius) with isolated header. Collapses below 640px to mobile.
+      </p>
+    </div>
+
+    <!-- Responsive Grid for Desktop View (Can show all 4 or switch to single) -->
+    <div id="screens-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 items-start justify-items-center">
+
+      <!-- ==========================================
+           A1: LOG IN SCREEN (DESKTOP)
+           ========================================== -->
+      <section id="card-a1" class="w-full flex flex-col items-center">
+        <!-- Label above card -->
+        <div class="w-full max-w-[440px] flex items-center justify-between mb-3 px-1">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#0B7A6B] bg-[#E6F4F1] px-2.5 py-1 rounded-full">A1: Log in</span>
+          <span class="text-xs text-[#5F6368]">Desktop Form • Max 440px</span>
+        </div>
+
+        <!-- The Centered Form Card -->
+        <div class="w-full max-w-[440px] bg-white border border-[#E0E0E0] rounded-lg p-6 sm:p-8 shadow-sm">
+          
+          <!-- Brand wordmark inside / top of card context -->
+          <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold tracking-tight text-[#0B7A6B]">Queueless</h2>
+            <h3 class="text-xl font-bold text-[#1A1A1A] mt-2">Log in</h3>
+          </div>
+
+          <form onsubmit="event.preventDefault();" class="space-y-4">
+            <!-- Email Field -->
+            <div>
+              <label for="a1-email" class="block text-base font-medium text-[#1A1A1A] mb-1.5">Email</label>
+              <input 
+                type="email" 
+                id="a1-email" 
+                name="email" 
+                placeholder="you@example.co.za" 
+                class="w-full h-12 px-3.5 bg-white border border-[#E0E0E0] rounded-[6px] text-base text-[#1A1A1A] placeholder-[#5F6368] transition focus:border-[#0B7A6B]"
+              >
+            </div>
+
+            <!-- Password Field with Show/Hide Eye -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="a1-password" class="block text-base font-medium text-[#1A1A1A]">Password</label>
+              </div>
+              <div class="relative">
+                <input 
+                  type="password" 
+                  id="a1-password" 
+                  name="password" 
+                  placeholder="Enter your password" 
+                  class="w-full h-12 pl-3.5 pr-12 bg-white border border-[#E0E0E0] rounded-[6px] text-base text-[#1A1A1A] placeholder-[#5F6368] transition focus:border-[#0B7A6B]"
+                >
+                <button 
+                  type="button" 
+                  onclick="togglePasswordVisibility('a1-password', this)" 
+                  aria-label="Toggle password visibility" 
+                  class="absolute right-0 top-0 w-11 h-12 flex items-center justify-center text-[#5F6368] hover:text-[#1A1A1A] transition-colors"
+                >
+                  <svg class="w-5 h-5 eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Forgot password link -->
+            <div class="flex justify-end pt-0.5">
+              <a href="#card-a3" onclick="showScreen('a3')" class="text-sm font-semibold text-[#0B7A6B] hover:underline focus:outline-none min-h-[44px] flex items-center">
+                Forgot password?
+              </a>
+            </div>
+
+            <!-- Primary CTA Button -->
+            <button 
+              type="submit" 
+              class="w-full h-12 rounded-full bg-[#0B7A6B] hover:bg-[#086256] text-white text-base font-semibold tracking-wide transition-colors shadow-sm flex items-center justify-center min-h-[48px]"
+            >
+              Log in
+            </button>
+
+            <!-- Secondary Actions -->
+            <div class="text-center pt-3 space-y-3">
+              <p class="text-sm text-[#5F6368]">
+                New to Queueless? 
+                <a href="#card-a2" onclick="showScreen('a2')" class="font-semibold text-[#0B7A6B] hover:underline ml-1">Sign up</a>
+              </p>
+              <div>
+                <a href="#" class="inline-flex items-center justify-center min-h-[44px] text-sm font-medium text-[#5F6368] hover:text-[#1A1A1A] transition-colors">
+                  Continue as guest
+                </a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           A2: SIGN UP SCREEN (DESKTOP)
+           ========================================== -->
+      <section id="card-a2" class="w-full flex flex-col items-center">
+        <!-- Label above card -->
+        <div class="w-full max-w-[440px] flex items-center justify-between mb-3 px-1">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#0B7A6B] bg-[#E6F4F1] px-2.5 py-1 rounded-full">A2: Sign up</span>
+          <span class="text-xs text-[#5F6368]">Desktop Form • Max 440px</span>
+        </div>
+
+        <!-- The Centered Form Card -->
+        <div class="w-full max-w-[440px] bg-white border border-[#E0E0E0] rounded-lg p-6 sm:p-8 shadow-sm">
+          
+          <!-- Brand wordmark inside / top of card context -->
+          <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold tracking-tight text-[#0B7A6B]">Queueless</h2>
+            <h3 class="text-xl font-bold text-[#1A1A1A] mt-2">Create your account</h3>
+          </div>
+
+          <form onsubmit="event.preventDefault();" class="space-y-4">
+            <!-- Email Field -->
+            <div>
+              <label for="a2-email" class="block text-base font-medium text-[#1A1A1A] mb-1.5">Email</label>
+              <input 
+                type="email" 
+                id="a2-email" 
+                name="email" 
+                placeholder="you@example.co.za" 
+                class="w-full h-12 px-3.5 bg-white border border-[#E0E0E0] rounded-[6px] text-base text-[#1A1A1A] placeholder-[#5F6368] transition focus:border-[#0B7A6B]"
+              >
+            </div>
+
+            <!-- Password Field with Show/Hide Eye -->
+            <div>
+              <label for="a2-password" class="block text-base font-medium text-[#1A1A1A] mb-1.5">Password</label>
+              <div class="relative">
+                <input 
+                  type="password" 
+                  id="a2-password" 
+                  name="password" 
+                  placeholder="Create a password" 
+                  class="w-full h-12 pl-3.5 pr-12 bg-white border border-[#E0E0E0] rounded-[6px] text-base text-[#1A1A1A] placeholder-[#5F6368] transition focus:border-[#0B7A6B]"
+                >
+                <button 
+                  type="button" 
+                  onclick="togglePasswordVisibility('a2-password', this)" 
+                  aria-label="Toggle password visibility" 
+                  class="absolute right-0 top-0 w-11 h-12 flex items-center justify-center text-[#5F6368] hover:text-[#1A1A1A] transition-colors"
+                >
+                  <svg class="w-5 h-5 eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
+              <p class="text-xs text-[#5F6368] mt-1.5">
+                At least 8 characters, 1 uppercase letter and 1 number
+              </p>
+            </div>
+
+            <!-- Checkbox 1: 16 or older (Empty by default) -->
+            <div class="pt-1">
+              <label class="flex items-start gap-3 cursor-pointer select-none min-h-[44px] py-1">
+                <input 
+                  type="checkbox" 
+                  id="chk-age" 
+                  onchange="validateA2Form()" 
+                  class="custom-checkbox mt-0.5"
+                >
+                <span class="text-base text-[#1A1A1A] leading-snug">I am 16 or older</span>
+              </label>
+            </div>
+
+            <!-- Checkbox 2: Privacy notice (Empty by default) -->
+            <div>
+              <label class="flex items-start gap-3 cursor-pointer select-none min-h-[44px] py-1">
+                <input 
+                  type="checkbox" 
+                  id="chk-privacy" 
+                  onchange="validateA2Form()" 
+                  class="custom-checkbox mt-0.5"
+                >
+                <span class="text-base text-[#1A1A1A] leading-snug">
+                  I agree to the <a href="#" class="text-[#0B7A6B] font-semibold underline hover:text-[#086256]">Privacy Notice</a>
+                </span>
+              </label>
+            </div>
+
+            <!-- Primary CTA Button (Disabled by default until both are checked) -->
+            <button 
+              type="submit" 
+              id="btn-signup" 
+              disabled 
+              class="w-full h-12 rounded-full bg-[#E0E0E0] text-[#5F6368] cursor-not-allowed text-base font-semibold tracking-wide transition-colors shadow-none flex items-center justify-center min-h-[48px]"
+            >
+              Sign up
+            </button>
+
+            <!-- Retailer Note -->
+            <div class="text-center pt-2">
+              <p class="text-xs text-[#5F6368]">
+                Retailer? Retailer accounts are approved by our team.
+              </p>
+            </div>
+          </form>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           A3: FORGOT / RESET PASSWORD SCREEN (DESKTOP)
+           ========================================== -->
+      <section id="card-a3" class="w-full flex flex-col items-center">
+        <!-- Label above card -->
+        <div class="w-full max-w-[440px] flex items-center justify-between mb-3 px-1">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#0B7A6B] bg-[#E6F4F1] px-2.5 py-1 rounded-full">A3: Reset Password</span>
+          <span class="text-xs text-[#5F6368]">Desktop Form • Max 440px</span>
+        </div>
+
+        <!-- The Centered Form Card -->
+        <div class="w-full max-w-[440px] bg-white border border-[#E0E0E0] rounded-lg p-6 sm:p-8 shadow-sm">
+          
+          <!-- Brand wordmark inside / top of card context -->
+          <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold tracking-tight text-[#0B7A6B]">Queueless</h2>
+            <h3 class="text-xl font-bold text-[#1A1A1A] mt-2">Reset your password</h3>
+          </div>
+
+          <p class="text-base text-[#5F6368] leading-relaxed mb-6">
+            Enter the email address associated with your Queueless account and we'll send you a recovery link.
+          </p>
+
+          <form onsubmit="event.preventDefault(); showResetSuccess();" class="space-y-5">
+            <!-- Email Field -->
+            <div>
+              <label for="a3-email" class="block text-base font-medium text-[#1A1A1A] mb-1.5">Email</label>
+              <input 
+                type="email" 
+                id="a3-email" 
+                name="email" 
+                placeholder="you@example.co.za" 
+                class="w-full h-12 px-3.5 bg-white border border-[#E0E0E0] rounded-[6px] text-base text-[#1A1A1A] placeholder-[#5F6368] transition focus:border-[#0B7A6B]"
+              >
+            </div>
+
+            <!-- Success banner placeholder (hidden initially or shown upon test click) -->
+            <div id="reset-success-box" class="hidden p-3.5 bg-[#E8F5E9] border border-[#2E7D32] rounded-lg flex items-start gap-2.5">
+              <svg class="w-5 h-5 text-[#2E7D32] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <p class="text-sm text-[#2E7D32] font-medium leading-snug">
+                Check your email. The reset link is valid for 1 hour.
+              </p>
+            </div>
+
+            <!-- Primary CTA Button -->
+            <button 
+              type="submit" 
+              id="btn-reset"
+              class="w-full h-12 rounded-full bg-[#0B7A6B] hover:bg-[#086256] text-white text-base font-semibold tracking-wide transition-colors shadow-sm flex items-center justify-center min-h-[48px]"
+            >
+              Send reset link
+            </button>
+
+            <!-- Back to log in link -->
+            <div class="text-center pt-2">
+              <a href="#card-a1" onclick="showScreen('a1')" class="inline-flex items-center justify-center min-h-[44px] text-sm font-semibold text-[#0B7A6B] hover:underline">
+                Back to log in
+              </a>
+            </div>
+          </form>
+        </div>
+      </section>
+
+
+      <!-- ==========================================
+           A4: VERIFY YOUR EMAIL SCREEN (DESKTOP)
+           ========================================== -->
+      <section id="card-a4" class="w-full flex flex-col items-center">
+        <!-- Label above card -->
+        <div class="w-full max-w-[440px] flex items-center justify-between mb-3 px-1">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#0B7A6B] bg-[#E6F4F1] px-2.5 py-1 rounded-full">A4: Verify Email</span>
+          <span class="text-xs text-[#5F6368]">Desktop Form • Max 440px</span>
+        </div>
+
+        <!-- The Centered Form Card -->
+        <div class="w-full max-w-[440px] bg-white border border-[#E0E0E0] rounded-lg p-6 sm:p-8 shadow-sm text-center">
+          
+          <!-- Brand wordmark inside / top of card context -->
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold tracking-tight text-[#0B7A6B]">Queueless</h2>
+          </div>
+
+          <!-- Teal Envelope Icon in soft circular badge -->
+          <div class="w-16 h-16 bg-[#E6F4F1] text-[#0B7A6B] rounded-full mx-auto flex items-center justify-center mb-5">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+          </div>
+
+          <h3 class="text-2xl font-bold text-[#1A1A1A] mb-3">Verify your email</h3>
+          
+          <p class="text-base text-[#5F6368] leading-relaxed mb-1">
+            We sent a link to <span class="font-semibold text-[#0B7A6B] break-all">tester.joy@queueless.co.za</span>.
+          </p>
+          <p class="text-sm text-[#5F6368] mb-8">
+            Until you verify, you can browse but not save or report.
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="space-y-3">
+            <!-- Primary Button: Resend email -->
+            <button 
+              type="button" 
+              class="w-full h-12 rounded-full bg-[#0B7A6B] hover:bg-[#086256] text-white text-base font-semibold tracking-wide transition-colors shadow-sm flex items-center justify-center min-h-[48px]"
+            >
+              Resend email
+            </button>
+
+            <!-- Secondary Button: Continue browsing -->
+            <button 
+              type="button" 
+              class="w-full h-12 rounded-full bg-white hover:bg-neutral-50 border border-[#0B7A6B] text-[#0B7A6B] text-base font-semibold tracking-wide transition-colors flex items-center justify-center min-h-[48px]"
+            >
+              Continue browsing
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Desktop Footer -->
+  <footer class="w-full border-t border-[#E0E0E0] py-6 px-4 sm:px-6 lg:px-8 mt-12 bg-white text-center text-sm text-[#5F6368]">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>&copy; 2026 Queueless. All rights reserved.</p>
+      <div class="flex items-center gap-6">
+        <a href="#" class="hover:text-[#1A1A1A] hover:underline">Privacy Notice</a>
+        <a href="#" class="hover:text-[#1A1A1A] hover:underline">Terms of Service</a>
+        <a href="#" class="hover:text-[#1A1A1A] hover:underline">Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Toggle password show/hide
+    function togglePasswordVisibility(inputId, button) {
+      const input = document.getElementById(inputId);
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      
+      button.innerHTML = isPassword 
+        ? `<svg class="w-5 h-5 text-[#0B7A6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>`
+        : `<svg class="w-5 h-5 eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>`;
+    }
+
+    // A2 Checkbox logic: Enable button only when both checkboxes are checked
+    function validateA2Form() {
+      const chkAge = document.getElementById('chk-age');
+      const chkPrivacy = document.getElementById('chk-privacy');
+      const btn = document.getElementById('btn-signup');
+
+      if (chkAge.checked && chkPrivacy.checked) {
+        btn.disabled = false;
+        btn.classList.remove('bg-[#E0E0E0]', 'text-[#5F6368]', 'cursor-not-allowed', 'shadow-none');
+        btn.classList.add('bg-[#0B7A6B]', 'hover:bg-[#086256]', 'text-white', 'cursor-pointer', 'shadow-sm');
+      } else {
+        btn.disabled = true;
+        btn.classList.add('bg-[#E0E0E0]', 'text-[#5F6368]', 'cursor-not-allowed', 'shadow-none');
+        btn.classList.remove('bg-[#0B7A6B]', 'hover:bg-[#086256]', 'text-white', 'cursor-pointer', 'shadow-sm');
+      }
+    }
+
+    // A3 reset demo success trigger
+    function showResetSuccess() {
+      const box = document.getElementById('reset-success-box');
+      if (box) {
+        box.classList.remove('hidden');
+      }
+    }
+
+    // Interactive view switcher for reviewing individual screens or all at once
+    function showScreen(screenId) {
+      const cards = ['card-a1', 'card-a2', 'card-a3', 'card-a4'];
+      const buttons = ['btn-all', 'btn-a1', 'btn-a2', 'btn-a3', 'btn-a4'];
+      const grid = document.getElementById('screens-grid');
+
+      // Update button styles
+      buttons.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.classList.remove('active');
+        }
+      });
+      const activeBtn = document.getElementById('btn-' + screenId);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      if (screenId === 'all') {
+        grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 items-start justify-items-center';
+        cards.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove('hidden');
+        });
+      } else {
+        grid.className = 'grid grid-cols-1 gap-8 items-start justify-items-center max-w-xl mx-auto';
+        cards.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            if (id === 'card-' + screenId) {
+              el.classList.remove('hidden');
+            } else {
+              el.classList.add('hidden');
+            }
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>
