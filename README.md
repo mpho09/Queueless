@@ -16,14 +16,14 @@
 | Team Loom      | _TODO_                                                   |
 | PRD            | [docs/PRD.md](docs/PRD.md)                               |
 | Designs        | [docs/designs/](docs/designs/) (exported screens: `screen.png` + `code.html`) |
-| Implementation | [docs/Implementation plan.md](docs/Implementation%20plan.md) |
+| Implementation | [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) |
 
 ## 📋 Project Documentation
 
 We use the Product Requirements Document (PRD) as our single source of truth for features, business logic and database schemas. Make sure the PRD is updated and approved before editing any core code.
 
 - **[Product Requirements Document (PRD)](docs/PRD.md)**: core specification, user stories, screen flows, data model and compliance rules.
-- **[Implementation Plan](docs/Implementation%20plan.md)**: step-by-step build sequence, tech stack configuration and automated testing definitions.
+- **[Implementation Plan](docs/IMPLEMENTATION_PLAN.md)**: step-by-step build sequence, tech stack configuration and automated testing definitions.
 
 ## 👥 Team & Roles
 

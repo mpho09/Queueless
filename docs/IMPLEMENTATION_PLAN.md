@@ -93,7 +93,7 @@ Existing files are marked *(exists)*; everything else is new.
 Queueless/
 ├── docs/
 │   ├── PRD.md                            (exists)
-│   ├── Implementation plan.md            (this file)
+│   ├── IMPLEMENTATION_PLAN.md            (this file)
 │   └── designs/                          # Stitch export (reference only, never imported)
 ├── client/
 │   ├── index.html                        (exists) add Inter font link
