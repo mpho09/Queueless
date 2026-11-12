@@ -1,5 +1,6 @@
-// Number of items in the shopper's basket, for the header badge.
-// The basket itself is built in F2 (#16); until then the count is 0 and no badge shows.
+import { useBasket } from './useBasket.js'
+
+/** Number of products in the shopper's basket, for the header badge. */
 export function useBasketCount() {
-  return 0
+  return useBasket().count
 }
