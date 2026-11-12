@@ -1,10 +1,10 @@
 # Queueless — Implementation Plan
 
 **Version:** v2.0 (replaces the v1.0 MASTER build plan) · **Date:** 11 Nov 2026 · **Target:** M4 MVP built by 08 Jan 2027
-**Built from:** PRD v1.0 (`docs/PRD.md`) + the Stitch designs (22 boards in `docs/design/stitch/`) + the existing repo setup (`client/` + `server/` npm workspaces).
+**Built from:** PRD v1.0 (`docs/PRD.md`) + the Stitch designs (22 boards in `docs/designs/`) + the existing repo setup (`client/` + `server/` npm workspaces).
 **Stitch project:** https://stitch.withgoogle.com/projects/14854798444949179025
 
-> How to use this file: give it to your AI coding assistant together with `docs/PRD.md`. Build **one phase per session**. Do not start a phase until the previous phase's Definition of Done is all ticked. Open the Stitch screenshots listed for each phase (`docs/design/stitch/<folder>/screen.png`) while building that phase.
+> How to use this file: give it to your AI coding assistant together with `docs/PRD.md`. Build **one phase per session**. Do not start a phase until the previous phase's Definition of Done is all ticked. Open the Stitch images listed for each phase (`docs/designs/<name>.png`, see §9.2) while building that phase.
 
 **What changed from v1.0:** fits the repo as it is now (React client + Express API in npm workspaces, instead of a single Vite app); uses the Stitch designs for every screen; adds the missing Store, Suburb and Basket tables; adds account screens A1–A4; resolves the report-limit conflict between US3 and BR2 in favour of BR2; and lists 16 decisions the team must confirm (§0).
 
@@ -94,7 +94,7 @@ Queueless/
 ├── docs/
 │   ├── PRD.md                            (exists)
 │   ├── Implementation plan.md            (this file)
-│   └── design/stitch/                    # Stitch export (reference only, never imported)
+│   └── designs/                          # Stitch images (*.png) + html/ source (reference only, never imported)
 ├── client/
 │   ├── index.html                        (exists) add Inter font link
 │   ├── vite.config.js                    (exists) add tailwindcss() plugin
@@ -461,19 +461,20 @@ Load Inter 400/500/600/700 from Google Fonts in `index.html`. Spacing scale 4/8/
 
 ### 9.2 Using the Stitch export
 
-- Unzip to `docs/design/stitch/`. Each folder holds `screen.png` (look at this) and `code.html` (copy layout and spacing ideas, **never paste it in**).
+- The images are in `docs/designs/<name>.png` (look at these). The matching Stitch source is in `docs/designs/html/<name>.html` (copy layout and spacing ideas, **never paste it in**).
 - The boards are **showcase sheets**: they include meta bars, frame labels ("Frame 2: Loading State", "PRIMARY"), and multiple frames side by side. Build only the app UI inside each frame.
+- Each screen has three images: `-mobile` (360px, normal frame first), `-states` (every extra state) and `-desktop` (1200px).
 
-| Stitch folder | Builds |
+| Images in `docs/designs/` | Builds |
 |---|---|
-| `queueless_design_system_sheet` | §9.1 tokens + all `ui/`, `feedback/`, `domain/` badge components |
-| `queueless_s1_home_search_landing` (+`_states`, `_desktop_1200px`) | S1 |
-| `queueless_s2_search_results` (+`_states`, `_desktop_1200px`) | S2 |
-| `queueless_s3_store_details` (+`_states`, `_desktop_1200px`) | S3 |
-| `queueless_s4_shopping_basket` (+`_states`, `_desktop_1200px`) | S4 |
-| `queueless_s5_report_submission` (+`_states`, `_desktop_1200px`) | S5 |
-| `queueless_s6_savings_analytics_dashboard` (+`_states`, `_desktop_1200px`) | S6 |
-| `queueless_account_screens_a1_a4` (+`_states_variations`, `_desktop_a1_a4`) | A1–A4 |
+| `00-design-system.png` | §9.1 tokens + all `ui/`, `feedback/`, `domain/` badge components |
+| `s1-home-mobile.png`, `s1-home-states.png`, `s1-home-desktop.png` | S1 |
+| `s2-search-results-mobile.png`, `-states.png`, `-desktop.png` | S2 |
+| `s3-store-details-mobile.png`, `-states.png`, `-desktop.png` | S3 |
+| `s4-shopping-basket-mobile.png`, `-states.png`, `-desktop.png` | S4 |
+| `s5-report-submission-mobile.png`, `-states.png`, `-desktop.png` | S5 |
+| `s6-savings-dashboard-mobile.png`, `-states.png`, `-desktop.png` | S6 |
+| `a1-a4-account-mobile.png`, `-states.png`, `-desktop.png` | A1–A4 |
 
 **Stitch content to ignore or correct (the PRD wins):**
 

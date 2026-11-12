@@ -15,7 +15,7 @@
 | Project board  | _TODO_                                                   |
 | Team Loom      | _TODO_                                                   |
 | PRD            | [docs/PRD.md](docs/PRD.md)                               |
-| Designs        | [docs/design/stitch/](docs/design/stitch/) (exported screens: `screen.png` + `code.html`) |
+| Designs        | [docs/designs/](docs/designs/) (all Stitch screens as images) |
 | Implementation | [docs/Implementation plan.md](docs/Implementation%20plan.md) |
 
 ## 📋 Project Documentation
