@@ -1,10 +1,10 @@
 # Queueless — Implementation Plan
 
 **Version:** v2.0 (replaces the v1.0 MASTER build plan) · **Date:** 11 Nov 2026 · **Target:** M4 MVP built by 08 Jan 2027
-**Built from:** PRD v1.0 (`docs/PRD.md`) + the Stitch designs (22 boards in `docs/design/stitch/`) + the existing repo setup (`client/` + `server/` npm workspaces).
+**Built from:** PRD v1.0 (`docs/PRD.md`) + the Stitch designs (22 boards in `docs/designs/`) + the existing repo setup (`client/` + `server/` npm workspaces).
 **Stitch project:** https://stitch.withgoogle.com/projects/14854798444949179025
 
-> How to use this file: give it to your AI coding assistant together with `docs/PRD.md`. Build **one phase per session**. Do not start a phase until the previous phase's Definition of Done is all ticked. Open the Stitch screenshots listed for each phase (`docs/design/stitch/<folder>/screen.png`) while building that phase.
+> How to use this file: give it to your AI coding assistant together with `docs/PRD.md`. Build **one phase per session**. Do not start a phase until the previous phase's Definition of Done is all ticked. Open the Stitch screenshots listed for each phase (`docs/designs/<folder>/screen.png`) while building that phase.
 
 **What changed from v1.0:** fits the repo as it is now (React client + Express API in npm workspaces, instead of a single Vite app); uses the Stitch designs for every screen; adds the missing Store, Suburb and Basket tables; adds account screens A1–A4; resolves the report-limit conflict between US3 and BR2 in favour of BR2; and lists 16 decisions the team must confirm (§0).
 
@@ -94,7 +94,7 @@ Queueless/
 ├── docs/
 │   ├── PRD.md                            (exists)
 │   ├── Implementation plan.md            (this file)
-│   └── design/stitch/                    # Stitch export (reference only, never imported)
+│   └── designs/                          # Stitch export (reference only, never imported)
 ├── client/
 │   ├── index.html                        (exists) add Inter font link
 │   ├── vite.config.js                    (exists) add tailwindcss() plugin
@@ -461,7 +461,7 @@ Load Inter 400/500/600/700 from Google Fonts in `index.html`. Spacing scale 4/8/
 
 ### 9.2 Using the Stitch export
 
-- Unzip to `docs/design/stitch/`. Each folder holds `screen.png` (look at this) and `code.html` (copy layout and spacing ideas, **never paste it in**).
+- Unzip to `docs/designs/`. Each folder holds `screen.png` (look at this) and `code.html` (copy layout and spacing ideas, **never paste it in**).
 - The boards are **showcase sheets**: they include meta bars, frame labels ("Frame 2: Loading State", "PRIMARY"), and multiple frames side by side. Build only the app UI inside each frame.
 
 | Stitch folder | Builds |
