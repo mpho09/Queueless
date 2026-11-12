@@ -1,20 +1,63 @@
-:root {
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  color-scheme: light dark;
+@import "tailwindcss";
+
+/* Design tokens from the Stitch design system sheet (docs/Implementation plan.md §9.1).
+   Use them as Tailwind classes, e.g. bg-primary, text-muted, rounded-card, text-price. */
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --color-primary: #0B7A6B;
+  --color-primary-pressed: #085A4F;
+  --color-savings: #2E7D32;
+  --color-bg: #FFFFFF;
+  --color-surface-soft: #F9F9F9;
+  --color-ink: #1A1A1A;
+  --color-muted: #5F6368;
+  --color-border: #E0E0E0;
+
+  --color-amber: #B26A00;        /* icons and borders only (fails 4.5:1 as text) */
+  --color-amber-text: #9A5B00;   /* D5: amber text */
+  --color-amber-bg: #FFF8E1;
+  --color-red: #C62828;
+  --color-red-bg: #FFEBEE;
+  --color-green-bg: #E8F5E9;
+  --color-grey-pill-bg: #F1F3F4;
+  --color-live: #1565C0;
+
+  --radius-card: 8px;
+  --radius-input: 6px;
+  --radius-button: 24px;
+
+  --text-page-title: 24px;
+  --text-page-title--line-height: 32px;
+  --text-section: 20px;
+  --text-section--line-height: 28px;
+  --text-card-title: 18px;
+  --text-card-title--line-height: 26px;
+  --text-body: 16px;
+  --text-body--line-height: 24px;
+  --text-price: 22px;
+  --text-price--line-height: 28px;
+  --text-caption: 14px;
+  --text-caption--line-height: 20px;
 }
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-}
+  body {
+    margin: 0;
+    min-height: 100vh;
+  }
 
-.app {
-  display: grid;
-  place-content: center;
-  min-height: 100vh;
-  text-align: center;
+  /* Visible focus ring on every interactive element (PRD §12.1 accessibility) */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 }

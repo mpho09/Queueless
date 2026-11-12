@@ -17,7 +17,8 @@
     "db:status": "supabase status",
     "db:reset": "supabase db reset",
     "db:migration": "supabase migration new",
-    "db:push": "supabase db push"
+    "db:push": "supabase db push",
+    "test": "npm test -w client"
   },
   "devDependencies": {
     "concurrently": "^10.0.7",

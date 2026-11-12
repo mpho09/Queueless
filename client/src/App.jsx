@@ -1,21 +1,29 @@
-import { useEffect, useState } from 'react'
+import { Route, Routes } from 'react-router'
+import AppShell from './components/layout/AppShell.jsx'
+import Home from './pages/Home.jsx'
+import ComingSoon from './pages/ComingSoon.jsx'
+import NotFound from './pages/NotFound.jsx'
 
+// Route table from docs/Implementation plan.md §8.
+// Screens not built yet show a placeholder that names their issue.
 export default function App() {
-  const [status, setStatus] = useState('checking…')
-
-  useEffect(() => {
-    fetch('/api/health')
-      .then((res) => res.json())
-      .then((data) => setStatus(data.status))
-      .catch(() => setStatus('unreachable'))
-  }, [])
-
   return (
-    <main className="app">
-      <h1>Queueless</h1>
-      <p>
-        API status: <strong>{status}</strong>
-      </p>
-    </main>
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route index element={<Home />} />
+        <Route path="search" element={<ComingSoon title="Search results" issue={11} />} />
+        <Route path="stores/:storeId" element={<ComingSoon title="Store details" issue={12} />} />
+        <Route path="stores/:storeId/report" element={<ComingSoon title="Report" issue={18} />} />
+        <Route path="basket" element={<ComingSoon title="Your basket" issue={16} />} />
+        <Route path="savings" element={<ComingSoon title="Your savings" issue={20} />} />
+        <Route path="login" element={<ComingSoon title="Log in" issue={14} />} />
+        <Route path="signup" element={<ComingSoon title="Sign up" issue={14} />} />
+        <Route path="forgot-password" element={<ComingSoon title="Forgot password" issue={14} />} />
+        <Route path="reset-password" element={<ComingSoon title="Set a new password" issue={14} />} />
+        <Route path="verify-email" element={<ComingSoon title="Verify your email" issue={14} />} />
+        <Route path="privacy" element={<ComingSoon title="Privacy Notice" issue={14} />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
   )
 }
