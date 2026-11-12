@@ -12,13 +12,14 @@
     "dev:server": "npm run dev -w server",
     "build": "npm run build -w client",
     "start": "npm run start -w server",
-    "db:start": "supabase start",
-    "db:stop": "supabase stop",
-    "db:status": "supabase status",
-    "db:reset": "supabase db reset",
+    "test": "npm test -w client",
+    "db:link": "supabase link",
     "db:migration": "supabase migration new",
-    "db:push": "supabase db push",
-    "test": "npm test -w client"
+    "db:check": "supabase db push --remote --dry-run",
+    "db:push": "supabase db push --remote",
+    "db:seed": "supabase db push --remote --include-seed",
+    "db:test": "supabase test db --remote",
+    "db:reset:hosted": "supabase db reset --remote"
   },
   "devDependencies": {
     "concurrently": "^10.0.7",

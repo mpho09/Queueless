@@ -85,7 +85,7 @@ Queueless/
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) 20.19+ (built and tested on 22)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/), which the local Supabase stack runs in
+- Access to the team's hosted Supabase project (ask the Tech Lead). We don't run Supabase locally, so Docker is **not** needed
 - Git
 
 ### 1. Install
@@ -111,25 +111,37 @@ cp client/.env.example client/.env
 | `client/.env` | `VITE_SUPABASE_URL`         | Supabase project URL                                 |
 | `client/.env` | `VITE_SUPABASE_ANON_KEY`    | Public anon key                                      |
 
-For local development, `npm run db:start` prints the URL and keys to use. For a hosted project, find them under **Supabase Dashboard → Project Settings → API**.
+Find the values under **Supabase Dashboard → Project Settings → API**, or ask the Tech Lead for them privately. Never post keys in the team thread or commit them.
 
 ### 3. Database: migrations & seed
 
+We use **one shared hosted Supabase project** (no local database, no Docker). Every database change is a migration file merged through a PR; never edit tables by hand in the dashboard.
+
 ```bash
-npm run db:start     # start local Supabase (Docker); prints URLs and keys
-npm run db:reset     # apply all migrations in supabase/migrations, then run supabase/seed.sql
+npm run db:link -- --project-ref <project-ref>   # once per computer (Tech Lead shares the ref)
+npm run db:migration -- <name>                   # create a new migration file
+npm run db:check                                 # dry run: shows which migrations would be applied
 ```
 
-Other database commands:
+After a migration PR is **merged into main**, the Tech Lead applies it:
 
-| Command                         | Description                                  |
-| ------------------------------- | -------------------------------------------- |
-| `npm run db:migration -- <name>` | Create a new migration file                 |
-| `npm run db:status`             | Show local Supabase URLs and keys            |
-| `npm run db:push`               | Push migrations to the linked hosted project |
-| `npm run db:stop`               | Stop the local Supabase stack                |
+```bash
+npm run db:push      # apply new migrations to the hosted project
+npm run db:seed      # apply migrations and load supabase/seed.sql
+npm run db:test      # run the database tests in supabase/tests/ against the hosted project
+```
 
-Supabase Studio (the local dashboard) runs at http://127.0.0.1:54323.
+| Command | Description |
+| --- | --- |
+| `npm run db:link -- --project-ref <ref>` | Link this folder to the hosted project |
+| `npm run db:migration -- <name>` | Create a new migration file |
+| `npm run db:check` | Dry run: list migrations that would be applied |
+| `npm run db:push` | Apply new migrations to the hosted project |
+| `npm run db:seed` | Apply migrations and load the seed data |
+| `npm run db:test` | Run the database tests against the hosted project |
+| `npm run db:reset:hosted` | ⚠️ **Wipes the shared database** and rebuilds it from migrations + seed. Tech Lead only, and tell the team first |
+
+The shared database is used by everyone and by the live site, so only push migrations that have been reviewed and merged.
 
 ### 4. Start
 
