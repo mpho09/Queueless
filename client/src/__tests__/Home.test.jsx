@@ -83,3 +83,26 @@ test('shows the empty basket message and the shared layout', async () => {
   expect(screen.getAllByRole('navigation', { name: 'Main' })).toHaveLength(2) // desktop nav + tab bar
   expect(screen.queryByRole('button', { name: 'Go back' })).not.toBeInTheDocument()
 })
+
+test('shows the active basket summary with the cheapest store, linking to S4', async () => {
+  localStorage.setItem(
+    'queueless.basket',
+    JSON.stringify({
+      title: 'My basket',
+      items: [
+        { productId: 'sample-milk', quantity: 1 },
+        { productId: 'sample-bread', quantity: 1 },
+        { productId: 'sample-sugar', quantity: 1 },
+      ],
+    }),
+  )
+  renderHome()
+
+  const summary = await screen.findByRole('link', { name: /View basket/ })
+  expect(summary).toHaveTextContent('3 items • Cheapest at Shoprite Hatfield')
+  expect(summary).toHaveTextContent('R98.97')
+  expect(screen.queryByText('Your basket is empty. Search for a product to start.')).not.toBeInTheDocument()
+
+  await userEvent.click(summary)
+  expect(screen.getByText('At /basket')).toBeInTheDocument()
+})
