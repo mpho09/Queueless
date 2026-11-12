@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queueless S3 Store Details Desktop (1200px)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #FAFAFA;
+      color: #1A1A1A;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Desktop & Mobile Header -->
+  <header class="bg-white border-b border-[#E0E0E0] sticky top-0 z-50">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      
+      <!-- Left: Back Arrow + Logo -->
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <button type="button" aria-label="Go back" class="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-[#1A1A1A]">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+        <a href="#" class="text-2xl font-bold text-[#0B7A6B] tracking-tight hover:opacity-95">Queueless</a>
+      </div>
+
+      <!-- Center: Desktop Navigation Links (hidden on mobile <640px) -->
+      <nav class="hidden sm:flex items-center space-x-8 text-[16px] font-medium text-[#5F6368]">
+        <a href="#" class="text-[#0B7A6B] font-semibold py-5 border-b-2 border-[#0B7A6B] transition-colors">Home</a>
+        <a href="#" class="hover:text-[#1A1A1A] py-5 border-b-2 border-transparent transition-colors">Basket</a>
+        <a href="#" class="hover:text-[#1A1A1A] py-5 border-b-2 border-transparent transition-colors">Savings</a>
+      </nav>
+
+      <!-- Right: User Avatar + Basket Icon with Badge 3 -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <button type="button" aria-label="User Account" class="hidden sm:flex w-11 h-11 items-center justify-center rounded-full hover:bg-gray-100 text-[#1A1A1A] transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </button>
+        
+        <button type="button" aria-label="Shopping Basket with 3 items" class="w-11 h-11 relative flex items-center justify-center rounded-full hover:bg-gray-100 text-[#1A1A1A] transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <!-- Notification Badge "3" -->
+          <span class="absolute top-1.5 right-1.5 bg-[#0B7A6B] text-white text-[11px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+            3
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Container (Max 1200px, Centred) -->
+  <main class="max-w-[1200px] w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow">
+
+    <!-- Top Row: Store Info on Left, Queue Metric Panel on Right (Collapses on <640px) -->
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 pb-8 border-b border-[#E0E0E0]">
+      
+      <!-- Left Column: Store Details & Action Buttons -->
+      <div class="flex-1 max-w-xl">
+        <h1 class="text-2xl sm:text-3xl font-bold text-[#1A1A1A] tracking-tight">Shoprite Hatfield</h1>
+        <p class="text-[16px] text-[#5F6368] mt-1">Hatfield, Pretoria</p>
+        
+        <!-- Opening Hours with Status Dot -->
+        <div class="flex items-center space-x-2 mt-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#2E7D32]"></span>
+          <span class="text-[16px] text-[#1A1A1A] font-medium">Open today 08:00–20:00</span>
+        </div>
+
+        <!-- The two action buttons sit under the store info -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-6">
+          <button type="button" class="min-h-[48px] px-6 rounded-full border-2 border-[#0B7A6B] text-[#0B7A6B] font-semibold text-[16px] hover:bg-[#E6F2F0] active:bg-[#CCE5E2] transition-colors flex items-center justify-center">
+            Update Store Price
+          </button>
+          <button type="button" class="min-h-[48px] px-6 rounded-full bg-[#0B7A6B] text-white font-semibold text-[16px] hover:bg-[#096357] active:bg-[#074F45] transition-colors shadow-sm flex items-center justify-center">
+            Report Queue Status
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Column: Queue Metric Panel Card -->
+      <div class="w-full sm:w-[380px] bg-white border border-[#E0E0E0] rounded-[8px] p-5 shadow-sm">
+        <div class="text-[12px] font-bold text-[#5F6368] uppercase tracking-wider mb-3">
+          CURRENT QUEUE
+        </div>
+        
+        <!-- Red Queue Badge with Clock Icon + Text -->
+        <div class="inline-flex items-center space-x-2 bg-[#FDEDEC] border border-[#FADBD8] text-[#C62828] px-3 py-1.5 rounded-full font-semibold text-[14px]">
+          <svg class="w-4 h-4 text-[#C62828]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2" />
+          </svg>
+          <span>Long Line (30+ Mins Wait)</span>
+        </div>
+
+        <div class="mt-3 text-[14px] font-medium text-[#1A1A1A]">
+          Based on 6 reports • Last report 14:05
+        </div>
+        <div class="mt-1 text-[13px] text-[#5F6368]">
+          Recent reports count more.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- "Prices at this store" Section -->
+    <section class="mt-8 mb-12">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Prices at this store</h2>
+        <span class="text-[14px] text-[#5F6368] font-medium">4 products listed</span>
+      </div>
+
+      <!-- 2-Column Grid of Price Cards (1 column below 640px) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        
+        <!-- Card 1: Clover Full Cream Milk 2L -->
+        <div class="bg-white border border-[#E0E0E0] rounded-[8px] p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+          <div>
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 class="text-[18px] font-bold text-[#1A1A1A]">Clover Full Cream Milk 2L</h3>
+                <p class="text-[14px] text-[#5F6368] mt-0.5">Clover • 2L bottle</p>
+              </div>
+              <div class="text-right">
+                <span class="text-2xl font-bold text-[#1A1A1A]">R36.99</span>
+              </div>
+            </div>
+
+            <!-- Stock badge + Timestamp -->
+            <div class="flex flex-wrap items-center gap-2 mt-3">
+              <span class="inline-flex items-center space-x-1.5 bg-[#E8F5E9] text-[#2E7D32] px-2.5 py-1 rounded-[6px] text-[13px] font-medium">
+                <svg class="w-3.5 h-3.5 text-[#2E7D32]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>In Stock</span>
+              </span>
+              <span class="text-[13px] text-[#5F6368]">Updated 14:05, 11 Nov 2026</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-[#F0F0F0] flex justify-end">
+            <button type="button" class="min-h-[44px] px-4 rounded-full text-[#0B7A6B] font-semibold text-[15px] hover:bg-[#E6F2F0] active:bg-[#CCE5E2] transition-colors flex items-center space-x-1">
+              <span>+ Add to Basket</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 2: Albany Superior White Bread 700g -->
+        <div class="bg-white border border-[#E0E0E0] rounded-[8px] p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+          <div>
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 class="text-[18px] font-bold text-[#1A1A1A]">Albany Superior White Bread 700g</h3>
+                <p class="text-[14px] text-[#5F6368] mt-0.5">Albany • Sliced loaf</p>
+              </div>
+              <div class="text-right">
+                <span class="text-2xl font-bold text-[#1A1A1A]">R18.99</span>
+              </div>
+            </div>
+
+            <!-- Stock badge + Timestamp -->
+            <div class="flex flex-wrap items-center gap-2 mt-3">
+              <span class="inline-flex items-center space-x-1.5 bg-[#F5F5F5] text-[#5F6368] px-2.5 py-1 rounded-[6px] text-[13px] font-medium">
+                <span class="font-bold text-[14px]">?</span>
+                <span>Unknown</span>
+              </span>
+              <span class="text-[13px] text-[#5F6368]">Updated 09:12, 11 Nov 2026</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-[#F0F0F0] flex justify-end">
+            <button type="button" class="min-h-[44px] px-4 rounded-full text-[#0B7A6B] font-semibold text-[15px] hover:bg-[#E6F2F0] active:bg-[#CCE5E2] transition-colors flex items-center space-x-1">
+              <span>+ Add to Basket</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 3: White Sugar 2kg -->
+        <div class="bg-white border border-[#E0E0E0] rounded-[8px] p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+          <div>
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 class="text-[18px] font-bold text-[#1A1A1A]">White Sugar 2kg</h3>
+                <p class="text-[14px] text-[#5F6368] mt-0.5">Huletts • 2kg pack</p>
+              </div>
+              <div class="text-right">
+                <span class="text-2xl font-bold text-[#1A1A1A]">R42.99</span>
+              </div>
+            </div>
+
+            <!-- Stock badge + Timestamp -->
+            <div class="flex flex-wrap items-center gap-2 mt-3">
+              <span class="inline-flex items-center space-x-1.5 bg-[#E8F5E9] text-[#2E7D32] px-2.5 py-1 rounded-[6px] text-[13px] font-medium">
+                <svg class="w-3.5 h-3.5 text-[#2E7D32]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>In Stock</span>
+              </span>
+              <span class="text-[13px] text-[#5F6368]">Updated 13:40, 11 Nov 2026</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-[#F0F0F0] flex justify-end">
+            <button type="button" class="min-h-[44px] px-4 rounded-full text-[#0B7A6B] font-semibold text-[15px] hover:bg-[#E6F2F0] active:bg-[#CCE5E2] transition-colors flex items-center space-x-1">
+              <span>+ Add to Basket</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 4: Sunflower Oil 2L -->
+        <div class="bg-white border border-[#E0E0E0] rounded-[8px] p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+          <div>
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 class="text-[18px] font-bold text-[#1A1A1A]">Sunflower Oil 2L</h3>
+                <p class="text-[14px] text-[#5F6368] mt-0.5">Sunfoil • 2L bottle</p>
+              </div>
+              <div class="text-right">
+                <span class="text-2xl font-bold text-[#1A1A1A]">R64.99</span>
+              </div>
+            </div>
+
+            <!-- Stock badges + Timestamp -->
+            <div class="flex flex-wrap items-center gap-2 mt-3">
+              <span class="inline-flex items-center space-x-1.5 bg-[#FFF3E0] text-[#B26A00] px-2.5 py-1 rounded-[6px] text-[13px] font-medium">
+                <span class="font-bold text-[14px]">!</span>
+                <span>Limited Stock</span>
+              </span>
+              <span class="inline-flex items-center space-x-1 bg-[#FFF3E0] text-[#B26A00] px-2.5 py-1 rounded-[6px] text-[13px] font-medium">
+                <span class="font-bold text-[14px]">!</span>
+                <span>Unverified for 2 days</span>
+              </span>
+              <span class="text-[13px] text-[#5F6368]">Updated 08:30, 09 Nov 2026</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-[#F0F0F0] flex justify-end">
+            <button type="button" class="min-h-[44px] px-4 rounded-full text-[#0B7A6B] font-semibold text-[15px] hover:bg-[#E6F2F0] active:bg-[#CCE5E2] transition-colors flex items-center space-x-1">
+              <span>+ Add to Basket</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Tab Bar (Visible only below 640px) -->
+  <nav class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#E0E0E0] px-6 py-2 flex justify-around items-center z-50">
+    <a href="#" class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-[#0B7A6B]">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+      <span class="text-[12px] font-semibold mt-0.5">Home</span>
+    </a>
+    <a href="#" class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-[#5F6368] hover:text-[#1A1A1A]">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+      </svg>
+      <span class="text-[12px] font-medium mt-0.5">Basket</span>
+    </a>
+    <a href="#" class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-[#5F6368] hover:text-[#1A1A1A]">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v8m-3-5h6" />
+      </svg>
+      <span class="text-[12px] font-medium mt-0.5">Savings</span>
+    </a>
+  </nav>
+
+  <!-- Desktop Footer (hidden on mobile) -->
+  <footer class="hidden sm:block border-t border-[#E0E0E0] bg-white py-6">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center justify-between text-[14px] text-[#5F6368]">
+      <p>© 2026 Queueless. All rights reserved.</p>
+      <div class="flex space-x-6">
+        <a href="#" class="hover:text-[#1A1A1A] transition-colors">Privacy Notice</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

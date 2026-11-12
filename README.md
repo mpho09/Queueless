@@ -11,11 +11,11 @@
 | Resource       | Link                                                     |
 | -------------- | -------------------------------------------------------- |
 | Live app       | _TODO_                                                   |
-| Stitch project | _TODO_                                                   |
+| Stitch project | [Queueless on Stitch](https://stitch.withgoogle.com/projects/14854798444949179025) |
 | Project board  | _TODO_                                                   |
 | Team Loom      | _TODO_                                                   |
 | PRD            | [docs/PRD.md](docs/PRD.md)                               |
-| Designs        | _TODO_                                                   |
+| Designs        | [docs/design/stitch/](docs/design/stitch/) (exported screens: `screen.png` + `code.html`) |
 | Implementation | [docs/Implementation plan.md](docs/Implementation%20plan.md) |
 
 ## 📋 Project Documentation

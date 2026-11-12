@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queueless — S6 Savings Analytics Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* CSS Reset & Variables adhering strictly to Queueless Style Guide */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary-teal: #0B7A6B;
+      --primary-teal-dark: #085a4f;
+      --savings-green: #2E7D32;
+      --savings-green-light: #E8F5E9;
+      --bg-white: #FFFFFF;
+      --text-charcoal: #1A1A1A;
+      --text-muted: #5F6368;
+      --status-amber: #B26A00;
+      --status-red: #C62828;
+      --status-grey: #5F6368;
+      --live-blue: #1565C0;
+      --border-color: #E0E0E0;
+      --surface-light: #F8F9FA;
+      --card-radius: 8px;
+      --input-radius: 6px;
+      --btn-radius: 24px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #ECEFF1;
+      color: var(--text-charcoal);
+      font-size: 16px;
+      line-height: 1.5;
+      padding: 32px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .meta-header {
+      max-width: 1300px;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+
+    .meta-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-charcoal);
+      margin-bottom: 6px;
+    }
+
+    .meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .tag-pill {
+      background: #FFFFFF;
+      border: 1px solid #D2D6DC;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    .tag-pill.success {
+      background: #E8F5E9;
+      color: var(--savings-green);
+      border-color: #A5D6A7;
+    }
+
+    /* Multi-frame board layout */
+    .frames-board {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: flex-start;
+      max-width: 100%;
+      overflow-x: auto;
+      padding-bottom: 32px;
+    }
+
+    .frame-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 360px;
+      flex-shrink: 0;
+    }
+
+    .frame-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .frame-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #374151;
+    }
+
+    .frame-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: #E5E7EB;
+      color: #4B5563;
+      text-transform: uppercase;
+    }
+
+    .frame-badge.primary {
+      background: #0B7A6B;
+      color: #FFFFFF;
+    }
+
+    .frame-badge.modal {
+      background: #EDE7F6;
+      color: #512DA8;
+    }
+
+    .frame-badge.danger {
+      background: #FFEBEE;
+      color: var(--status-red);
+    }
+
+    .frame-badge.info {
+      background: #E3F2FD;
+      color: var(--live-blue);
+    }
+
+    /* Device Container 360px width */
+    .mobile-frame {
+      width: 360px;
+      background: var(--bg-white);
+      border: 1px solid #D2D6DC;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 820px;
+    }
+
+    /* Global Header */
+    .global-header {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-color);
+      background: #FFFFFF;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--primary-teal);
+      border-radius: 50%;
+    }
+
+    .icon-btn:focus-visible {
+      outline: 2px solid var(--primary-teal);
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-teal);
+      letter-spacing: -0.2px;
+      text-decoration: none;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .basket-btn-wrap {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-charcoal);
+    }
+
+    .basket-badge {
+      position: absolute;
+      top: 6px;
+      right: 4px;
+      background: var(--primary-teal);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      border: 2px solid #FFFFFF;
+    }
+
+    /* Content Area */
+    .screen-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+      padding-bottom: 84px; /* Space for fixed tab bar */
+    }
+
+    /* Profile Row */
+    .profile-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--surface-light);
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+    }
+
+    .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .avatar-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #0B7A6B;
+      color: #FFFFFF;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .profile-text {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .profile-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-charcoal);
+      line-height: 1.2;
+    }
+
+    .profile-email {
+      font-size: 13px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Hero Savings Card */
+    .hero-savings-card {
+      background: #FFFFFF;
+      border: 1.5px solid #A5D6A7;
+      background: linear-gradient(180deg, #FAFCFA 0%, #FFFFFF 100%);
+      border-radius: var(--card-radius);
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(46, 125, 50, 0.06);
+    }
+
+    .hero-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .hero-amount {
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--savings-green);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .hero-subtext {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Stat Tiles Side by Side */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-tile {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stat-tile-title {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .stat-tile-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-charcoal);
+    }
+
+    /* Contributor Level TODO */
+    .todo-box {
+      background: #F1F3F4;
+      border: 1.5px dashed var(--status-grey);
+      border-radius: var(--card-radius);
+      padding: 14px;
+      font-size: 14px;
+      color: var(--status-grey);
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* Simple Bar Chart */
+    .chart-section {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      padding: 14px;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-charcoal);
+      margin-bottom: 12px;
+    }
+
+    .chart-bars-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 120px;
+      padding-top: 18px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .chart-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .bar-value {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-charcoal);
+    }
+
+    .bar-value.current {
+      color: var(--savings-green);
+    }
+
+    .bar-pillar {
+      width: 36px;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      transition: height 0.3s ease;
+    }
+
+    .bar-pillar.teal {
+      background-color: var(--primary-teal);
+    }
+
+    .bar-pillar.green {
+      background-color: var(--savings-green);
+    }
+
+    .chart-labels-wrap {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 6px;
+    }
+
+    .chart-label {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .chart-label.current {
+      color: var(--savings-green);
+      font-weight: 700;
+    }
+
+    /* Section Headers */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-charcoal);
+      margin-top: 4px;
+      margin-bottom: -4px;
+    }
+
+    /* Recent Activity List */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .activity-item {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .activity-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .activity-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-charcoal);
+    }
+
+    .activity-points-pill {
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--savings-green-light);
+      color: var(--savings-green);
+      padding: 2px 8px;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .activity-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Settings List Rows */
+    .settings-list {
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      background: #FFFFFF;
+      overflow: hidden;
+    }
+
+    .settings-row {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      text-decoration: none;
+      color: var(--text-charcoal);
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+
+    .settings-row.danger {
+      color: var(--status-red);
+      font-weight: 600;
+    }
+
+    .settings-label {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .settings-row.danger .settings-label {
+      color: var(--status-red);
+    }
+
+    .chevron-icon {
+      color: var(--text-muted);
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Bottom Tab Bar (Fixed height 60px) */
+    .tab-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #FFFFFF;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 25;
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      height: 100%;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      gap: 3px;
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .tab-item.active {
+      color: var(--primary-teal);
+      font-weight: 700;
+    }
+
+    .tab-icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Sheet / Modal Overlays */
+    .sheet-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    /* Bottom Sheet Tray */
+    .bottom-sheet {
+      background: #FFFFFF;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: #D2D6DC;
+      border-radius: 2px;
+      margin: 0 auto 8px auto;
+    }
+
+    .sheet-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text-charcoal);
+    }
+
+    .sheet-btn {
+      min-height: 48px;
+      border-radius: var(--btn-radius);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      gap: 12px;
+      border: 1px solid var(--border-color);
+      background: #FFFFFF;
+      color: var(--text-charcoal);
+    }
+
+    .sheet-btn.danger {
+      color: var(--status-red);
+      border-color: #FFCDD2;
+      background: #FFF5F5;
+    }
+
+    .sheet-btn.cancel {
+      justify-content: center;
+      background: var(--surface-light);
+      margin-top: 8px;
+      border: 1px solid #D2D6DC;
+    }
+
+    /* Centered Modal Card */
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-charcoal);
+    }
+
+    .modal-body {
+      font-size: 15px;
+      color: #374151;
+      line-height: 1.45;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn-capsule {
+      height: 48px;
+      border-radius: var(--btn-radius);
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--primary-teal);
+      color: #FFFFFF;
+    }
+
+    .btn-danger {
+      background: var(--status-red);
+      color: #FFFFFF;
+    }
+
+    .btn-secondary {
+      background: #FFFFFF;
+      border: 1.5px solid var(--primary-teal);
+      color: var(--primary-teal);
+    }
+
+    .btn-ghost {
+      background: #F3F4F6;
+      border: 1px solid #D1D5DB;
+      color: #374151;
+    }
+
+    /* In-App Notification Banner / Toast */
+    .in-app-toast-wrap {
+      position: absolute;
+      bottom: 72px; /* Just above tab bar */
+      left: 12px;
+      right: 12px;
+      z-index: 28;
+    }
+
+    .toast-box {
+      background: #202124;
+      color: #FFFFFF;
+      padding: 12px 14px;
+      border-radius: var(--card-radius);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.4;
+      border-left: 4px solid var(--savings-green);
+    }
+
+    .toast-icon {
+      color: #81C784;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Skeleton Loading State */
+    .skeleton {
+      background: linear-gradient(90deg, #E2E8F0 25%, #EDF2F7 50%, #E2E8F0 75%);
+      background-size: 200% 100%;
+      animation: pulse 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes pulse {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+    }
+
+    .skeleton-text {
+      height: 16px;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Page Metadata Summary -->
+  <div class="meta-header">
+    <h1>Queueless — S6 Savings Analytics Dashboard</h1>
+    <div class="meta-tags">
+      <span class="tag-pill success">Mobile-First 360px</span>
+      <span class="tag-pill">Inter Font (min 16px body copy)</span>
+      <span class="tag-pill">South Africa (en-ZA: R1,234.50 • 24h clock)</span>
+      <span class="tag-pill">Touch Targets ≥44×44px</span>
+      <span class="tag-pill">WCAG Contrast ≥4.5:1</span>
+      <span class="tag-pill">All 6 UI States Complete</span>
+    </div>
+  </div>
+
+  <div class="frames-board">
+
+    <!-- ========================================== -->
+    <!-- FRAME 1: DEFAULT STATE (PRIMARY VIEW)      -->
+    <!-- ========================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header">
+        <span class="frame-title">Frame 1: Default State</span>
+        <span class="frame-badge primary">Primary</span>
+      </div>
+
+      <div class="mobile-frame">
+        <!-- 1. Global Header -->
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-btn" aria-label="Go back">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap" aria-label="Shopping basket with 3 items">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="basket-badge">3</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="screen-content">
+          <!-- 2. Profile Row -->
+          <div class="profile-card">
+            <div class="profile-info">
+              <div class="avatar-circle">JM</div>
+              <div class="profile-text">
+                <span class="profile-name">Joy Mokoena</span>
+                <span class="profile-email">tester.joy@queueless.co.za</span>
+              </div>
+            </div>
+            <button class="icon-btn" aria-label="Open profile menu tray">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="12" cy="5" r="1"></circle>
+                <circle cx="12" cy="19" r="1"></circle>
+              </svg>
+            </button>
+          </div>
+
+          <!-- 3. Hero Savings Card -->
+          <section class="hero-savings-card" aria-label="Hero savings summary">
+            <div class="hero-label">Saved this month</div>
+            <div class="hero-amount">R152.40</div>
+            <div class="hero-subtext">November 2026</div>
+          </section>
+
+          <!-- 4. Two Stat Tiles Side by Side -->
+          <div class="stats-row">
+            <div class="stat-tile">
+              <span class="stat-tile-title">Reward points</span>
+              <span class="stat-tile-value">120</span>
+            </div>
+            <div class="stat-tile">
+              <span class="stat-tile-title">Reports this month</span>
+              <span class="stat-tile-value">8</span>
+            </div>
+          </div>
+
+          <!-- 5. Contributor Level (Explicit TODO requirement) -->
+          <div class="todo-box">
+            TODO: contributor level names and thresholds
+          </div>
+
+          <!-- 6. Simple Bar Chart: Monthly Savings -->
+          <section class="chart-section" aria-label="Monthly savings bar chart">
+            <h2 class="chart-title">Monthly savings</h2>
+            <div class="chart-bars-wrap">
+              <!-- Aug 2026: R96.20 (approx 63%) -->
+              <div class="chart-col">
+                <span class="bar-value">R96.20</span>
+                <div class="bar-pillar teal" style="height: 58px;"></div>
+              </div>
+              <!-- Sep 2026: R118.75 (approx 78%) -->
+              <div class="chart-col">
+                <span class="bar-value">R118.75</span>
+                <div class="bar-pillar teal" style="height: 72px;"></div>
+              </div>
+              <!-- Oct 2026: R140.10 (approx 92%) -->
+              <div class="chart-col">
+                <span class="bar-value">R140.10</span>
+                <div class="bar-pillar teal" style="height: 85px;"></div>
+              </div>
+              <!-- Nov 2026 (Current): R152.40 (100% Green) -->
+              <div class="chart-col">
+                <span class="bar-value current">R152.40</span>
+                <div class="bar-pillar green" style="height: 94px;"></div>
+              </div>
+            </div>
+            <div class="chart-labels-wrap">
+              <span class="chart-label">Aug</span>
+              <span class="chart-label">Sep</span>
+              <span class="chart-label">Oct</span>
+              <span class="chart-label current">Nov</span>
+            </div>
+          </section>
+
+          <!-- 7. Recent Activity List -->
+          <h2 class="section-title">Recent activity</h2>
+          <div class="activity-list">
+            <!-- Item 1 -->
+            <div class="activity-item">
+              <div class="activity-top">
+                <span class="activity-name">Queue report verified</span>
+                <span class="activity-points-pill">+10 points</span>
+              </div>
+              <div class="activity-sub">Shoprite Hatfield · 14:05, 11 Nov 2026</div>
+            </div>
+            <!-- Item 2 -->
+            <div class="activity-item">
+              <div class="activity-top">
+                <span class="activity-name">Price update</span>
+              </div>
+              <div class="activity-sub">Pick n Pay Hatfield · 10:22, 10 Nov 2026</div>
+            </div>
+          </div>
+
+          <!-- 8. Settings List Rows -->
+          <h2 class="section-title">Settings</h2>
+          <div class="settings-list">
+            <div class="settings-row">
+              <span class="settings-label">Change email</span>
+              <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+            <div class="settings-row">
+              <span class="settings-label">Privacy Notice</span>
+              <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+            <div class="settings-row danger">
+              <span class="settings-label">Delete account</span>
+              <svg class="chevron-icon" style="color: var(--status-red);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+            <div class="settings-row">
+              <span class="settings-label">Log out</span>
+              <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+          </div>
+        </main>
+
+        <!-- 9. Bottom Tab Bar (Savings Active) -->
+        <nav class="tab-bar" aria-label="Bottom Navigation">
+          <a href="#" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Home</span>
+          </a>
+          <a href="#" class="tab-item">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Basket</span>
+          </a>
+          <a href="#" class="tab-item active">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 6v12M15 9.5a2.5 2.5 0 0 0-5 0c0 2 5 2 5 4a2.5 2.5 0 0 1-5 0"></path>
+            </svg>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- FRAME 2: PROFILE MENU TRAY (BOTTOM SHEET)  -->
+    <!-- ========================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header">
+        <span class="frame-title">Frame 2: Profile Menu Tray</span>
+        <span class="frame-badge modal">Bottom Sheet</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+            <span class="brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line></svg><span class="basket-badge">3</span></div>
+          </div>
+        </header>
+
+        <main class="screen-content" style="opacity: 0.35;">
+          <div class="profile-card">
+            <div class="profile-info">
+              <div class="avatar-circle">JM</div>
+              <div class="profile-text"><span class="profile-name">Joy Mokoena</span><span class="profile-email">tester.joy@queueless.co.za</span></div>
+            </div>
+          </div>
+          <div class="hero-savings-card">
+            <div class="hero-label">Saved this month</div>
+            <div class="hero-amount">R152.40</div>
+          </div>
+        </main>
+
+        <!-- Bottom Sheet Tray Overlay -->
+        <div class="sheet-backdrop">
+          <div class="bottom-sheet">
+            <div class="sheet-handle"></div>
+            <h3 class="sheet-title">Account Menu</h3>
+            <button class="sheet-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              <span>Settings</span>
+            </button>
+            <button class="sheet-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span>Privacy Notice</span>
+            </button>
+            <button class="sheet-btn danger">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              <span>Log out</span>
+            </button>
+            <button class="sheet-btn cancel">Cancel</button>
+          </div>
+        </div>
+
+        <nav class="tab-bar">
+          <a href="#" class="tab-item"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Home</span></a>
+          <a href="#" class="tab-item"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg><span>Basket</span></a>
+          <a href="#" class="tab-item active"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M15 9.5a2.5 2.5 0 0 0-5 0c0 2 5 2 5 4a2.5 2.5 0 0 1-5 0"></path></svg><span>Savings</span></a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- FRAME 3: LOG OUT CONFIRMATION MODAL        -->
+    <!-- ========================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header">
+        <span class="frame-title">Frame 3: Log Out Modal</span>
+        <span class="frame-badge modal">Confirmation</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+            <span class="brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg><span class="basket-badge">3</span></div>
+          </div>
+        </header>
+
+        <main class="screen-content" style="opacity: 0.35;">
+          <div class="profile-card">
+            <div class="profile-info"><div class="avatar-circle">JM</div><div class="profile-text"><span class="profile-name">Joy Mokoena</span><span class="profile-email">tester.joy@queueless.co.za</span></div></div>
+          </div>
+          <div class="hero-savings-card"><div class="hero-label">Saved this month</div><div class="hero-amount">R152.40</div></div>
+        </main>
+
+        <!-- Centered Modal Card -->
+        <div class="modal-backdrop">
+          <div class="modal-card" role="dialog" aria-labelledby="logout-title">
+            <h3 id="logout-title" class="modal-title">Log out of Queueless?</h3>
+            <p class="modal-body">You will need to sign in again to submit reports and view your personal savings history.</p>
+            <div class="modal-actions">
+              <button class="btn-capsule btn-primary">Log out</button>
+              <button class="btn-capsule btn-ghost">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <nav class="tab-bar">
+          <a href="#" class="tab-item"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Home</span></a>
+          <a href="#" class="tab-item"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg><span>Basket</span></a>
+          <a href="#" class="tab-item active"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M15 9.5a2.5 2.5 0 0 0-5 0c0 2 5 2 5 4a2.5 2.5 0 0 1-5 0"></path></svg><span>Savings</span></a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- FRAME 4: DELETE ACCOUNT MODAL (DANGER)     -->
+    <!-- ========================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header">
+        <span class="frame-title">Frame 4: Delete Account Modal</span>
+        <span class="frame-badge danger">Danger</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+            <span class="brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg><span class="basket-badge">3</span></div>
+          </div>
+        </header>
+
+        <main class="screen-content" style="opacity: 0.35;">
+          <div class="profile-card">
+            <div class="profile-info"><div class="avatar-circle">JM</div><div class="profile-text"><span class="profile-name">Joy Mokoena</span><span class="profile-email">tester.joy@queueless.co.za</span></div></div>
+          </div>
+          <div class="hero-savings-card"><div class="hero-label">Saved this month</div><div class="hero-amount">R152.40</div></div>
+        </main>
+
+        <!-- Centered Danger Modal Card -->
+        <div class="modal-backdrop">
+          <div class="modal-card" role="dialog" aria-labelledby="delete-title">
+            <div style="display: flex; align-items: center; gap: 8px; color: var(--status-red);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <h3 id="delete-title" class="modal-title" style="color: var(--status-red);">Delete your account?</h3>
+            </div>
+            <p class="modal-body">Your profile, email logs and saved baskets will be permanently deleted within 7 days.</p>
+            <div class="modal-actions">
+              <button class="btn-capsule btn-danger">Delete account</button>
+              <button class="btn-capsule btn-ghost">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <nav class="tab-bar">
+          <a href="#" class="tab-item"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Home</span></a>
+          <a href="#" class="tab-item"><svg class="tab-item" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg><span>Basket</span></a>
+          <a href="#" class="tab-item active"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M15 9.5a2.5 2.5 0 0 0-5 0c0 2 5 2 5 4a2.5 2.5 0 0 1-5 0"></path></svg><span>Savings</span></a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- FRAME 5: IN-APP NOTIFICATION TOAST         -->
+    <!-- ========================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header">
+        <span class="frame-title">Frame 5: In-App Notification</span>
+        <span class="frame-badge info">Notification Toast</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+            <span class="brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg><span class="basket-badge">3</span></div>
+          </div>
+        </header>
+
+        <main class="screen-content">
+          <div class="profile-card">
+            <div class="profile-info">
+              <div class="avatar-circle">JM</div>
+              <div class="profile-text"><span class="profile-name">Joy Mokoena</span><span class="profile-email">tester.joy@queueless.co.za</span></div>
+            </div>
+            <button class="icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg></button>
+          </div>
+
+          <section class="hero-savings-card">
+            <div class="hero-label">Saved this month</div>
+            <div class="hero-amount">R152.40</div>
+            <div class="hero-subtext">November 2026</div>
+          </section>
+
+          <div class="stats-row">
+            <div class="stat-tile">
+              <span class="stat-tile-title">Reward points</span>
+              <span class="stat-tile-value">120</span>
+            </div>
+            <div class="stat-tile">
+              <span class="stat-tile-title">Reports this month</span>
+              <span class="stat-tile-value">8</span>
+            </div>
+          </div>
+
+          <div class="todo-box">
+            TODO: contributor level names and thresholds
+          </div>
+
+          <!-- Section: Recent Activity -->
+          <h2 class="section-title">Recent activity</h2>
+          <div class="activity-list">
+            <div class="activity-item" style="border-color: #A5D6A7; background: #FAFCFA;">
+              <div class="activity-top">
+                <span class="activity-name">Queue report verified</span>
+                <span class="activity-points-pill">+10 points</span>
+              </div>
+              <div class="activity-sub">Shoprite Hatfield · Just now (14:06)</div>
+            </div>
+          </div>
+        </main>
+
+        <!-- In-App Notification Toast directly above tab bar -->
+        <div class="in-app-toast-wrap">
+          <div class="toast-box" role="status" aria-live="polite">
+            <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <div>
+              <strong>Thank you!</strong> Your update for Shoprite Hatfield has been verified. <strong>+10 points</strong> added.
+            </div>
+          </div>
+        </div>
+
+        <nav class="tab-bar">
+          <a href="#" class="tab-item"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Home</span></a>
+          <a href="#" class="tab-item"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg><span>Basket</span></a>
+          <a href="#" class="tab-item active"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M15 9.5a2.5 2.5 0 0 0-5 0c0 2 5 2 5 4a2.5 2.5 0 0 1-5 0"></path></svg><span>Savings</span></a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- FRAME 6: LOADING STATE (SKELETON TILES)    -->
+    <!-- ========================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header">
+        <span class="frame-title">Frame 6: Loading State</span>
+        <span class="frame-badge">Skeleton</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+            <span class="brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg><span class="basket-badge">3</span></div>
+          </div>
+        </header>
+
+        <main class="screen-content">
+          <!-- Profile Skeleton -->
+          <div class="profile-card">
+            <div class="profile-info">
+              <div class="skeleton skeleton-avatar"></div>
+              <div style="flex: 1; width: 140px;">
+                <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                <div class="skeleton skeleton-text" style="width: 100%; height: 12px; margin-bottom: 0;"></div>
+              </div>
+            </div>
+            <div class="skeleton" style="width: 32px; height: 32px; border-radius: 50%;"></div>
+          </div>
+
+          <!-- Hero Skeleton -->
+          <div class="hero-savings-card">
+            <div class="skeleton skeleton-text" style="width: 40%; height: 14px;"></div>
+            <div class="skeleton skeleton-text" style="width: 60%; height: 36px;"></div>
+            <div class="skeleton skeleton-text" style="width: 30%; height: 12px; margin-bottom: 0;"></div>
+          </div>
+
+          <!-- Stat Tiles Skeleton -->
+          <div class="stats-row">
+            <div class="stat-tile">
+              <div class="skeleton skeleton-text" style="width: 60%; height: 12px;"></div>
+              <div class="skeleton skeleton-text" style="width: 40%; height: 24px; margin-bottom: 0;"></div>
+            </div>
+            <div class="stat-tile">
+              <div class="skeleton skeleton-text" style="width: 70%; height: 12px;"></div>
+              <div class="skeleton skeleton-text" style="width: 30%; height: 24px; margin-bottom: 0;"></div>
+            </div>
+          </div>
+
+          <!-- Contributor Level Skeleton -->
+          <div class="skeleton" style="height: 48px; border-radius: var(--card-radius);"></div>
+
+          <!-- Chart Skeleton -->
+          <div class="chart-section">
+            <div class="skeleton skeleton-text" style="width: 45%; height: 16px; margin-bottom: 16px;"></div>
+            <div class="chart-bars-wrap" style="align-items: flex-end;">
+              <div class="chart-col"><div class="skeleton" style="width: 36px; height: 45px; border-radius: 4px 4px 0 0;"></div></div>
+              <div class="chart-col"><div class="skeleton" style="width: 36px; height: 65px; border-radius: 4px 4px 0 0;"></div></div>
+              <div class="chart-col"><div class="skeleton" style="width: 36px; height: 80px; border-radius: 4px 4px 0 0;"></div></div>
+              <div class="chart-col"><div class="skeleton" style="width: 36px; height: 95px; border-radius: 4px 4px 0 0;"></div></div>
+            </div>
+            <div class="chart-labels-wrap">
+              <div class="skeleton skeleton-text" style="width: 25px; height: 12px; margin: 0 auto;"></div>
+              <div class="skeleton skeleton-text" style="width: 25px; height: 12px; margin: 0 auto;"></div>
+              <div class="skeleton skeleton-text" style="width: 25px; height: 12px; margin: 0 auto;"></div>
+              <div class="skeleton skeleton-text" style="width: 25px; height: 12px; margin: 0 auto;"></div>
+            </div>
+          </div>
+
+          <!-- Activity Skeleton -->
+          <div class="skeleton skeleton-text" style="width: 35%; height: 18px; margin-top: 4px;"></div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="skeleton skeleton-text" style="width: 60%; height: 15px;"></div>
+              <div class="skeleton skeleton-text" style="width: 80%; height: 12px; margin-bottom: 0;"></div>
+            </div>
+            <div class="activity-item">
+              <div class="skeleton skeleton-text" style="width: 40%; height: 15px;"></div>
+              <div class="skeleton skeleton-text" style="width: 70%; height: 12px; margin-bottom: 0;"></div>
+            </div>
+          </div>
+        </main>
+
+        <nav class="tab-bar">
+          <a href="#" class="tab-item"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>Home</span></a>
+          <a href="#" class="tab-item"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg><span>Basket</span></a>
+          <a href="#" class="tab-item active"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12M15 9.5a2.5 2.5 0 0 0-5 0c0 2 5 2 5 4a2.5 2.5 0 0 1-5 0"></path></svg><span>Savings</span></a>
+        </nav>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

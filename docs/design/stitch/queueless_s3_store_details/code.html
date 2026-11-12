@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queueless S3 Store Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: #F4F6F8;
+      color: #1A1A1A;
+      padding: 40px 24px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .meta-header {
+      max-width: 1440px;
+      margin: 0 auto 32px auto;
+      padding: 0 8px;
+    }
+
+    .meta-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1A1A1A;
+      margin-bottom: 6px;
+    }
+
+    .meta-subtitle {
+      font-size: 14px;
+      color: #5F6368;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .spec-pill {
+      background: #E8F5E9;
+      color: #2E7D32;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .boards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 360px));
+      gap: 32px;
+      justify-content: center;
+      max-width: 1540px;
+      margin: 0 auto;
+    }
+
+    .frame-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .frame-label {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #5F6368;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+    }
+
+    .state-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      background: #E0E0E0;
+      color: #333333;
+    }
+
+    .state-tag.primary { background: #0B7A6B; color: #FFFFFF; }
+    .state-tag.sheet { background: #1A1A1A; color: #FFFFFF; }
+    .state-tag.neutral { background: #ECEFF1; color: #455A64; }
+    .state-tag.offline { background: #D32F2F; color: #FFFFFF; }
+
+    /* Mobile Container 360px */
+    .mobile-phone {
+      width: 360px;
+      background-color: #FFFFFF;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 840px;
+      position: relative;
+      border: 1px solid #E0E0E0;
+    }
+
+    /* Global Header */
+    .global-header {
+      height: 56px;
+      background: #FFFFFF;
+      border-bottom: 1px solid #EEEEEE;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-button {
+      background: none;
+      border: none;
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1A1A1A;
+      cursor: pointer;
+      border-radius: 50%;
+      text-decoration: none;
+      padding: 0;
+    }
+
+    .icon-button:hover {
+      background-color: #F5F5F5;
+    }
+
+    .app-brand-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0B7A6B;
+      letter-spacing: -0.3px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .basket-btn {
+      position: relative;
+    }
+
+    .basket-badge {
+      position: absolute;
+      top: 6px;
+      right: 4px;
+      background-color: #0B7A6B;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      border: 1.5px solid #FFFFFF;
+    }
+
+    /* Offline Banner */
+    .offline-banner {
+      background-color: #5F6368;
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.3;
+    }
+
+    /* Scrollable Content */
+    .screen-content {
+      flex: 1;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background-color: #FFFFFF;
+      overflow-y: auto;
+      padding-bottom: 84px; /* Space for fixed bottom bar */
+    }
+
+    /* Store Info Section */
+    .store-headline-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .store-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1A1A1A;
+      line-height: 1.2;
+    }
+
+    .store-meta-line {
+      font-size: 16px;
+      color: #5F6368;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .store-hours {
+      font-size: 14px;
+      color: #1A1A1A;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .store-hours .dot-open {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #2E7D32;
+      display: inline-block;
+    }
+
+    /* Queue Metric Panel (Card) */
+    .queue-panel-card {
+      background: #FFFFFF;
+      border: 1px solid #E0E0E0;
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .queue-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .queue-panel-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #5F6368;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+      width: fit-content;
+    }
+
+    .badge-large {
+      padding: 8px 14px;
+      font-size: 15px;
+      border-radius: 20px;
+    }
+
+    .badge-queue-red {
+      background-color: #FFEBEE;
+      color: #C62828;
+      border: 1px solid #FFCDD2;
+    }
+
+    .badge-queue-grey {
+      background-color: #ECEFF1;
+      color: #5F6368;
+      border: 1px solid #CFD8DC;
+    }
+
+    .badge-stock-green {
+      background-color: #E8F5E9;
+      color: #2E7D32;
+      font-size: 13px;
+      padding: 4px 8px;
+    }
+
+    .badge-stock-amber {
+      background-color: #FFF3E0;
+      color: #B26A00;
+      font-size: 13px;
+      padding: 4px 8px;
+    }
+
+    .badge-stock-grey {
+      background-color: #F5F5F5;
+      color: #5F6368;
+      font-size: 13px;
+      padding: 4px 8px;
+    }
+
+    .queue-reports-meta {
+      font-size: 14px;
+      color: #1A1A1A;
+      font-weight: 500;
+    }
+
+    .queue-caption {
+      font-size: 14px;
+      color: #5F6368;
+    }
+
+    /* Action Buttons (Side by Side) */
+    .action-button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .capsule-btn {
+      min-height: 48px;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      text-decoration: none;
+      padding: 10px 14px;
+      text-align: center;
+      line-height: 1.2;
+      border: none;
+      transition: background-color 0.15s ease, transform 0.05s;
+    }
+
+    .capsule-btn:active {
+      transform: scale(0.98);
+    }
+
+    .capsule-btn-primary {
+      background-color: #0B7A6B;
+      color: #FFFFFF;
+    }
+
+    .capsule-btn-primary:hover {
+      background-color: #09685B;
+    }
+
+    .capsule-btn-secondary {
+      background-color: #FFFFFF;
+      color: #0B7A6B;
+      border: 1.5px solid #0B7A6B;
+    }
+
+    .capsule-btn-secondary:hover {
+      background-color: #E8F5F3;
+    }
+
+    .capsule-btn-disabled {
+      background-color: #EAEAEA !important;
+      color: #8E9297 !important;
+      border: none !important;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Section Prices at this store */
+    .prices-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+
+    .item-card {
+      background: #FFFFFF;
+      border: 1px solid #E0E0E0;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .item-title-group {
+      flex: 1;
+    }
+
+    .item-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1A1A1A;
+      line-height: 1.3;
+    }
+
+    .item-size {
+      font-size: 14px;
+      color: #5F6368;
+    }
+
+    .item-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1A1A1A;
+      white-space: nowrap;
+    }
+
+    .item-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item-timestamp {
+      font-size: 13px;
+      color: #5F6368;
+    }
+
+    .item-card-bottom {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      border-top: 1px solid #F5F5F5;
+      padding-top: 8px;
+    }
+
+    .text-action-btn {
+      background: none;
+      border: none;
+      color: #0B7A6B;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .text-action-btn:hover {
+      background-color: #E8F5F3;
+    }
+
+    .text-action-btn:active {
+      color: #09685B;
+    }
+
+    .text-action-btn.disabled {
+      color: #8E9297;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Fixed Bottom Tab Bar */
+    .bottom-tab-bar {
+      height: 60px;
+      background: #FFFFFF;
+      border-top: 1px solid #EEEEEE;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: center;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      height: 100%;
+      text-decoration: none;
+      color: #5F6368;
+      font-size: 12px;
+      font-weight: 500;
+      min-height: 44px;
+    }
+
+    .tab-item.active {
+      color: #0B7A6B;
+      font-weight: 600;
+    }
+
+    .tab-item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Modal / Bottom Sheet for Guest State */
+    .sheet-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 50;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .bottom-sheet {
+      background: #FFFFFF;
+      width: 100%;
+      border-radius: 16px 16px 0 0;
+      padding: 24px 20px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+      animation: slideUp 0.2s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: #D0D0D0;
+      border-radius: 2px;
+      margin: -8px auto 4px auto;
+    }
+
+    .sheet-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1A1A1A;
+      line-height: 1.3;
+    }
+
+    .sheet-text {
+      font-size: 16px;
+      color: #5F6368;
+      line-height: 1.4;
+    }
+
+    .sheet-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    /* Skeletons */
+    .skeleton-box {
+      background: linear-gradient(90deg, #F0F0F0 25%, #E6E6E6 50%, #F0F0F0 75%);
+      background-size: 200% 100%;
+      animation: pulse 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes pulse {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Touch target guarantee */
+    .touch-target-indicator {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="meta-header">
+    <h1 class="meta-title">Queueless — S3 Store Details</h1>
+    <div class="meta-subtitle">
+      <span>360px mobile width</span>
+      <span>•</span>
+      <span>Inter font (min 16px body)</span>
+      <span>•</span>
+      <span>South Africa (en-ZA: R1,234.50 • 24h clock)</span>
+      <span>•</span>
+      <span class="spec-pill">✓ Touch targets ≥44×44px</span>
+      <span class="spec-pill">✓ WCAG Contrast ≥4.5:1</span>
+    </div>
+  </header>
+
+  <main class="boards-grid">
+
+    <!-- FRAME 1: DEFAULT STATE -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span>Frame 1: Default State</span>
+        <span class="state-tag primary">PRIMARY</span>
+      </div>
+
+      <div class="mobile-phone" aria-label="Queueless S3 Store Details Default State">
+        <!-- 1. Global Header -->
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-button" aria-label="Go back to previous screen">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span class="app-brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <button class="icon-button basket-btn" aria-label="Shopping basket with 3 items">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+              <span class="basket-badge">3</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Screen Content Scrollable -->
+        <div class="screen-content">
+          <!-- 2. Store Name, Suburb, Hours -->
+          <section class="store-headline-group">
+            <h2 class="store-name">Shoprite Hatfield</h2>
+            <p class="store-meta-line">Hatfield, Pretoria</p>
+            <div class="store-hours">
+              <span class="dot-open" aria-hidden="true"></span>
+              <span>Open today 08:00–20:00</span>
+            </div>
+          </section>
+
+          <!-- 3. Queue Metric Panel (card) -->
+          <section class="queue-panel-card" aria-label="Queue information">
+            <div class="queue-panel-header">
+              <span class="queue-panel-label">Current queue</span>
+            </div>
+            
+            <div class="badge badge-large badge-queue-red" role="status">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Long Line (30+ Mins Wait)</span>
+            </div>
+
+            <p class="queue-reports-meta">Based on 6 reports · Last report 14:05</p>
+            <p class="queue-caption">Recent reports count more.</p>
+          </section>
+
+          <!-- 4. Two Action Buttons (side by side, opens S5) -->
+          <div class="action-button-row">
+            <button class="capsule-btn capsule-btn-secondary" aria-label="Update Store Price">
+              Update Store Price
+            </button>
+            <button class="capsule-btn capsule-btn-primary" aria-label="Report Queue Status">
+              Report Queue Status
+            </button>
+          </div>
+
+          <!-- 5. Section "Prices at this store" -->
+          <section class="prices-section" aria-label="Prices at this store">
+            <h3 class="section-title">Prices at this store</h3>
+
+            <!-- Item 1 -->
+            <article class="item-card">
+              <div class="item-card-top">
+                <div class="item-title-group">
+                  <h4 class="item-name">Clover Full Cream Milk 2L</h4>
+                  <span class="item-size">Clover · 2L bottle</span>
+                </div>
+                <div class="item-price">R36.99</div>
+              </div>
+              <div class="item-card-meta">
+                <span class="badge badge-stock-green">✓ In Stock</span>
+                <span class="item-timestamp">Updated 14:05, 11 Nov 2026</span>
+              </div>
+              <div class="item-card-bottom">
+                <button class="text-action-btn" aria-label="Add Clover Full Cream Milk 2L to basket">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  <span>Add to Basket</span>
+                </button>
+              </div>
+            </article>
+
+            <!-- Item 2 -->
+            <article class="item-card">
+              <div class="item-card-top">
+                <div class="item-title-group">
+                  <h4 class="item-name">Albany Superior White Bread 700g</h4>
+                  <span class="item-size">Albany · Sliced loaf</span>
+                </div>
+                <div class="item-price">R18.99</div>
+              </div>
+              <div class="item-card-meta">
+                <span class="badge badge-stock-grey">? Unknown</span>
+                <span class="item-timestamp">Updated 09:12, 11 Nov 2026</span>
+              </div>
+              <div class="item-card-bottom">
+                <button class="text-action-btn" aria-label="Add Albany Superior White Bread 700g to basket">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  <span>Add to Basket</span>
+                </button>
+              </div>
+            </article>
+
+            <!-- Item 3 -->
+            <article class="item-card">
+              <div class="item-card-top">
+                <div class="item-title-group">
+                  <h4 class="item-name">White Sugar 2kg</h4>
+                  <span class="item-size">Huletts · 2kg pack</span>
+                </div>
+                <div class="item-price">R42.99</div>
+              </div>
+              <div class="item-card-meta">
+                <span class="badge badge-stock-green">✓ In Stock</span>
+                <span class="item-timestamp">Updated 13:40, 11 Nov 2026</span>
+              </div>
+              <div class="item-card-bottom">
+                <button class="text-action-btn" aria-label="Add White Sugar 2kg to basket">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  <span>Add to Basket</span>
+                </button>
+              </div>
+            </article>
+
+            <!-- Item 4 -->
+            <article class="item-card">
+              <div class="item-card-top">
+                <div class="item-title-group">
+                  <h4 class="item-name">Sunflower Oil 2L</h4>
+                  <span class="item-size">Sunfoil · 2L bottle</span>
+                </div>
+                <div class="item-price">R64.99</div>
+              </div>
+              <div class="item-card-meta">
+                <span class="badge badge-stock-amber">! Limited Stock</span>
+                <span class="badge badge-stock-amber">! Unverified for 2 days</span>
+              </div>
+              <div class="item-card-bottom">
+                <button class="text-action-btn" aria-label="Add Sunflower Oil 2L to basket">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  <span>Add to Basket</span>
+                </button>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- 6. Bottom Tab Bar -->
+        <nav class="bottom-tab-bar" aria-label="Bottom Navigation">
+          <a href="#" class="tab-item active" aria-current="page">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span>Home</span>
+          </a>
+          <a href="#" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            <span>Basket</span>
+          </a>
+          <a href="#" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v12M15 9.5a3.5 3.5 0 0 0-5 0c0 2 3.5 2 3.5 4.5a3.5 3.5 0 0 1-5 0"/>
+            </svg>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- FRAME 2: GUEST STATE (Bottom Sheet) -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span>Frame 2: Guest State</span>
+        <span class="state-tag sheet">BOTTOM SHEET TRIGGER</span>
+      </div>
+
+      <div class="mobile-phone" aria-label="Queueless S3 Store Details Guest Login Prompt">
+        <!-- Header -->
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-button" aria-label="Back">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <span class="app-brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <button class="icon-button basket-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/></svg>
+              <span class="basket-badge">3</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Dimmed Screen Content Underneath -->
+        <div class="screen-content" style="opacity: 0.35;">
+          <section class="store-headline-group">
+            <h2 class="store-name">Shoprite Hatfield</h2>
+            <p class="store-meta-line">Hatfield, Pretoria</p>
+          </section>
+
+          <section class="queue-panel-card">
+            <span class="queue-panel-label">Current queue</span>
+            <div class="badge badge-large badge-queue-red">
+              <span>Long Line (30+ Mins Wait)</span>
+            </div>
+            <p class="queue-reports-meta">Based on 6 reports · Last report 14:05</p>
+          </section>
+
+          <div class="action-button-row">
+            <button class="capsule-btn capsule-btn-secondary">Update Store Price</button>
+            <button class="capsule-btn capsule-btn-primary">Report Queue Status</button>
+          </div>
+
+          <section class="prices-section">
+            <h3 class="section-title">Prices at this store</h3>
+            <article class="item-card">
+              <div class="item-card-top">
+                <span class="item-name">Clover Full Cream Milk 2L</span>
+                <span class="item-price">R36.99</span>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- Bottom Sheet Overlay -->
+        <div class="sheet-overlay" role="dialog" aria-modal="true" aria-labelledby="sheet-title-guest">
+          <div class="bottom-sheet">
+            <div class="sheet-handle" aria-hidden="true"></div>
+            <h4 id="sheet-title-guest" class="sheet-title">Sign in required</h4>
+            <p class="sheet-text">Log in to report queue or price updates.</p>
+            <div class="sheet-buttons">
+              <button class="capsule-btn capsule-btn-primary" style="width: 100%;">Log in</button>
+              <button class="capsule-btn capsule-btn-secondary" style="width: 100%;">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Nav -->
+        <nav class="bottom-tab-bar" style="z-index: 10;">
+          <div class="tab-item active"><span>Home</span></div>
+          <div class="tab-item"><span>Basket</span></div>
+          <div class="tab-item"><span>Savings</span></div>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- FRAME 3: NO QUEUE DATA STATE -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span>Frame 3: No Queue Data</span>
+        <span class="state-tag neutral">ZERO REPORTS</span>
+      </div>
+
+      <div class="mobile-phone" aria-label="Queueless S3 Store Details No Queue Data">
+        <!-- Header -->
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-button" aria-label="Back">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <span class="app-brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <button class="icon-button basket-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/></svg>
+              <span class="basket-badge">3</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Content -->
+        <div class="screen-content">
+          <section class="store-headline-group">
+            <h2 class="store-name">Shoprite Hatfield</h2>
+            <p class="store-meta-line">Hatfield, Pretoria</p>
+            <div class="store-hours">
+              <span class="dot-open" aria-hidden="true"></span>
+              <span>Open today 08:00–20:00</span>
+            </div>
+          </section>
+
+          <!-- Queue Panel with Unknown / Zero reports -->
+          <section class="queue-panel-card" aria-label="Queue status unknown">
+            <div class="queue-panel-header">
+              <span class="queue-panel-label">Current queue</span>
+            </div>
+            
+            <div class="badge badge-large badge-queue-grey" role="status">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <span>Unknown</span>
+            </div>
+
+            <p class="queue-reports-meta" style="color: #5F6368;">No recent reports. Be the first to report.</p>
+            <p class="queue-caption">Shoppers rely on community updates.</p>
+          </section>
+
+          <!-- Buttons -->
+          <div class="action-button-row">
+            <button class="capsule-btn capsule-btn-secondary">Update Store Price</button>
+            <button class="capsule-btn capsule-btn-primary">Report Queue Status</button>
+          </div>
+
+          <!-- Section Prices -->
+          <section class="prices-section">
+            <h3 class="section-title">Prices at this store</h3>
+
+            <article class="item-card">
+              <div class="item-card-top">
+                <div class="item-title-group">
+                  <h4 class="item-name">Clover Full Cream Milk 2L</h4>
+                  <span class="item-size">Clover · 2L bottle</span>
+                </div>
+                <div class="item-price">R36.99</div>
+              </div>
+              <div class="item-card-meta">
+                <span class="badge badge-stock-green">✓ In Stock</span>
+                <span class="item-timestamp">Updated 14:05, 11 Nov 2026</span>
+              </div>
+              <div class="item-card-bottom">
+                <button class="text-action-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  <span>Add to Basket</span>
+                </button>
+              </div>
+            </article>
+
+            <article class="item-card">
+              <div class="item-card-top">
+                <div class="item-title-group">
+                  <h4 class="item-name">White Sugar 2kg</h4>
+                  <span class="item-size">Huletts · 2kg pack</span>
+                </div>
+                <div class="item-price">R42.99</div>
+              </div>
+              <div class="item-card-meta">
+                <span class="badge badge-stock-green">✓ In Stock</span>
+                <span class="item-timestamp">Updated 13:40, 11 Nov 2026</span>
+              </div>
+              <div class="item-card-bottom">
+                <button class="text-action-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  <span>Add to Basket</span>
+                </button>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <nav class="bottom-tab-bar">
+          <a href="#" class="tab-item active"><span>Home</span></a>
+          <a href="#" class="tab-item"><span>Basket</span></a>
+          <a href="#" class="tab-item"><span>Savings</span></a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- FRAME 4: LOADING STATE -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span>Frame 4: Loading State</span>
+        <span class="state-tag">SKELETON</span>
+      </div>
+
+      <div class="mobile-phone" aria-label="Queueless S3 Store Details Loading Skeleton">
+        <!-- Header -->
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-button" aria-label="Back">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <span class="app-brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <button class="icon-button basket-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/></svg>
+              <span class="basket-badge">3</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Skeleton Content -->
+        <div class="screen-content">
+          <!-- Store Header Skeleton -->
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="skeleton-box" style="width: 220px; height: 26px;"></div>
+            <div class="skeleton-box" style="width: 140px; height: 16px;"></div>
+            <div class="skeleton-box" style="width: 170px; height: 16px;"></div>
+          </div>
+
+          <!-- Queue Panel Skeleton -->
+          <div class="queue-panel-card" style="gap: 12px;">
+            <div class="skeleton-box" style="width: 100px; height: 14px;"></div>
+            <div class="skeleton-box" style="width: 230px; height: 36px; border-radius: 18px;"></div>
+            <div class="skeleton-box" style="width: 190px; height: 14px;"></div>
+            <div class="skeleton-box" style="width: 150px; height: 12px;"></div>
+          </div>
+
+          <!-- Buttons Skeleton -->
+          <div class="action-button-row">
+            <div class="skeleton-box" style="height: 48px; border-radius: 24px;"></div>
+            <div class="skeleton-box" style="height: 48px; border-radius: 24px;"></div>
+          </div>
+
+          <!-- Prices Skeleton -->
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 6px;">
+            <div class="skeleton-box" style="width: 180px; height: 22px;"></div>
+
+            <div class="item-card" style="gap: 12px;">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="skeleton-box" style="width: 160px; height: 18px;"></div>
+                <div class="skeleton-box" style="width: 60px; height: 20px;"></div>
+              </div>
+              <div class="skeleton-box" style="width: 100px; height: 14px;"></div>
+              <div style="display: flex; gap: 8px;">
+                <div class="skeleton-box" style="width: 80px; height: 22px; border-radius: 11px;"></div>
+                <div class="skeleton-box" style="width: 130px; height: 14px;"></div>
+              </div>
+            </div>
+
+            <div class="item-card" style="gap: 12px;">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="skeleton-box" style="width: 180px; height: 18px;"></div>
+                <div class="skeleton-box" style="width: 60px; height: 20px;"></div>
+              </div>
+              <div class="skeleton-box" style="width: 110px; height: 14px;"></div>
+              <div style="display: flex; gap: 8px;">
+                <div class="skeleton-box" style="width: 80px; height: 22px; border-radius: 11px;"></div>
+                <div class="skeleton-box" style="width: 130px; height: 14px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="bottom-tab-bar">
+          <div class="tab-item active"><span>Home</span></div>
+          <div class="tab-item"><span>Basket</span></div>
+          <div class="tab-item"><span>Savings</span></div>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- FRAME 5: OFFLINE STATE -->
+    <div class="frame-wrapper">
+      <div class="frame-label">
+        <span>Frame 5: Offline State</span>
+        <span class="state-tag offline">OFFLINE & CACHED</span>
+      </div>
+
+      <div class="mobile-phone" aria-label="Queueless S3 Store Details Offline Mode">
+        <!-- Header -->
+        <header class="global-header">
+          <div class="header-left">
+            <button class="icon-button" aria-label="Back">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <span class="app-brand-title">Queueless</span>
+          </div>
+          <div class="header-right">
+            <button class="icon-button basket-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/></svg>
+              <span class="basket-badge">3</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Offline Banner -->
+        <div class="offline-banner" role="alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+            <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+            <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+            <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+            <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+          </svg>
+          <span>You're offline. Changes will not be saved.</span>
+        </div>
+
+        <!-- Content -->
+        <div class="screen-content">
+          <section class="store-headline-group">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <h2 class="store-name">Shoprite Hatfield</h2>
+              <span class="badge badge-stock-grey" style="font-size: 11px;">Cached data</span>
+            </div>
+            <p class="store-meta-line">Hatfield, Pretoria</p>
+            <div class="store-hours">
+              <span class="dot-open" aria-hidden="true"></span>
+              <span>Open today 08:00–20:00</span>
+            </div>
+          </section>
+
+          <!-- Queue Panel Cached -->
+          <section class="queue-panel-card" aria-label="Cached queue status">
+            <div class="queue-panel-header">
+              <span class="queue-panel-label">Current queue (Cached)</span>
+            </div>
+            
+            <div class="badge badge-large badge-queue-red" role="status">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Long Line (30+ Mins Wait)</span>
+            </div>
+
+            <p class="queue-reports-meta">Based on 6 reports · Cached at 14:05</p>
+            <p class="queue-caption">Queue reports disabled while offline.</p>
+          </section>
+
+          <!-- Both Report Buttons Disabled -->
+          <div class="action-button-row">
+            <button class="capsule-btn capsule-btn-disabled" disabled aria-disabled="true" title="Disabled offline">
+              Update Store Price
+            </button>
+            <button class="capsule-btn capsule-btn-disabled" disabled aria-disabled="true" title="Disabled offline">
+              Report Queue Status
+            </button>
+          </div>
+
+          <!-- Section Prices at this store -->
+          <section class="prices-section">
+            <h3 class="section-title">Prices at this store</h3>
+
+            <article class="item-card">
+              <div class="item-card-top">
+                <div class="item-title-group">
+                  <h4 class="item-name">Clover Full Cream Milk 2L</h4>
+                  <span class="item-size">Clover · 2L bottle</span>
+                </div>
+                <div class="item-price">R36.99</div>
+              </div>
+              <div class="item-card-meta">
+                <span class="badge badge-stock-green">✓ In Stock</span>
+                <span class="item-timestamp">Cached 14:05, 11 Nov 2026</span>
+              </div>
+              <div class="item-card-bottom">
+                <button class="text-action-btn disabled" disabled>
+                  <span>Add to Basket (Disabled)</span>
+                </button>
+              </div>
+            </article>
+
+            <article class="item-card">
+              <div class="item-card-top">
+                <div class="item-title-group">
+                  <h4 class="item-name">White Sugar 2kg</h4>
+                  <span class="item-size">Huletts · 2kg pack</span>
+                </div>
+                <div class="item-price">R42.99</div>
+              </div>
+              <div class="item-card-meta">
+                <span class="badge badge-stock-green">✓ In Stock</span>
+                <span class="item-timestamp">Cached 13:40, 11 Nov 2026</span>
+              </div>
+              <div class="item-card-bottom">
+                <button class="text-action-btn disabled" disabled>
+                  <span>Add to Basket (Disabled)</span>
+                </button>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <nav class="bottom-tab-bar">
+          <a href="#" class="tab-item active"><span>Home</span></a>
+          <a href="#" class="tab-item"><span>Basket</span></a>
+          <a href="#" class="tab-item"><span>Savings</span></a>
+        </nav>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>

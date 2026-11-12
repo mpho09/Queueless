@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queueless — S2 Search Results State Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset & Base Setup */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #F4F6F8;
+      color: #1A1A1A;
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 20px;
+    }
+
+    /* Board Presentation Container */
+    .board-header {
+      max-width: 1560px;
+      margin: 0 auto 32px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #D0D7DE;
+    }
+
+    .board-title h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1A1A1A;
+      margin-bottom: 4px;
+    }
+
+    .board-title p {
+      font-size: 14px;
+      color: #5F6368;
+    }
+
+    .meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meta-pill {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      background: #FFFFFF;
+      border: 1px solid #E0E0E0;
+      color: #1A1A1A;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-pill.active {
+      background: #E6F2F0;
+      color: #0B7A6B;
+      border-color: #B2DDD7;
+    }
+
+    /* Grid Layout for 8 State Frames */
+    .frames-grid {
+      max-width: 1560px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 360px));
+      gap: 36px 32px;
+      justify-content: center;
+    }
+
+    .frame-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .frame-header-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 0 4px;
+    }
+
+    .frame-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1A1A1A;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .state-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .tag-primary { background: #0B7A6B; color: #FFFFFF; }
+    .tag-neutral { background: #E9ECEF; color: #495057; }
+    .tag-success { background: #2E7D32; color: #FFFFFF; }
+    .tag-warning { background: #FFF3E0; color: #B26A00; }
+    .tag-blue { background: #E3F2FD; color: #1565C0; }
+    .tag-error { background: #FFEBEE; color: #C62828; }
+    .tag-offline { background: #5F6368; color: #FFFFFF; }
+
+    /* Mobile 360px Frame */
+    .mobile-frame {
+      width: 360px;
+      height: 800px;
+      background: #FFFFFF;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+      border: 1px solid #E0E0E0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Screen Global Header */
+    .screen-header {
+      height: 56px;
+      min-height: 56px;
+      background: #FFFFFF;
+      border-bottom: 1px solid #EEEEEE;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: relative;
+      z-index: 20;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: #1A1A1A;
+      cursor: pointer;
+      border-radius: 50%;
+      text-decoration: none;
+      margin-left: -8px;
+    }
+
+    .icon-btn:active {
+      background-color: #F1F3F5;
+    }
+
+    .app-brand {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0B7A6B;
+      letter-spacing: -0.2px;
+      text-decoration: none;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .basket-btn-wrap {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #1A1A1A;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .basket-badge {
+      position: absolute;
+      top: 6px;
+      right: 4px;
+      background: #0B7A6B;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      line-height: 18px;
+      border-radius: 9px;
+      text-align: center;
+      padding: 0 4px;
+    }
+
+    .basket-badge.bump {
+      background: #2E7D32;
+    }
+
+    /* Offline Banner */
+    .offline-banner {
+      background-color: #5F6368;
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.3;
+      flex-shrink: 0;
+    }
+
+    /* Frame Scroll Area */
+    .screen-content {
+      flex: 1;
+      padding: 16px;
+      padding-bottom: 76px; /* space for tab bar */
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Search Bar Field */
+    .search-bar-wrap {
+      display: flex;
+      position: relative;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .search-icon-pos {
+      position: absolute;
+      left: 14px;
+      color: #5F6368;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 52px;
+      border: 1px solid #D0D7DE;
+      border-radius: 6px;
+      padding: 0 16px 0 44px;
+      font-size: 16px;
+      font-family: inherit;
+      color: #1A1A1A;
+      background: #FFFFFF;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border: 2px solid #0B7A6B;
+      padding-left: 43px;
+    }
+
+    /* Summary Bar */
+    .results-summary {
+      font-size: 14px;
+      font-weight: 500;
+      color: #5F6368;
+      padding-bottom: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Product Result Card */
+    .product-card {
+      background: #FFFFFF;
+      border: 1px solid #E0E0E0;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .product-meta-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .product-thumb {
+      width: 56px;
+      height: 56px;
+      min-width: 56px;
+      border-radius: 6px;
+      background: #F8F9FA;
+      border: 1px solid #EEEEEE;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #757575;
+    }
+
+    .product-info {
+      flex: 1;
+    }
+
+    .product-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1A1A1A;
+      line-height: 1.3;
+      margin-bottom: 2px;
+    }
+
+    .product-sub {
+      font-size: 14px;
+      color: #5F6368;
+    }
+
+    /* Store Price Mini List */
+    .store-mini-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-top: 1px solid #F0F0F0;
+      padding-top: 10px;
+    }
+
+    .store-price-row {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: #F9FAFB;
+      border: 1px solid #EEEEEE;
+      min-height: 48px;
+    }
+
+    .store-price-row.cheapest-row {
+      background: #F3F8F4;
+      border-color: #C8E6C9;
+    }
+
+    .store-price-row.live-update-row {
+      background: #EFF6FC;
+      border-color: #BBDEFB;
+    }
+
+    .store-price-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .store-name-col {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1A1A1A;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .price-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1A1A1A;
+    }
+
+    .price-value.cheapest-price {
+      color: #2E7D32;
+    }
+
+    .price-value.live-blue {
+      color: #1565C0;
+    }
+
+    .store-meta-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 14px;
+      color: #5F6368;
+    }
+
+    .store-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    /* Badges System */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .badge-in-stock {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+
+    .badge-limited {
+      background: #FFF8E1;
+      color: #B26A00;
+    }
+
+    .badge-out-stock {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+
+    .badge-unknown {
+      background: #F1F3F4;
+      color: #5F6368;
+    }
+
+    .badge-cheapest {
+      background: #2E7D32;
+      color: #FFFFFF;
+      padding: 2px 6px;
+    }
+
+    .badge-unverified {
+      background: #FFF3E0;
+      color: #B26A00;
+      border: 1px solid #FFE0B2;
+    }
+
+    .badge-live {
+      background: #E3F2FD;
+      color: #1565C0;
+      border: 1px solid #BBDEFB;
+      font-weight: 600;
+    }
+
+    /* Buttons */
+    .btn-capsule {
+      min-height: 48px;
+      border-radius: 24px;
+      padding: 0 20px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      width: 100%;
+      box-sizing: border-box;
+      transition: background-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn-primary {
+      background-color: #0B7A6B;
+      color: #FFFFFF;
+    }
+
+    .btn-primary:active {
+      background-color: #085C51;
+    }
+
+    .btn-secondary {
+      background-color: #FFFFFF;
+      color: #0B7A6B;
+      border: 1.5px solid #0B7A6B;
+    }
+
+    .btn-secondary:active {
+      background-color: #E6F2F0;
+    }
+
+    .btn-disabled {
+      background-color: #E0E0E0 !important;
+      color: #5F6368 !important;
+      border: none !important;
+      cursor: not-allowed !important;
+      pointer-events: none;
+    }
+
+    /* Bottom Tab Bar */
+    .bottom-tab-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #FFFFFF;
+      border-top: 1px solid #EEEEEE;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 30;
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      height: 100%;
+      color: #5F6368;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .tab-item.active {
+      color: #0B7A6B;
+      font-weight: 600;
+    }
+
+    .tab-icon {
+      margin-bottom: 2px;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: absolute;
+      bottom: 72px;
+      left: 16px;
+      right: 16px;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .toast-pill {
+      background: #1A1A1A;
+      color: #FFFFFF;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .toast-check {
+      color: #81C784;
+    }
+
+    /* Empty State View */
+    .empty-state-block {
+      background: #FAFAFA;
+      border: 1px dashed #D0D7DE;
+      border-radius: 8px;
+      padding: 36px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    .empty-icon-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 26px;
+      background: #EEEEEE;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5F6368;
+    }
+
+    .empty-state-text {
+      font-size: 16px;
+      color: #1A1A1A;
+      line-height: 1.45;
+    }
+
+    /* Skeleton Loading Cards */
+    .skeleton-card {
+      background: #FFFFFF;
+      border: 1px solid #EEEEEE;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .skeleton-block {
+      background: #EAEAEA;
+      border-radius: 4px;
+      animation: skeletonPulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes skeletonPulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+
+    /* Modal Overlay (Frame 4: Add failed) */
+    .modal-dimmed-overlay {
+      position: absolute;
+      top: 0;
+      bottom: 60px; /* above bottom tab bar */
+      left: 0;
+      right: 0;
+      background: rgba(26, 26, 26, 0.45);
+      z-index: 25;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+      border: 1px solid #E0E0E0;
+      padding: 24px 20px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .modal-alert-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 22px;
+      background: #FFEBEE;
+      color: #C62828;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .modal-message {
+      font-size: 16px;
+      font-weight: 500;
+      color: #1A1A1A;
+      line-height: 1.45;
+    }
+
+    /* Error Screen Container (Frame 7: Server Error) */
+    .server-error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 48px 16px 20px;
+      gap: 16px;
+    }
+
+    .error-circle-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 28px;
+      background: #FFEBEE;
+      color: #C62828;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .server-error-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1A1A1A;
+      line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Showcase Header -->
+  <header class="board-header">
+    <div class="board-title">
+      <h1>Queueless — S2 Search Results State Showcase</h1>
+      <p>360px mobile width frames • Inter 16px min body • South Africa (en-ZA R1,234.50) • 8 Comprehensive UI States</p>
+    </div>
+    <div class="meta-pills">
+      <span class="meta-pill active">● 8 States Full Board</span>
+      <span class="meta-pill">≥44×44px Targets</span>
+      <span class="meta-pill">Palette: #0B7A6B, #2E7D32, #1565C0, #C62828, #B26A00</span>
+      <span class="meta-pill">Sorted Lowest First</span>
+    </div>
+  </header>
+
+  <!-- Frames Grid (8 States: Normal + 7 requested extra frames) -->
+  <main class="frames-grid">
+
+    <!-- ============================================== -->
+    <!-- FRAME 0: NORMAL (DEFAULT)                      -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header-label">
+        <span class="frame-title">Normal (Default)</span>
+        <span class="state-tag tag-primary">DEFAULT</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="screen-header">
+          <div class="header-left">
+            <button class="icon-btn" aria-label="Go back to Home">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="app-brand">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap" aria-label="View shopping basket with 2 items">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="basket-badge">2</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="screen-content">
+          <div class="search-bar-wrap">
+            <span class="search-icon-pos">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input type="text" class="search-input" value="White Sugar 2kg" aria-label="Search grocery products" readonly>
+          </div>
+
+          <div class="results-summary">
+            4 results in Hatfield • Sorted by lowest price
+          </div>
+
+          <!-- Product 1: White Sugar 2kg -->
+          <article class="product-card">
+            <div class="product-meta-row">
+              <div class="product-thumb" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2h12v4H6zM4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"></path>
+                </svg>
+              </div>
+              <div class="product-info">
+                <h2 class="product-title">White Sugar 2kg</h2>
+                <p class="product-sub">Huletts · 2kg pack</p>
+              </div>
+            </div>
+
+            <div class="store-mini-list">
+              <div class="store-price-row cheapest-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">
+                    Shoprite Hatfield
+                    <span class="status-badge badge-cheapest">★ Cheapest</span>
+                  </span>
+                  <span class="price-value cheapest-price">R42.99</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-in-stock">✓ In Stock</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+
+              <div class="store-price-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">Checkers Hatfield</span>
+                  <span class="price-value">R43.49</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-limited">! Limited Stock</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+
+              <div class="store-price-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">Pick n Pay Hatfield</span>
+                  <span class="price-value">R44.99</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-in-stock">✓ In Stock</span>
+                    <span class="status-badge badge-unverified">! Unverified for 2 days</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-capsule btn-primary" aria-label="Add White Sugar 2kg to basket">Add to Basket</button>
+          </article>
+
+          <!-- Product 2: Clover Full Cream Milk 2L -->
+          <article class="product-card">
+            <div class="product-meta-row">
+              <div class="product-thumb" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="7" y="2" width="10" height="20" rx="2"></rect>
+                  <line x1="7" y1="8" x2="17" y2="8"></line>
+                </svg>
+              </div>
+              <div class="product-info">
+                <h2 class="product-title">Clover Full Cream Milk 2L</h2>
+                <p class="product-sub">Clover · 2L bottle</p>
+              </div>
+            </div>
+
+            <div class="store-mini-list">
+              <div class="store-price-row cheapest-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">
+                    Shoprite Hatfield
+                    <span class="status-badge badge-cheapest">★ Cheapest</span>
+                  </span>
+                  <span class="price-value cheapest-price">R36.99</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-in-stock">✓ In Stock</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+
+              <div class="store-price-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">Checkers Hatfield</span>
+                  <span class="price-value">R37.99</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-in-stock">✓ In Stock</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+
+              <div class="store-price-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">Pick n Pay Hatfield</span>
+                  <span class="price-value">R38.49</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-out-stock">✕ Out of Stock</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-capsule btn-primary" aria-label="Add Clover Full Cream Milk 2L to basket">Add to Basket</button>
+          </article>
+        </div>
+
+        <nav class="bottom-tab-bar" aria-label="Main Navigation">
+          <a href="#" class="tab-item active" aria-current="page">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </span>
+            <span>Home</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </span>
+            <span>Basket</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <text x="12" y="16" font-size="12" font-family="Inter, sans-serif" font-weight="bold" fill="currentColor" text-anchor="middle">R</text>
+              </svg>
+            </span>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- FRAME 1: EMPTY                                 -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header-label">
+        <span class="frame-title">1. Empty</span>
+        <span class="state-tag tag-neutral">ZERO RESULTS</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="screen-header">
+          <div class="header-left">
+            <button class="icon-btn" aria-label="Go back to Home">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="app-brand">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap" aria-label="View shopping basket with 2 items">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="basket-badge">2</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="screen-content">
+          <div class="search-bar-wrap">
+            <span class="search-icon-pos">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input type="text" class="search-input" value="Bread rolls 6 pack" aria-label="Search grocery products" readonly>
+          </div>
+
+          <div class="results-summary">
+            0 results in Hatfield
+          </div>
+
+          <!-- Empty State Container -->
+          <div class="empty-state-block">
+            <div class="empty-icon-circle" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <p class="empty-state-text">No products found matching your search term. Please try another product name.</p>
+          </div>
+        </div>
+
+        <nav class="bottom-tab-bar" aria-label="Main Navigation">
+          <a href="#" class="tab-item active" aria-current="page">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </span>
+            <span>Home</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </span>
+            <span>Basket</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <text x="12" y="16" font-size="12" font-family="Inter, sans-serif" font-weight="bold" fill="currentColor" text-anchor="middle">R</text>
+              </svg>
+            </span>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- FRAME 2: LOADING                               -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header-label">
+        <span class="frame-title">2. Loading</span>
+        <span class="state-tag tag-neutral">SKELETON</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="screen-header">
+          <div class="header-left">
+            <button class="icon-btn" aria-label="Go back to Home">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="app-brand">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap" aria-label="View shopping basket with 2 items">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="basket-badge">2</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="screen-content">
+          <div class="search-bar-wrap">
+            <span class="search-icon-pos">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input type="text" class="search-input" value="White Sugar 2kg" aria-label="Search grocery products" readonly>
+          </div>
+
+          <div style="width: 140px; height: 16px;" class="skeleton-block"></div>
+
+          <!-- 3 Grey Skeleton Product Cards -->
+          <!-- Skeleton Card 1 -->
+          <div class="skeleton-card">
+            <div class="product-meta-row">
+              <div style="width: 56px; height: 56px;" class="skeleton-block"></div>
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                <div style="width: 75%; height: 18px;" class="skeleton-block"></div>
+                <div style="width: 45%; height: 14px;" class="skeleton-block"></div>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #F0F0F0; padding-top: 10px;">
+              <div style="height: 48px; width: 100%;" class="skeleton-block"></div>
+              <div style="height: 48px; width: 100%;" class="skeleton-block"></div>
+              <div style="height: 48px; width: 100%;" class="skeleton-block"></div>
+            </div>
+            <div style="height: 48px; border-radius: 24px; width: 100%;" class="skeleton-block"></div>
+          </div>
+
+          <!-- Skeleton Card 2 -->
+          <div class="skeleton-card">
+            <div class="product-meta-row">
+              <div style="width: 56px; height: 56px;" class="skeleton-block"></div>
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                <div style="width: 70%; height: 18px;" class="skeleton-block"></div>
+                <div style="width: 40%; height: 14px;" class="skeleton-block"></div>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #F0F0F0; padding-top: 10px;">
+              <div style="height: 48px; width: 100%;" class="skeleton-block"></div>
+              <div style="height: 48px; width: 100%;" class="skeleton-block"></div>
+            </div>
+            <div style="height: 48px; border-radius: 24px; width: 100%;" class="skeleton-block"></div>
+          </div>
+
+          <!-- Skeleton Card 3 -->
+          <div class="skeleton-card">
+            <div class="product-meta-row">
+              <div style="width: 56px; height: 56px;" class="skeleton-block"></div>
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                <div style="width: 80%; height: 18px;" class="skeleton-block"></div>
+                <div style="width: 50%; height: 14px;" class="skeleton-block"></div>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #F0F0F0; padding-top: 10px;">
+              <div style="height: 48px; width: 100%;" class="skeleton-block"></div>
+              <div style="height: 48px; width: 100%;" class="skeleton-block"></div>
+            </div>
+            <div style="height: 48px; border-radius: 24px; width: 100%;" class="skeleton-block"></div>
+          </div>
+        </div>
+
+        <nav class="bottom-tab-bar" aria-label="Main Navigation">
+          <a href="#" class="tab-item active" aria-current="page">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </span>
+            <span>Home</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </span>
+            <span>Basket</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <text x="12" y="16" font-size="12" font-family="Inter, sans-serif" font-weight="bold" fill="currentColor" text-anchor="middle">R</text>
+              </svg>
+            </span>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- FRAME 3: SUCCESS                               -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header-label">
+        <span class="frame-title">3. Success</span>
+        <span class="state-tag tag-success">TOAST + BADGE 3</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="screen-header">
+          <div class="header-left">
+            <button class="icon-btn" aria-label="Go back to Home">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="app-brand">Queueless</span>
+          </div>
+          <div class="header-right">
+            <!-- Basket badge changes to 3 -->
+            <div class="basket-btn-wrap" aria-label="View shopping basket with 3 items">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="basket-badge bump">3</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="screen-content">
+          <div class="search-bar-wrap">
+            <span class="search-icon-pos">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input type="text" class="search-input" value="White Sugar 2kg" aria-label="Search grocery products" readonly>
+          </div>
+
+          <div class="results-summary">
+            4 results in Hatfield • Sorted by lowest price
+          </div>
+
+          <!-- Product 1: Added state -->
+          <article class="product-card">
+            <div class="product-meta-row">
+              <div class="product-thumb" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2h12v4H6zM4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"></path>
+                </svg>
+              </div>
+              <div class="product-info">
+                <h2 class="product-title">White Sugar 2kg</h2>
+                <p class="product-sub">Huletts · 2kg pack</p>
+              </div>
+            </div>
+
+            <div class="store-mini-list">
+              <div class="store-price-row cheapest-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">
+                    Shoprite Hatfield
+                    <span class="status-badge badge-cheapest">★ Cheapest</span>
+                  </span>
+                  <span class="price-value cheapest-price">R42.99</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-in-stock">✓ In Stock</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+
+              <div class="store-price-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">Checkers Hatfield</span>
+                  <span class="price-value">R43.49</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-limited">! Limited Stock</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-capsule btn-primary" aria-label="Added to Basket">✓ Added to Basket</button>
+          </article>
+
+          <!-- Product 2 -->
+          <article class="product-card">
+            <div class="product-meta-row">
+              <div class="product-thumb" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="7" y="2" width="10" height="20" rx="2"></rect>
+                  <line x1="7" y1="8" x2="17" y2="8"></line>
+                </svg>
+              </div>
+              <div class="product-info">
+                <h2 class="product-title">Clover Full Cream Milk 2L</h2>
+                <p class="product-sub">Clover · 2L bottle</p>
+              </div>
+            </div>
+
+            <div class="store-mini-list">
+              <div class="store-price-row cheapest-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">
+                    Shoprite Hatfield
+                    <span class="status-badge badge-cheapest">★ Cheapest</span>
+                  </span>
+                  <span class="price-value cheapest-price">R36.99</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-in-stock">✓ In Stock</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-capsule btn-primary" aria-label="Add Clover Full Cream Milk 2L to basket">Add to Basket</button>
+          </article>
+        </div>
+
+        <!-- Success Toast at the bottom -->
+        <div class="toast-container" role="status" aria-live="polite">
+          <div class="toast-pill">
+            <span class="toast-check">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </span>
+            <span>Item added to your basket.</span>
+          </div>
+        </div>
+
+        <nav class="bottom-tab-bar" aria-label="Main Navigation">
+          <a href="#" class="tab-item active" aria-current="page">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </span>
+            <span>Home</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </span>
+            <span>Basket</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <text x="12" y="16" font-size="12" font-family="Inter, sans-serif" font-weight="bold" fill="currentColor" text-anchor="middle">R</text>
+              </svg>
+            </span>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- FRAME 4: ADD FAILED                           -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header-label">
+        <span class="frame-title">4. Add failed</span>
+        <span class="state-tag tag-error">OVERLAY MODAL</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="screen-header">
+          <div class="header-left">
+            <button class="icon-btn" aria-label="Go back to Home">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="app-brand">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap" aria-label="View shopping basket with 2 items">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="basket-badge">2</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Normal screen behind overlay -->
+        <div class="screen-content" aria-hidden="true" style="filter: blur(1px);">
+          <div class="search-bar-wrap">
+            <span class="search-icon-pos">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input type="text" class="search-input" value="White Sugar 2kg" readonly>
+          </div>
+
+          <div class="results-summary">
+            4 results in Hatfield • Sorted by lowest price
+          </div>
+
+          <article class="product-card">
+            <div class="product-meta-row">
+              <div class="product-thumb">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.75">
+                  <path d="M6 2h12v4H6zM4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"></path>
+                </svg>
+              </div>
+              <div class="product-info">
+                <h2 class="product-title">White Sugar 2kg</h2>
+                <p class="product-sub">Huletts · 2kg pack</p>
+              </div>
+            </div>
+            <button class="btn-capsule btn-primary">Add to Basket</button>
+          </article>
+        </div>
+
+        <!-- Dimmed Modal Overlay -->
+        <div class="modal-dimmed-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-msg-title">
+          <div class="modal-box">
+            <div class="modal-alert-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <p id="modal-msg-title" class="modal-message">Action failed. Please verify your internet connection and try again.</p>
+            <button class="btn-capsule btn-primary" aria-label="Confirm error message">OK</button>
+          </div>
+        </div>
+
+        <nav class="bottom-tab-bar" aria-label="Main Navigation">
+          <a href="#" class="tab-item active">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </span>
+            <span>Home</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </span>
+            <span>Basket</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <text x="12" y="16" font-size="12" font-family="Inter, sans-serif" font-weight="bold" fill="currentColor" text-anchor="middle">R</text>
+              </svg>
+            </span>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- FRAME 5: LIVE PRICE UPDATE                     -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header-label">
+        <span class="frame-title">5. Live price update</span>
+        <span class="state-tag tag-blue">PRICE FLASH #1565C0</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="screen-header">
+          <div class="header-left">
+            <button class="icon-btn" aria-label="Go back to Home">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="app-brand">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap" aria-label="View shopping basket with 2 items">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="basket-badge">2</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="screen-content">
+          <div class="search-bar-wrap">
+            <span class="search-icon-pos">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input type="text" class="search-input" value="White Sugar 2kg" aria-label="Search grocery products" readonly>
+          </div>
+
+          <div class="results-summary">
+            4 results in Hatfield • Sorted by lowest price
+          </div>
+
+          <!-- Product Card: Clover Full Cream Milk 2L with Live Update -->
+          <article class="product-card">
+            <div class="product-meta-row">
+              <div class="product-thumb" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="7" y="2" width="10" height="20" rx="2"></rect>
+                  <line x1="7" y1="8" x2="17" y2="8"></line>
+                </svg>
+              </div>
+              <div class="product-info">
+                <h2 class="product-title">Clover Full Cream Milk 2L</h2>
+                <p class="product-sub">Clover · 2L bottle</p>
+              </div>
+            </div>
+
+            <div class="store-mini-list">
+              <!-- Live Update on Shoprite Hatfield: R35.99 in #1565C0 + Price just updated -->
+              <div class="store-price-row live-update-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">
+                    Shoprite Hatfield
+                    <span class="status-badge badge-cheapest">★ Cheapest</span>
+                    <span class="status-badge badge-live">● Price just updated</span>
+                  </span>
+                  <span class="price-value live-blue">R35.99</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-in-stock">✓ In Stock</span>
+                  </div>
+                  <span style="color: #1565C0; font-weight: 500;">Updated Just now (14:06)</span>
+                </div>
+              </div>
+
+              <!-- Checkers Hatfield -->
+              <div class="store-price-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">Checkers Hatfield</span>
+                  <span class="price-value">R37.99</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-in-stock">✓ In Stock</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+
+              <!-- Pick n Pay Hatfield -->
+              <div class="store-price-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">Pick n Pay Hatfield</span>
+                  <span class="price-value">R38.49</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-out-stock">✕ Out of Stock</span>
+                  </div>
+                  <span>Updated 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-capsule btn-primary" aria-label="Add Clover Full Cream Milk 2L to basket">Add to Basket</button>
+          </article>
+
+          <!-- White Sugar Card for completeness -->
+          <article class="product-card">
+            <div class="product-meta-row">
+              <div class="product-thumb">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.75">
+                  <path d="M6 2h12v4H6zM4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"></path>
+                </svg>
+              </div>
+              <div class="product-info">
+                <h2 class="product-title">White Sugar 2kg</h2>
+                <p class="product-sub">Huletts · 2kg pack</p>
+              </div>
+            </div>
+            <button class="btn-capsule btn-primary">Add to Basket</button>
+          </article>
+        </div>
+
+        <nav class="bottom-tab-bar" aria-label="Main Navigation">
+          <a href="#" class="tab-item active" aria-current="page">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </span>
+            <span>Home</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </span>
+            <span>Basket</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <text x="12" y="16" font-size="12" font-family="Inter, sans-serif" font-weight="bold" fill="currentColor" text-anchor="middle">R</text>
+              </svg>
+            </span>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- FRAME 6: OFFLINE                               -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header-label">
+        <span class="frame-title">6. Offline</span>
+        <span class="state-tag tag-offline">OFFLINE BANNER</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="screen-header">
+          <div class="header-left">
+            <button class="icon-btn" aria-label="Go back to Home">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="app-brand">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap" aria-label="View shopping basket with 2 items">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="basket-badge">2</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Offline Banner directly under header -->
+        <div class="offline-banner" role="alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+            <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+            <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+            <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+            <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+          </svg>
+          <span>You're offline. Changes will not be saved.</span>
+        </div>
+
+        <div class="screen-content">
+          <div class="search-bar-wrap">
+            <span class="search-icon-pos">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input type="text" class="search-input" value="White Sugar 2kg" aria-label="Search grocery products" readonly>
+          </div>
+
+          <div class="results-summary">
+            Cached results • Hatfield
+          </div>
+
+          <!-- Product Card: Add to Basket disabled (grey) -->
+          <article class="product-card">
+            <div class="product-meta-row">
+              <div class="product-thumb" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2h12v4H6zM4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"></path>
+                </svg>
+              </div>
+              <div class="product-info">
+                <h2 class="product-title">White Sugar 2kg</h2>
+                <p class="product-sub">Huletts · 2kg pack</p>
+              </div>
+            </div>
+
+            <div class="store-mini-list">
+              <div class="store-price-row cheapest-row">
+                <div class="store-price-main">
+                  <span class="store-name-col">
+                    Shoprite Hatfield
+                    <span class="status-badge badge-cheapest">★ Cheapest</span>
+                  </span>
+                  <span class="price-value cheapest-price">R42.99</span>
+                </div>
+                <div class="store-meta-line">
+                  <div class="store-badges">
+                    <span class="status-badge badge-in-stock">✓ In Stock</span>
+                  </div>
+                  <span>Cached 14:05, 11 Nov 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Disabled Button -->
+            <button class="btn-capsule btn-disabled" disabled aria-disabled="true">Add to Basket (Disabled Offline)</button>
+          </article>
+
+          <article class="product-card">
+            <div class="product-meta-row">
+              <div class="product-thumb">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.75">
+                  <rect x="7" y="2" width="10" height="20" rx="2"></rect>
+                  <line x1="7" y1="8" x2="17" y2="8"></line>
+                </svg>
+              </div>
+              <div class="product-info">
+                <h2 class="product-title">Clover Full Cream Milk 2L</h2>
+                <p class="product-sub">Clover · 2L bottle</p>
+              </div>
+            </div>
+            <!-- Disabled Button -->
+            <button class="btn-capsule btn-disabled" disabled aria-disabled="true">Add to Basket (Disabled Offline)</button>
+          </article>
+        </div>
+
+        <nav class="bottom-tab-bar" aria-label="Main Navigation">
+          <a href="#" class="tab-item active" aria-current="page">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </span>
+            <span>Home</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </span>
+            <span>Basket</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <text x="12" y="16" font-size="12" font-family="Inter, sans-serif" font-weight="bold" fill="currentColor" text-anchor="middle">R</text>
+              </svg>
+            </span>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- FRAME 7: SERVER ERROR                          -->
+    <!-- ============================================== -->
+    <div class="frame-wrapper">
+      <div class="frame-header-label">
+        <span class="frame-title">7. Server error</span>
+        <span class="state-tag tag-error">ERROR STATE</span>
+      </div>
+
+      <div class="mobile-frame">
+        <header class="screen-header">
+          <div class="header-left">
+            <button class="icon-btn" aria-label="Go back to Home">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="app-brand">Queueless</span>
+          </div>
+          <div class="header-right">
+            <div class="basket-btn-wrap" aria-label="View shopping basket with 2 items">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span class="basket-badge">2</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="screen-content">
+          <div class="search-bar-wrap">
+            <span class="search-icon-pos">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <input type="text" class="search-input" value="White Sugar 2kg" aria-label="Search grocery products" readonly>
+          </div>
+
+          <!-- Server Error Block -->
+          <div class="server-error-container" role="alert">
+            <div class="error-circle-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <h2 class="server-error-title">Something went wrong. Try again.</h2>
+            <button class="btn-capsule btn-secondary" style="max-width: 220px;" aria-label="Retry searching">Try again</button>
+          </div>
+        </div>
+
+        <nav class="bottom-tab-bar" aria-label="Main Navigation">
+          <a href="#" class="tab-item active" aria-current="page">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </span>
+            <span>Home</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </span>
+            <span>Basket</span>
+          </a>
+          <a href="#" class="tab-item">
+            <span class="tab-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <text x="12" y="16" font-size="12" font-family="Inter, sans-serif" font-weight="bold" fill="currentColor" text-anchor="middle">R</text>
+              </svg>
+            </span>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>

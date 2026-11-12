@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Queueless — S4 Shopping Basket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0B7A6B;
+    --primary-dark: #085e52;
+    --primary-light: #E6F3F1;
+    --savings-green: #2E7D32;
+    --savings-light: #E8F5E9;
+    --bg-white: #FFFFFF;
+    --surface-grey: #F8F9FA;
+    --text-charcoal: #1A1A1A;
+    --text-muted: #5F6368;
+    --border-color: #E2E8F0;
+    --amber: #B26A00;
+    --amber-light: #FFF8E1;
+    --red: #C62828;
+    --red-light: #FFEBEE;
+    --blue: #1565C0;
+    --blue-light: #E3F2FD;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #F1F5F9;
+    color: var(--text-charcoal);
+    padding: 32px 16px;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .canvas-container {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .screen-meta-header {
+    margin-bottom: 24px;
+    background: #FFFFFF;
+    padding: 16px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .screen-meta-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-charcoal);
+    margin-bottom: 6px;
+  }
+
+  .screen-meta-header p {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .spec-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .spec-pill {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: #F1F5F9;
+    color: var(--text-muted);
+  }
+  .spec-pill.success {
+    background: var(--savings-light);
+    color: var(--savings-green);
+  }
+
+  /* Presentation Frames Grid */
+  .frames-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    align-items: flex-start;
+  }
+
+  .frame-column {
+    display: flex;
+    flex-direction: column;
+    width: 360px;
+    flex-shrink: 0;
+  }
+
+  .frame-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .frame-tag {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #E2E8F0;
+    color: #334155;
+  }
+
+  .frame-tag.primary {
+    background: var(--primary);
+    color: #FFFFFF;
+  }
+
+  .frame-tag.alert {
+    background: var(--red);
+    color: #FFFFFF;
+  }
+
+  /* Mobile Shell at 360px width */
+  .mobile-shell {
+    width: 360px;
+    background-color: var(--bg-white);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--border-color);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Header */
+  .global-header {
+    height: 56px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-charcoal);
+  }
+
+  .nav-btn:active {
+    background: var(--surface-grey);
+  }
+
+  .app-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.3px;
+  }
+
+  .basket-icon-btn {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-charcoal);
+  }
+
+  .basket-badge {
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    background-color: var(--primary);
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 700;
+    height: 18px;
+    min-width: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+
+  /* Offline & Alert Banners */
+  .offline-banner {
+    background: var(--text-muted);
+    color: #FFFFFF;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .session-expired-banner {
+    background: var(--red);
+    color: #FFFFFF;
+    padding: 10px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Screen Content */
+  .screen-content {
+    padding: 16px 16px 80px 16px; /* 16px side margins, space for tab bar */
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Basket Title Header */
+  .basket-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .basket-title-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .basket-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-charcoal);
+  }
+
+  .rename-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-radius: 6px;
+  }
+
+  .rename-btn:active {
+    background: var(--surface-grey);
+    color: var(--primary);
+  }
+
+  .rename-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  .basket-item-count {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--surface-grey);
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+  }
+
+  /* Basket Items Section */
+  .items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .item-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .item-info {
+    flex: 1;
+    padding-right: 8px;
+  }
+
+  .item-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-charcoal);
+    line-height: 1.3;
+  }
+
+  .item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Stepper */
+  .stepper {
+    display: flex;
+    align-items: center;
+    background: var(--surface-grey);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2px;
+  }
+
+  .stepper-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: 16px;
+    border: none;
+    background: #FFFFFF;
+    color: var(--text-charcoal);
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+
+  .stepper-btn:active {
+    background: #E2E8F0;
+  }
+
+  .stepper-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .stepper-value {
+    width: 24px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-charcoal);
+  }
+
+  .remove-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-radius: 6px;
+  }
+
+  .remove-btn:hover, .remove-btn:active {
+    color: var(--red);
+    background: var(--red-light);
+  }
+
+  .remove-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Recommendation Banner */
+  .recommendation-banner {
+    background-color: var(--savings-light);
+    border: 1px solid #A5D6A7;
+    border-left: 4px solid var(--savings-green);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .recommendation-icon {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--savings-green);
+  }
+
+  .recommendation-text {
+    font-size: 15px;
+    color: #1B5E20;
+    line-height: 1.4;
+  }
+
+  .recommendation-text strong {
+    font-weight: 700;
+    color: var(--savings-green);
+  }
+
+  /* Section Title */
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-charcoal);
+  }
+
+  /* Store Comparison Cards */
+  .stores-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .store-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .store-card.featured-cheapest {
+    border: 2px solid var(--savings-green);
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.08);
+  }
+
+  .store-card.incomplete-card {
+    border: 1px dashed var(--amber);
+    background: #FFFDF8;
+  }
+
+  .store-card-header {
+    padding: 14px 14px 10px 14px;
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid #F1F5F9;
+  }
+
+  .store-card-header:active {
+    background: #F8FAFC;
+  }
+
+  .store-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .store-name-link {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-charcoal);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .store-name-link svg {
+    color: var(--text-muted);
+  }
+
+  .store-price-total {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-charcoal);
+  }
+
+  .store-price-total.cheapest {
+    color: var(--savings-green);
+  }
+
+  .store-sub-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .store-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* Status Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 12px;
+    line-height: 1.2;
+  }
+
+  .badge-cheapest {
+    background: var(--savings-light);
+    color: var(--savings-green);
+    border: 1px solid #C8E6C9;
+  }
+
+  .badge-missing {
+    background: var(--amber-light);
+    color: var(--amber);
+    border: 1px solid #FFE082;
+  }
+
+  .badge-diff {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  /* Queue Badges */
+  .queue-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 12px;
+    line-height: 1.2;
+  }
+
+  .queue-badge.red {
+    background: var(--red-light);
+    color: var(--red);
+    border: 1px solid #FFCDD2;
+  }
+
+  .queue-badge.green {
+    background: var(--savings-light);
+    color: var(--savings-green);
+    border: 1px solid #C8E6C9;
+  }
+
+  .queue-badge.amber {
+    background: var(--amber-light);
+    color: var(--amber);
+    border: 1px solid #FFE082;
+  }
+
+  .queue-badge.grey {
+    background: #EEEEEE;
+    color: var(--text-muted);
+    border: 1px solid #E0E0E0;
+  }
+
+  /* Incomplete note */
+  .missing-item-note {
+    background: #FFF8E1;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #8C5300;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-top: 1px solid #FFE082;
+  }
+
+  /* Per item prices toggle block */
+  .breakdown-toggle-btn {
+    width: 100%;
+    background: #FFFFFF;
+    border: none;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    cursor: pointer;
+    min-height: 44px;
+  }
+
+  .breakdown-toggle-btn:active {
+    background: var(--surface-grey);
+  }
+
+  .breakdown-details {
+    padding: 0 14px 12px 14px;
+    font-size: 13.5px;
+    border-top: 1px dashed var(--border-color);
+    background: #FAFAFA;
+  }
+
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #F1F5F9;
+  }
+
+  .breakdown-row:last-child {
+    border-bottom: none;
+  }
+
+  .breakdown-item-name {
+    color: var(--text-charcoal);
+  }
+
+  .breakdown-item-price {
+    font-weight: 600;
+    color: var(--text-charcoal);
+  }
+
+  /* Bottom Tab Bar */
+  .bottom-tab-bar {
+    position: sticky;
+    bottom: 0;
+    height: 60px;
+    background: #FFFFFF;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 20;
+  }
+
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    min-height: 44px;
+    min-width: 44px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .tab-item svg {
+    margin-bottom: 2px;
+  }
+
+  .tab-item.active {
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  /* Buttons */
+  .capsule-btn-primary {
+    height: 48px;
+    min-height: 48px;
+    border-radius: 24px;
+    background: var(--primary);
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 100%;
+    text-decoration: none;
+  }
+
+  .capsule-btn-primary:active {
+    background: var(--primary-dark);
+  }
+
+  .capsule-btn-secondary {
+    height: 48px;
+    min-height: 48px;
+    border-radius: 24px;
+    background: #FFFFFF;
+    color: var(--primary);
+    font-size: 16px;
+    font-weight: 600;
+    border: 1.5px solid var(--primary);
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 100%;
+    text-decoration: none;
+  }
+
+  .capsule-btn-secondary:active {
+    background: var(--primary-light);
+  }
+
+  /* Empty state */
+  .empty-state-box {
+    border: 1px dashed var(--border-color);
+    background: #FAFAFA;
+    border-radius: 8px;
+    padding: 32px 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .empty-state-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 26px;
+    background: #EDF2F7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+  }
+
+  .empty-state-text {
+    font-size: 16px;
+    color: var(--text-charcoal);
+    line-height: 1.4;
+  }
+
+  /* Skeletons */
+  .skeleton {
+    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes skeleton-pulse {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .skeleton-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Overlay Modal for Session Expired */
+  .session-modal-overlay {
+    background: rgba(0, 0, 0, 0.45);
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .session-modal {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .session-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-charcoal);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .session-modal-body {
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+
+<div class="canvas-container">
+  
+  <div class="screen-meta-header">
+    <h1>Queueless — S4 Shopping Basket</h1>
+    <p>360px mobile width • Inter font (min 16px body) • South Africa (en-ZA: R1,234.50 • 24h clock) • Multi-State Presentation</p>
+    <div class="spec-pills">
+      <span class="spec-pill success">✓ Mobile-First 360px</span>
+      <span class="spec-pill success">✓ Touch targets ≥44×44px</span>
+      <span class="spec-pill success">✓ WCAG Contrast ≥4.5:1</span>
+      <span class="spec-pill success">✓ Full-Basket Store Comparison</span>
+      <span class="spec-pill">5 UI States Complete</span>
+    </div>
+  </div>
+
+  <div class="frames-grid">
+
+    <!-- FRAME 1: DEFAULT STATE (PRIMARY) -->
+    <div class="frame-column">
+      <div class="frame-label">
+        <span>Frame 1: Default State</span>
+        <span class="frame-tag primary">PRIMARY</span>
+      </div>
+
+      <div class="mobile-shell">
+        <!-- 1. Global Header -->
+        <header class="global-header">
+          <div class="header-left">
+            <button class="nav-btn" aria-label="Back to previous screen" title="Back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="app-title">Queueless</span>
+          </div>
+          <button class="basket-icon-btn" aria-label="Shopping Basket with 3 items">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span class="basket-badge">3</span>
+          </button>
+        </header>
+
+        <div class="screen-content">
+          <!-- 2. Basket Title -->
+          <div class="basket-title-row">
+            <div class="basket-title-left">
+              <h2 class="basket-title">My basket</h2>
+              <button class="rename-btn" aria-label="Rename basket" title="Rename basket">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </div>
+            <span class="basket-item-count">3 items</span>
+          </div>
+
+          <!-- 3. Item List with Stepper and Remove -->
+          <div class="items-list">
+            <!-- Item 1 -->
+            <div class="item-card">
+              <div class="item-info">
+                <div class="item-name">Clover Full Cream Milk 2L</div>
+              </div>
+              <div class="item-actions">
+                <div class="stepper">
+                  <button class="stepper-btn" aria-label="Decrease quantity">−</button>
+                  <span class="stepper-value">1</span>
+                  <button class="stepper-btn" aria-label="Increase quantity">+</button>
+                </div>
+                <button class="remove-btn" aria-label="Remove Clover Milk from basket" title="Remove">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="item-card">
+              <div class="item-info">
+                <div class="item-name">Albany Superior White Bread 700g</div>
+              </div>
+              <div class="item-actions">
+                <div class="stepper">
+                  <button class="stepper-btn" aria-label="Decrease quantity">−</button>
+                  <span class="stepper-value">1</span>
+                  <button class="stepper-btn" aria-label="Increase quantity">+</button>
+                </div>
+                <button class="remove-btn" aria-label="Remove Albany Bread from basket" title="Remove">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="item-card">
+              <div class="item-info">
+                <div class="item-name">White Sugar 2kg</div>
+              </div>
+              <div class="item-actions">
+                <div class="stepper">
+                  <button class="stepper-btn" aria-label="Decrease quantity">−</button>
+                  <span class="stepper-value">1</span>
+                  <button class="stepper-btn" aria-label="Increase quantity">+</button>
+                </div>
+                <button class="remove-btn" aria-label="Remove White Sugar from basket" title="Remove">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Recommendation Banner (Savings Green Accent) -->
+          <div class="recommendation-banner">
+            <svg class="recommendation-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <div class="recommendation-text">
+              Great choice! You are saving <strong>R4.00</strong> on this basket selection by choosing Shoprite today.
+            </div>
+          </div>
+
+          <!-- 5. Section "Compare stores" -->
+          <h3 class="section-title">Compare stores</h3>
+
+          <div class="stores-list">
+            <!-- Store 1: Shoprite Hatfield (Cheapest) -->
+            <div class="store-card featured-cheapest">
+              <div class="store-card-header" title="Open Shoprite Hatfield store details">
+                <div class="store-top-row">
+                  <div class="store-name-link">
+                    Shoprite Hatfield
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </div>
+                  <div class="store-price-total cheapest">R98.97</div>
+                </div>
+                <div class="store-sub-row">
+                  <div class="store-badges">
+                    <span class="badge badge-cheapest">★ Cheapest</span>
+                    <span class="queue-badge red">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                      Long Line (30+ Mins Wait)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Collapsible breakdown -->
+              <button class="breakdown-toggle-btn">
+                <span>View item breakdown</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div class="breakdown-details">
+                <div class="breakdown-row">
+                  <span class="breakdown-item-name">Clover Full Cream Milk 2L</span>
+                  <span class="breakdown-item-price">R36.99</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-item-name">Albany Superior White Bread 700g</span>
+                  <span class="breakdown-item-price">R18.99</span>
+                </div>
+                <div class="breakdown-row">
+                  <span class="breakdown-item-name">White Sugar 2kg</span>
+                  <span class="breakdown-item-price">R42.99</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Store 2: Pick n Pay Hatfield -->
+            <div class="store-card">
+              <div class="store-card-header" title="Open Pick n Pay Hatfield store details">
+                <div class="store-top-row">
+                  <div class="store-name-link">
+                    Pick n Pay Hatfield
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </div>
+                  <div class="store-price-total">R102.97</div>
+                </div>
+                <div class="store-sub-row">
+                  <div class="store-badges">
+                    <span class="badge-diff">+R4.00</span>
+                    <span class="queue-badge green">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                      Short Line (under 10 Mins Wait)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <button class="breakdown-toggle-btn">
+                <span>View item breakdown</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Store 3: Checkers Hatfield (Missing 1 Item - Visually Separated) -->
+            <div class="store-card incomplete-card">
+              <div class="store-card-header" title="Open Checkers Hatfield store details">
+                <div class="store-top-row">
+                  <div class="store-name-link">
+                    Checkers Hatfield
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </div>
+                  <div class="store-price-total">R55.98</div>
+                </div>
+                <div class="store-sub-row">
+                  <div class="store-badges">
+                    <span class="badge badge-missing">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                      </svg>
+                      Missing 1 Item
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="missing-item-note">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>White Sugar 2kg: Price unavailable at this branch</span>
+              </div>
+              <button class="breakdown-toggle-btn">
+                <span>View 2 available items (Clover Milk, Albany Bread)</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Bottom Tab Bar (Basket Active) -->
+        <nav class="bottom-tab-bar" aria-label="Bottom Navigation">
+          <a class="tab-item" href="#home" title="Home">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Home</span>
+          </a>
+          <a class="tab-item active" href="#basket" title="Basket">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Basket</span>
+          </a>
+          <a class="tab-item" href="#savings" title="Savings">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- FRAME 2: EMPTY BASKET STATE -->
+    <div class="frame-column">
+      <div class="frame-label">
+        <span>Frame 2: Empty Basket</span>
+        <span class="frame-tag">ZERO ITEMS</span>
+      </div>
+
+      <div class="mobile-shell">
+        <header class="global-header">
+          <div class="header-left">
+            <button class="nav-btn" aria-label="Back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <span class="app-title">Queueless</span>
+          </div>
+          <button class="basket-icon-btn" aria-label="Shopping Basket empty">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span class="basket-badge">0</span>
+          </button>
+        </header>
+
+        <div class="screen-content">
+          <div class="basket-title-row">
+            <div class="basket-title-left">
+              <h2 class="basket-title">My basket</h2>
+            </div>
+            <span class="basket-item-count">0 items</span>
+          </div>
+
+          <div class="empty-state-box">
+            <div class="empty-state-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </div>
+            <p class="empty-state-text">
+              Your basket is empty. Search for a product to start.
+            </p>
+            <a class="capsule-btn-primary" href="#search">
+              Search products
+            </a>
+          </div>
+        </div>
+
+        <nav class="bottom-tab-bar">
+          <a class="tab-item" href="#home">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+          </a>
+          <a class="tab-item active" href="#basket">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <span>Basket</span>
+          </a>
+          <a class="tab-item" href="#savings">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            <span>Savings</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- FRAME 3: LOADING STATE -->
+    <div class="frame-column">
+      <div class="frame-label">
+        <span>Frame 3: Loading State</span>
+        <span class="frame-tag">SKELETON</span>
+      </div>
+
+      <div class="mobile-shell">
+        <header class="global-header">
+          <div class="header-left">
+            <button class="nav-btn" aria-label="Back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <span class="app-title">Queueless</span>
+          </div>
+          <button class="basket-icon-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <span class="basket-badge">3</span>
+          </button>
+        </header>
+
+        <div class="screen-content">
+          <div class="basket-title-row">
+            <div class="skeleton" style="width: 130px; height: 28px;"></div>
+            <div class="skeleton" style="width: 60px; height: 24px; border-radius: 12px;"></div>
+          </div>
+
+          <!-- Skeleton item rows -->
+          <div class="items-list">
+            <div class="skeleton-card" style="flex-direction: row; justify-content: space-between; align-items: center; height: 56px;">
+              <div class="skeleton" style="width: 160px; height: 18px;"></div>
+              <div class="skeleton" style="width: 90px; height: 32px; border-radius: 16px;"></div>
+            </div>
+            <div class="skeleton-card" style="flex-direction: row; justify-content: space-between; align-items: center; height: 56px;">
+              <div class="skeleton" style="width: 180px; height: 18px;"></div>
+              <div class="skeleton" style="width: 90px; height: 32px; border-radius: 16px;"></div>
+            </div>
+            <div class="skeleton-card" style="flex-direction: row; justify-content: space-between; align-items: center; height: 56px;">
+              <div class="skeleton" style="width: 140px; height: 18px;"></div>
+              <div class="skeleton" style="width: 90px; height: 32px; border-radius: 16px;"></div>
+            </div>
+          </div>
+
+          <!-- Skeleton banner -->
+          <div class="skeleton" style="width: 100%; height: 52px; border-radius: 8px;"></div>
+
+          <div class="skeleton" style="width: 140px; height: 22px; margin-top: 6px;"></div>
+
+          <!-- Skeleton comparison cards -->
+          <div class="stores-list">
+            <div class="skeleton-card" style="height: 104px;">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="skeleton" style="width: 140px; height: 20px;"></div>
+                <div class="skeleton" style="width: 80px; height: 24px;"></div>
+              </div>
+              <div style="display: flex; gap: 8px; margin-top: 4px;">
+                <div class="skeleton" style="width: 70px; height: 20px; border-radius: 10px;"></div>
+                <div class="skeleton" style="width: 120px; height: 20px; border-radius: 10px;"></div>
+              </div>
+            </div>
+
+            <div class="skeleton-card" style="height: 104px;">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="skeleton" style="width: 150px; height: 20px;"></div>
+                <div class="skeleton" style="width: 80px; height: 24px;"></div>
+              </div>
+              <div style="display: flex; gap: 8px; margin-top: 4px;">
+                <div class="skeleton" style="width: 50px; height: 20px; border-radius: 10px;"></div>
+                <div class="skeleton" style="width: 130px; height: 20px; border-radius: 10px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="bottom-tab-bar">
+          <a class="tab-item" href="#home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
+          <a class="tab-item active" href="#basket"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>Basket</span></a>
+          <a class="tab-item" href="#savings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg><span>Savings</span></a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- FRAME 4: OFFLINE CACHED STATE -->
+    <div class="frame-column">
+      <div class="frame-label">
+        <span>Frame 4: Offline State</span>
+        <span class="frame-tag alert">CACHED DATA</span>
+      </div>
+
+      <div class="mobile-shell">
+        <header class="global-header">
+          <div class="header-left">
+            <button class="nav-btn" aria-label="Back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <span class="app-title">Queueless</span>
+          </div>
+          <button class="basket-icon-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <span class="basket-badge">3</span>
+          </button>
+        </header>
+
+        <!-- Standard Offline Banner -->
+        <div class="offline-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+            <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+            <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+            <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+            <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+          </svg>
+          <span>You're offline. Changes will not be saved.</span>
+        </div>
+
+        <div class="screen-content">
+          <div class="basket-title-row">
+            <div class="basket-title-left">
+              <h2 class="basket-title">My basket</h2>
+              <button class="rename-btn" disabled title="Rename disabled offline">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </div>
+            <span class="basket-item-count">Cached (3 items)</span>
+          </div>
+
+          <!-- Items list with disabled steppers -->
+          <div class="items-list">
+            <div class="item-card" style="opacity: 0.85;">
+              <div class="item-info">
+                <div class="item-name">Clover Full Cream Milk 2L</div>
+              </div>
+              <div class="item-actions">
+                <div class="stepper" style="opacity: 0.6;">
+                  <button class="stepper-btn" disabled>−</button>
+                  <span class="stepper-value">1</span>
+                  <button class="stepper-btn" disabled>+</button>
+                </div>
+                <button class="remove-btn" disabled title="Cannot edit offline">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="item-card" style="opacity: 0.85;">
+              <div class="item-info">
+                <div class="item-name">Albany Superior White Bread 700g</div>
+              </div>
+              <div class="item-actions">
+                <div class="stepper" style="opacity: 0.6;">
+                  <button class="stepper-btn" disabled>−</button>
+                  <span class="stepper-value">1</span>
+                  <button class="stepper-btn" disabled>+</button>
+                </div>
+                <button class="remove-btn" disabled>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="item-card" style="opacity: 0.85;">
+              <div class="item-info">
+                <div class="item-name">White Sugar 2kg</div>
+              </div>
+              <div class="item-actions">
+                <div class="stepper" style="opacity: 0.6;">
+                  <button class="stepper-btn" disabled>−</button>
+                  <span class="stepper-value">1</span>
+                  <button class="stepper-btn" disabled>+</button>
+                </div>
+                <button class="remove-btn" disabled>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recommendation Banner (Cached) -->
+          <div class="recommendation-banner" style="opacity: 0.9;">
+            <svg class="recommendation-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <div class="recommendation-text">
+              Cached comparison: Saving <strong>R4.00</strong> at Shoprite today.
+            </div>
+          </div>
+
+          <h3 class="section-title">Compare stores (Cached)</h3>
+
+          <!-- Cached comparison totals -->
+          <div class="stores-list">
+            <div class="store-card featured-cheapest">
+              <div class="store-card-header">
+                <div class="store-top-row">
+                  <div class="store-name-link">Shoprite Hatfield</div>
+                  <div class="store-price-total cheapest">R98.97</div>
+                </div>
+                <div class="store-sub-row">
+                  <div class="store-badges">
+                    <span class="badge badge-cheapest">★ Cheapest</span>
+                    <span class="queue-badge grey">Queue: Cached 14:05</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="store-card">
+              <div class="store-card-header">
+                <div class="store-top-row">
+                  <div class="store-name-link">Pick n Pay Hatfield</div>
+                  <div class="store-price-total">R102.97</div>
+                </div>
+                <div class="store-sub-row">
+                  <div class="store-badges">
+                    <span class="badge-diff">+R4.00</span>
+                    <span class="queue-badge grey">Queue: Cached 14:05</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="bottom-tab-bar">
+          <a class="tab-item" href="#home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
+          <a class="tab-item active" href="#basket"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>Basket</span></a>
+          <a class="tab-item" href="#savings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg><span>Savings</span></a>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- FRAME 5: SESSION EXPIRED STATE -->
+    <div class="frame-column">
+      <div class="frame-label">
+        <span>Frame 5: Session Expired</span>
+        <span class="frame-tag alert">AUTH REQUIRED</span>
+      </div>
+
+      <div class="mobile-shell">
+        <header class="global-header">
+          <div class="header-left">
+            <button class="nav-btn" aria-label="Back">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <span class="app-title">Queueless</span>
+          </div>
+          <button class="basket-icon-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <span class="basket-badge">3</span>
+          </button>
+        </header>
+
+        <!-- Red Session Expired banner -->
+        <div class="session-expired-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>Session expired. Please log in again to save your changes.</span>
+        </div>
+
+        <div class="screen-content" style="filter: blur(1px); opacity: 0.5; pointer-events: none;">
+          <div class="basket-title-row">
+            <div class="basket-title-left">
+              <h2 class="basket-title">My basket</h2>
+            </div>
+            <span class="basket-item-count">3 items</span>
+          </div>
+
+          <div class="items-list">
+            <div class="item-card">
+              <div class="item-name">Clover Full Cream Milk 2L</div>
+            </div>
+            <div class="item-card">
+              <div class="item-name">Albany Superior White Bread 700g</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session Expired Action Modal -->
+        <div class="session-modal-overlay">
+          <div class="session-modal">
+            <div class="session-modal-title">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>Session Expired</span>
+            </div>
+            <p class="session-modal-body">
+              Session expired. Please log in again to save your changes.
+            </p>
+            <button class="capsule-btn-primary">
+              Log in to save
+            </button>
+            <button class="capsule-btn-secondary">
+              Continue as Guest
+            </button>
+          </div>
+        </div>
+
+        <nav class="bottom-tab-bar">
+          <a class="tab-item" href="#home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
+          <a class="tab-item active" href="#basket"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>Basket</span></a>
+          <a class="tab-item" href="#savings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg><span>Savings</span></a>
+        </nav>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
