@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router'
 import AppShell from './components/layout/AppShell.jsx'
 import Home from './pages/Home.jsx'
+import Basket from './pages/Basket.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import NotFound from './pages/NotFound.jsx'
 
@@ -14,7 +15,7 @@ export default function App() {
         <Route path="search" element={<ComingSoon title="Search results" issue={11} />} />
         <Route path="stores/:storeId" element={<ComingSoon title="Store details" issue={12} />} />
         <Route path="stores/:storeId/report" element={<ComingSoon title="Report" issue={18} />} />
-        <Route path="basket" element={<ComingSoon title="Your basket" issue={16} />} />
+        <Route path="basket" element={<Basket />} />
         <Route path="savings" element={<ComingSoon title="Your savings" issue={20} />} />
         <Route path="login" element={<ComingSoon title="Log in" issue={14} />} />
         <Route path="signup" element={<ComingSoon title="Sign up" issue={14} />} />
