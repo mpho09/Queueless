@@ -12,7 +12,7 @@
 | -------------- | -------------------------------------------------------- |
 | Live app       | _TODO_                                                   |
 | Stitch project | [Queueless on Stitch](https://stitch.withgoogle.com/projects/14854798444949179025) |
-| Project board  | _TODO_                                                   |
+| Project board  | [Queueless Board](https://github.com/users/mpho09/projects/1) |
 | Team Loom      | _TODO_                                                   |
 | PRD            | [docs/PRD.md](docs/PRD.md)                               |
 | Designs        | [docs/designs/](docs/designs/) (exported screens: `screen.png` + `code.html`) |
@@ -210,7 +210,7 @@ _TODO: confirm the rules._ Suggested:
 
 - Never push directly to `main`. All changes go through a pull request.
 - Keep PRs small and focused on one feature or fix.
-- Link the related issue or project board card.
+- Link the related Issue (`Closes #12`) so its card on the [project board](https://github.com/users/mpho09/projects/1) moves to Done.
 - CI must pass before merging.
 - Include screenshots for UI changes.
 
