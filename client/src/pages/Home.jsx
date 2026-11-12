@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronRight, MapPin, ShoppingCart } from 'lucide-react'
@@ -12,9 +12,11 @@ import ErrorState from '../components/feedback/ErrorState.jsx'
 import { Skeleton, SkeletonRows } from '../components/feedback/Skeleton.jsx'
 import { useOnline } from '../hooks/useOnline.js'
 import { useSuburb } from '../hooks/useSuburb.js'
-import { fetchNearbyStores, fetchSuburbs } from '../lib/data.js'
-import { formatDateTime, formatTime } from '../lib/format.js'
+import { useBasket } from '../hooks/useBasket.js'
+import { fetchBasketPrices, fetchNearbyStores, fetchSuburbs } from '../lib/data.js'
+import { formatDateTime, formatTime, formatZAR } from '../lib/format.js'
 import { messages } from '../lib/messages.js'
+import { basketTotals } from '../utils/basketTotals.js'
 
 const ALL_SUBURBS = 'all'
 const DEFAULT_SUBURB_NAME = 'Hatfield'
@@ -136,12 +138,19 @@ function UpdatedAt({ timestamp }) {
   )
 }
 
-/**
- * The basket summary ("3 items • Cheapest at …") needs the basket and BR3 totals,
- * which arrive with F2 (#16). Until then every shopper sees the empty basket state.
- */
+/** "3 items • Cheapest at Shoprite Hatfield" with the total, linking to S4 (BR3). */
 function ActiveBasket({ loading }) {
-  if (loading) {
+  const { items } = useBasket()
+  const productIds = useMemo(() => items.map((i) => i.productId).sort(), [items])
+  const prices = useQuery({
+    queryKey: ['basketPrices', productIds],
+    queryFn: () => fetchBasketPrices(productIds),
+    enabled: productIds.length > 0,
+  })
+
+  if (items.length === 0) return <EmptyState icon={ShoppingCart}>{messages.emptyBasket}</EmptyState>
+
+  if (loading || prices.isPending) {
     return (
       <Card className="flex items-start justify-between gap-4 p-4" aria-hidden="true">
         <div className="flex flex-1 flex-col gap-3">
@@ -152,7 +161,33 @@ function ActiveBasket({ loading }) {
       </Card>
     )
   }
-  return <EmptyState icon={ShoppingCart}>{messages.emptyBasket}</EmptyState>
+
+  const { cheapest } = prices.data ? basketTotals(items, prices.data) : { cheapest: null }
+  const countText = `${items.length} ${items.length === 1 ? 'item' : 'items'}`
+
+  return (
+    <Link
+      to="/basket"
+      className="flex flex-col gap-3 rounded-card border border-border bg-bg p-4 hover:border-primary sm:p-6"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <p className="text-body text-ink">
+          {countText}
+          {cheapest && (
+            <>
+              {' • Cheapest at '}
+              <span className="font-semibold">{cheapest.name}</span>
+            </>
+          )}
+        </p>
+        {cheapest && <p className="shrink-0 text-price font-bold text-savings">{formatZAR(cheapest.total)}</p>}
+      </div>
+      <span className="inline-flex items-center gap-1 text-body font-semibold text-primary">
+        View basket
+        <ChevronRight aria-hidden="true" className="size-5" />
+      </span>
+    </Link>
+  )
 }
 
 function NearbyStores({ query, loading, error, onRetry, cached }) {

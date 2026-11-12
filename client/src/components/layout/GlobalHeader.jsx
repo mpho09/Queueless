@@ -46,7 +46,9 @@ export default function GlobalHeader() {
           )}
           <Link
             to="/basket"
-            aria-label={basketCount > 0 ? `Basket, ${basketCount} items` : 'Basket'}
+            aria-label={
+              basketCount > 0 ? `Basket, ${basketCount} ${basketCount === 1 ? 'item' : 'items'}` : 'Basket'
+            }
             className={iconButton}
           >
             <ShoppingBasket aria-hidden="true" className="size-6" />
