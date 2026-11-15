@@ -9,3 +9,6 @@ if (!url || !anonKey) {
 
 // Browser client: uses the public anon key. Access is controlled by Row Level Security.
 export const supabase = url && anonKey ? createClient(url, anonKey) : null
+
+// True on `npm run dev`, false on the live site. Lets data helpers fall back to sample data in development only.
+export const isDev = import.meta.env.DEV
