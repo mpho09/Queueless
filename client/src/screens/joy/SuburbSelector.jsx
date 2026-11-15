@@ -44,11 +44,11 @@ export default function SuburbSelector({ onSuburbChange }) {
   return (
     <div className='w-full max-w-md rounded-xl border border-slate-200 bg-white p-3 shadow-xs'>
       <label htmlFor='suburb-select' className='mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-600'>
-        <MapPin className='h-4 w-4 text-[#0B7A6B]' aria-hidden='true' />
+        <MapPin className='h-4 w-4 text-primary' aria-hidden='true' />
         Shopping Suburb
       </label>
       <div className='flex items-center gap-2'>
-        <select id='suburb-select' aria-label='Select shopping suburb' value={selectedSuburbId} onChange={handleSelect} disabled={isLoading} className='w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-[#0B7A6B] focus:bg-white focus:outline-none'>
+        <select id='suburb-select' aria-label='Select shopping suburb' value={selectedSuburbId} onChange={handleSelect} disabled={isLoading} className='w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-primary focus:bg-white focus:outline-none'>
           <option value=''>{isLoading ? 'Loading suburbs...' : 'All suburbs (nearby)'}</option>
           {suburbs.map((suburb) => (
             <option key={suburb.id} value={suburb.id}>
