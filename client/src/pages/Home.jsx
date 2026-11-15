@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { ChevronRight, MapPin, ShoppingCart } from 'lucide-react'
 import Button from '../components/ui/Button.jsx'
 import Card from '../components/ui/Card.jsx'
-import Select from '../components/ui/Select.jsx'
+import SuburbSelector, { ALL_SUBURBS } from '../screens/joy/SuburbSelector.jsx'
 import SearchField from '../components/ui/SearchField.jsx'
 import QueueBadge from '../components/domain/QueueBadge.jsx'
 import EmptyState from '../components/feedback/EmptyState.jsx'
@@ -18,7 +18,6 @@ import { formatDateTime, formatTime, formatZAR } from '../lib/format.js'
 import { messages } from '../lib/messages.js'
 import { basketTotals } from '../utils/basketTotals.js'
 
-const ALL_SUBURBS = 'all'
 const DEFAULT_SUBURB_NAME = 'Hatfield'
 
 /** S1 Home (Search Landing): suburb selector, product search, active basket and nearby stores. */
@@ -54,20 +53,15 @@ export default function Home() {
     navigate(`/search?q=${encodeURIComponent(term)}`)
   }
 
-  const showingText = `Showing stores in ${suburb ? suburb.name : 'all suburbs'}${online ? '' : ' (Cached)'}`
-
   const suburbSelect = (
-    <Select
-      label="Your suburb"
-      value={suburbId ?? ''}
-      onChange={(id) => setSuburbId(id || ALL_SUBURBS)}
-      options={[
-        ...suburbList.map((s) => ({ value: s.id, label: s.name })),
-        { value: ALL_SUBURBS, label: 'All suburbs' },
-      ]}
+    <SuburbSelector
+      suburbs={suburbList}
+      value={suburbId}
+      suburbName={suburb?.name}
+      onChange={setSuburbId}
       disabled={suburbs.isPending}
-      hint={suburbs.isSuccess ? showingText : undefined}
-      hintIcon={<MapPin aria-hidden="true" className="size-4 shrink-0" />}
+      online={online}
+      ready={suburbs.isSuccess}
       className="sm:flex-1"
     />
   )
