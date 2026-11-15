@@ -10,7 +10,7 @@
 
 | Resource       | Link                                                     |
 | -------------- | -------------------------------------------------------- |
-| Live app       | _TODO_                                                   |
+| Live app       | https://queueless-copilotgroup.vercel.app/                                                   |
 | Stitch project | [Queueless on Stitch](https://stitch.withgoogle.com/projects/14854798444949179025) |
 | Project board  | [Queueless Board](https://github.com/users/mpho09/projects/1) |
 | Team Loom      | _TODO_                                                   |
