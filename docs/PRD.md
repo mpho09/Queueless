@@ -160,13 +160,16 @@ flowchart TD
 ## 9. Design direction
 
 ### 9.1 Look and brand
-* **Look and feel**: Clean, efficient, high-contrast
-* **Primary colour**: Teal Blue `#0B7A6B` (passes contrast 5.1:1 on white fields)
-* **Secondary / accent colour**: Mint Green `#2E7D32` (utilized for savings data elements)
-* **Background colour**: Pure Clear White `#FFFFFF`
-* **Main text colour**: Deep Charcoal `#1A1A1A`
-* **Font**: Sans-Serif standard asset token `Inter`
-* **Corner radius**: Cards: `8px`; Form input fields: `6px`; Buttons: `24px` capsule format.
+* **Look and feel**: Calm, premium and quietly futuristic. A deep teal-ink canvas, frosted-glass surfaces, generous space, and one luminous accent. Simple screens that work as a daily habit.
+* **Canvas / background**: Midnight Lagoon `#07161C` (cards `#0E2630`, raised surfaces `#143440`)
+* **Primary colour**: Luminous Aqua `#52DCC4` (10.9:1 on the canvas). Buttons use dark text `#03211C` on aqua.
+* **Savings colour**: Mint `#86E8B0`, used only for money saved and positive status.
+* **Winner colour**: Champagne Gold `#E6C887`, reserved for the single best result on screen (the cheapest store, the profile avatar).
+* **Main text colour**: Soft White `#EDF5F4`; secondary text `#9BB4B8`
+* **Fonts**: `Sora` for headings and prices, `Manrope` for body text and controls. Numbers use tabular figures.
+* **Corner radius**: Cards `20px`; form fields `14px`; buttons and pills fully rounded (capsule); hero panels and dialogs `28px`.
+* **Depth**: Hairline borders and a faint top highlight. Glow is kept for the cheapest-store card and the main search panel only.
+* **Accessibility**: Every text and background pair meets WCAG AA (4.5:1). Form field borders meet 3:1. Motion respects `prefers-reduced-motion`.
 
 ### 9.2 Tone of voice
 * Direct, supportive, and numeric-centric.

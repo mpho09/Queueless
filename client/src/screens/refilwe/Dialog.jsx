@@ -24,7 +24,7 @@ export default function Dialog({ title, titleIcon, onClose, sheet = false, child
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-center bg-ink/50 ${sheet ? 'items-end sm:items-center' : 'items-center px-4'}`}
+      className={`fixed inset-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm ${sheet ? 'items-end sm:items-center' : 'items-center px-4'}`}
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
@@ -32,10 +32,10 @@ export default function Dialog({ title, titleIcon, onClose, sheet = false, child
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`w-full bg-bg p-5 shadow-lg ${sheet ? 'rounded-t-2xl sm:max-w-sm sm:rounded-card' : 'max-w-sm rounded-card'}`}
+        className={`w-full border border-border-strong/60 bg-surface-raised p-6 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.9)] ${sheet ? 'rounded-t-[28px] sm:max-w-sm sm:rounded-panel' : 'max-w-sm rounded-panel'}`}
       >
-        {sheet && <div aria-hidden="true" className="mx-auto mb-4 h-1 w-10 rounded-full bg-border sm:hidden" />}
-        <h2 id={titleId} className="flex items-center gap-2 text-card-title font-semibold text-ink">
+        {sheet && <div aria-hidden="true" className="mx-auto mb-4 h-1 w-10 rounded-full bg-border-strong sm:hidden" />}
+        <h2 id={titleId} className="flex items-center gap-2 text-section font-semibold text-ink">
           {titleIcon}
           {title}
         </h2>

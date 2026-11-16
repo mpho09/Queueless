@@ -21,7 +21,7 @@ import { savingsText } from './savingsText.js'
 import { useSavings } from './useSavings.js'
 
 const menuItem =
-  'flex min-h-12 w-full items-center gap-3 rounded-button border border-border px-4 text-left text-body text-ink hover:bg-surface-soft'
+  'flex min-h-12 w-full items-center gap-3 rounded-button border border-border-strong px-4 text-left text-body text-ink transition-colors hover:bg-surface-raised'
 
 /**
  * S6 Savings Analytics Dashboard (#20): profile, saved this month, points, reports,
@@ -167,7 +167,7 @@ export default function Savings() {
 function NewUserCard() {
   return (
     <Card className="flex flex-col items-center gap-3 px-4 py-8 text-center">
-      <span className="flex size-12 items-center justify-center rounded-full bg-green-bg">
+      <span className="flex size-14 items-center justify-center rounded-full bg-green-bg">
         <CircleDollarSign aria-hidden="true" className="size-6 text-savings" />
       </span>
       <p className="text-body font-semibold text-ink">{savingsText.newUserTitle}</p>

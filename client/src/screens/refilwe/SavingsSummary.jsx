@@ -9,13 +9,13 @@ export function SavedThisMonth({ cents, month }) {
   return (
     <section
       aria-labelledby={id}
-      className="flex flex-col gap-1 rounded-card border border-savings/40 bg-bg p-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:p-6"
+      className="flex flex-col gap-1 rounded-card border border-savings/30 bg-linear-to-br from-green-bg to-surface p-5 shadow-[0_24px_60px_-34px_rgb(134_232_176/0.55)] sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:p-6"
     >
       <div>
-        <h2 id={id} className="text-caption font-semibold tracking-wide text-muted uppercase sm:text-body">
+        <h2 id={id} className="text-caption font-semibold text-muted sm:text-body">
           Saved this month
         </h2>
-        <p className="text-[32px] leading-10 font-bold text-savings sm:text-[44px] sm:leading-[52px]">
+        <p className="font-display text-[34px] leading-10 font-semibold tracking-tight text-savings tabular-nums sm:text-[48px] sm:leading-[56px]">
           {formatZAR(cents / 100)}
         </p>
       </div>
@@ -32,7 +32,7 @@ export function StatTile({ label, value }) {
       <h2 id={id} className="text-caption text-muted sm:text-body">
         {label}
       </h2>
-      <p className="text-section font-bold text-ink sm:text-[36px] sm:leading-10">{value}</p>
+      <p className="font-display text-[26px] leading-8 font-semibold text-ink tabular-nums sm:text-[36px] sm:leading-10">{value}</p>
     </Card>
   )
 }

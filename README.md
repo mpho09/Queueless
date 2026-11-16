@@ -189,9 +189,12 @@ CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs on every pull req
 
 ## 📸 Screenshots
 
-_TODO: add screenshots or a GIF of the main screens (for example in `docs/screenshots/`)._
+Design: "Midnight Lagoon" (see [docs/DESIGN_REFRESH.md](docs/DESIGN_REFRESH.md)).
 
-<!-- ![Home screen](docs/screenshots/home.png) -->
+| Home | Basket | Savings |
+| --- | --- | --- |
+| ![Home](docs/screenshots/home-desktop.png) | ![Basket](docs/screenshots/basket-desktop.png) | ![Savings](docs/screenshots/savings-desktop.png) |
+| ![Home mobile](docs/screenshots/home-mobile.png) | ![Basket mobile](docs/screenshots/basket-mobile.png) | ![Savings mobile](docs/screenshots/savings-mobile.png) |
 
 ## 🐞 Known Issues & What's Next
 

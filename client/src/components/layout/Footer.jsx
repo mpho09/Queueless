@@ -5,8 +5,8 @@ export default function Footer() {
   return (
     <footer className="mt-auto sm:border-t sm:border-border">
       <div className="mx-auto flex max-w-[1200px] items-center justify-center px-4 py-6 sm:justify-between sm:px-6 sm:py-8">
-        <p className="hidden text-body text-muted sm:block">© {new Date().getFullYear()} Queueless. All rights reserved.</p>
-        <Link to="/privacy" className="inline-flex min-h-11 items-center text-caption text-muted underline sm:text-body sm:text-ink">
+        <p className="hidden text-caption text-muted sm:block">© {new Date().getFullYear()} Queueless. All rights reserved.</p>
+        <Link to="/privacy" className="inline-flex min-h-11 items-center text-caption text-muted underline decoration-border-strong underline-offset-4 hover:text-primary">
           Privacy Notice
         </Link>
       </div>

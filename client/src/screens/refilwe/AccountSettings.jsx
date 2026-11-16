@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 import { ChevronRight } from 'lucide-react'
 
 const row =
-  'flex min-h-14 w-full items-center justify-between gap-3 px-4 text-left text-body hover:bg-surface-soft disabled:cursor-not-allowed disabled:text-muted disabled:hover:bg-transparent sm:px-6'
+  'flex min-h-14 w-full items-center justify-between gap-3 px-4 text-left text-body transition-colors hover:bg-surface-raised disabled:cursor-not-allowed disabled:text-muted disabled:hover:bg-transparent sm:px-6'
 
 /**
  * Settings list: Change email, Privacy Notice, Delete account, Log out.
@@ -10,11 +10,11 @@ const row =
  */
 export default function AccountSettings({ onLogOut, onDelete, disabled }) {
   return (
-    <section aria-labelledby="settings-heading" className="rounded-card border border-border bg-bg">
+    <section aria-labelledby="settings-heading" className="overflow-hidden rounded-card border border-border bg-surface shadow-hairline">
       <h2
         id="settings-heading"
         tabIndex={-1}
-        className="px-4 pt-4 pb-3 text-body font-semibold text-ink outline-none sm:px-6 sm:pt-6 sm:text-[24px] sm:leading-8"
+        className="px-4 pt-4 pb-3 text-section font-semibold text-ink outline-none sm:px-6 sm:pt-6 sm:text-[24px] sm:leading-8"
       >
         Settings
       </h2>

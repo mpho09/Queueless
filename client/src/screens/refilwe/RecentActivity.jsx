@@ -6,7 +6,7 @@ import { savingsText } from './savingsText.js'
 export default function RecentActivity({ items }) {
   return (
     <Card as="section" aria-labelledby="activity-heading" className="flex flex-col gap-2 p-4 sm:p-6">
-      <h2 id="activity-heading" className="text-body font-semibold text-ink sm:text-[24px] sm:leading-8">
+      <h2 id="activity-heading" className="text-section font-semibold text-ink sm:text-[24px] sm:leading-8">
         Recent activity
       </h2>
       <ul aria-label="Recent activity" className="flex flex-col divide-y divide-border">

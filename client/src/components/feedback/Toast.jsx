@@ -17,12 +17,12 @@ export default function Toast({ message, tone = 'success', onClose, duration = 3
   const Icon = error ? CircleAlert : CircleCheck
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-20 z-40 flex justify-center px-4 sm:bottom-6">
+    <div className="pointer-events-none fixed inset-x-0 bottom-28 z-40 flex justify-center px-4 sm:bottom-6">
       <div
         role={error ? 'alert' : 'status'}
-        className={`pointer-events-auto flex max-w-md items-start gap-3 rounded-card px-4 py-3 text-body text-white shadow-lg ${error ? 'bg-red' : 'bg-ink'}`}
+        className={`pointer-events-auto flex max-w-md items-start gap-3 rounded-card border px-4 py-3 text-body shadow-[0_20px_50px_-20px_rgb(0_0_0/0.9)] ${error ? 'border-red/40 bg-red-bg text-red' : 'glass border-border-strong text-ink'}`}
       >
-        <Icon aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+        <Icon aria-hidden="true" className={`mt-0.5 size-5 shrink-0 ${error ? '' : 'text-primary'}`} />
         <p className="flex-1">{message}</p>
         {error && onClose && (
           <button type="button" onClick={onClose} className="-my-1 min-h-8 font-semibold underline">

@@ -20,7 +20,7 @@ export default function SavingsChart({ months }) {
       </h2>
       <p className="hidden text-body text-muted sm:block">{savingsText.chartIntro}</p>
 
-      <ul aria-label="Monthly savings" className="mt-4 flex items-end justify-around gap-3 border-b border-border pb-3">
+      <ul aria-label="Monthly savings" className="mt-4 flex items-end justify-around gap-3 border-b border-border-strong/50 pb-3">
         {months.map((m, i) => {
           const isCurrent = i === current
           const height = Math.max(4, Math.round((m.cents / max) * BAR_AREA))
@@ -36,7 +36,7 @@ export default function SavingsChart({ months }) {
               <div
                 aria-hidden="true"
                 style={{ height }}
-                className={`w-10 rounded-t sm:w-16 ${isCurrent ? 'bg-savings' : 'bg-primary'}`}
+                className={`w-10 rounded-t-xl bg-linear-to-t sm:w-16 ${isCurrent ? 'from-savings/25 to-savings' : 'from-primary/20 to-primary'}`}
               />
               <span className={`text-caption ${isCurrent ? 'font-semibold text-savings' : 'text-muted'}`}>
                 {monthShort(m.month)}

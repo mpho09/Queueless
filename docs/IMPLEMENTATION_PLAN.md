@@ -425,39 +425,35 @@ The client sends the device's approximate coordinates, if the user allows it. If
 ## 9. Design tokens and shared components
 
 ### 9.1 Tokens: `src/index.css`
+
+> **Design refresh (Nov 2026):** the original light theme was replaced by "Midnight Lagoon". Token **names are unchanged**, so every screen re-themes automatically. New tokens: `surface`, `surface-raised`, `border-strong`, `on-primary`, `gold`, `gold-deep`, `on-gold`, `on-red`. Full rationale and the contrast table are in [DESIGN_REFRESH.md](DESIGN_REFRESH.md). **The file `client/src/index.css` is the source of truth; this block is a summary.**
+
 ```css
-@import "tailwindcss";
-
 @theme {
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-display: "Sora", "Manrope", system-ui, sans-serif;
 
-  --color-primary: #0B7A6B;
-  --color-primary-pressed: #085A4F;
-  --color-savings: #2E7D32;
-  --color-bg: #FFFFFF;
-  --color-surface-soft: #F9F9F9;
-  --color-ink: #1A1A1A;
-  --color-muted: #5F6368;
-  --color-border: #E0E0E0;
+  --color-bg: #07161c;            --color-surface: #0e2630;
+  --color-surface-soft: #0b1f27;  --color-surface-raised: #143440;
+  --color-ink: #edf5f4;           --color-muted: #9bb4b8;
+  --color-border: #1c404b;        --color-border-strong: #4f7a86;   /* form fields */
 
-  --color-amber: #B26A00;        /* icons, borders only */
-  --color-amber-text: #9A5B00;   /* D5: amber text */
-  --color-amber-bg: #FFF8E1;
-  --color-red: #C62828;
-  --color-red-bg: #FFEBEE;
-  --color-green-bg: #E8F5E9;
-  --color-grey-pill-bg: #F1F3F4;
-  --color-live: #1565C0;
+  --color-primary: #52dcc4;       --color-primary-pressed: #36c2ab;  --color-on-primary: #03211c;
+  --color-savings: #86e8b0;       --color-green-bg: #0f3a2e;
+  --color-gold: #e6c887;          --color-gold-deep: #b8935a;        --color-on-gold: #2a1e08;
 
-  --radius-card: 8px;
-  --radius-input: 6px;
-  --radius-button: 24px;
+  --color-amber: #e0a23b;         /* icons, borders */
+  --color-amber-text: #f2c46b;    /* D5: amber text */
+  --color-amber-bg: #34260d;
+  --color-red: #ff8a80;           --color-red-bg: #3a1517;           --color-on-red: #2b0705;
+  --color-grey-pill-bg: #17333c;  --color-live: #6cb4ff;
 
-  --text-page-title: 24px;  --text-section: 20px;  --text-card-title: 18px;
-  --text-body: 16px;        --text-price: 22px;    --text-caption: 14px;
+  --radius-card: 20px;  --radius-input: 14px;  --radius-button: 999px;  --radius-panel: 28px;
 }
 ```
-Load Inter 400/500/600/700 from Google Fonts in `index.html`. Spacing scale 4/8/12/16/24/32px; mobile side margin 16px. Minimum control height 48px; touch targets ≥44×44px.
+Load Sora (500/600/700) and Manrope (400/500/600/700) from Google Fonts in `index.html`. Spacing scale 4/8/12/16/24/32px; mobile side margin 16px. Minimum control height 48px; touch targets ≥44×44px.
+
+**Using the colours:** text on `bg-primary` is `text-on-primary` (never `text-white`); text on `bg-gold` is `text-on-gold`; text on `bg-red` is `text-on-red`. Gold marks the winner only. Mint (`savings`) marks money saved only.
 
 ### 9.2 Using the Stitch export
 
