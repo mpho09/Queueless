@@ -4,7 +4,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(13);
+select plan(15);
 
 select is(
   (select rowsecurity from pg_tables where schemaname = 'public' and tablename = 'savings_events'),
@@ -75,6 +75,26 @@ select is(
   (select count(*)::int from public.savings_events),
   1,
   'Only one saving is logged per basket per day'
+);
+
+-- Follow-up to #29 review: savings can't be inflated with old or extra baskets.
+update public.baskets set is_active = false where id = 'dddddddd-0000-4000-8000-000000000201';
+select is(
+  public.record_basket_saving('dddddddd-0000-4000-8000-000000000201'),
+  null,
+  'A deactivated basket cannot record a saving'
+);
+insert into public.baskets (id, user_id) values
+  ('dddddddd-0000-4000-8000-000000000203', 'aaaaaaaa-0000-4000-8000-000000000201');
+insert into public.basket_items (basket_id, product_id) values
+  ('dddddddd-0000-4000-8000-000000000203', 'eeeeeeee-0000-4000-8000-000000000201'),
+  ('dddddddd-0000-4000-8000-000000000203', 'eeeeeeee-0000-4000-8000-000000000202'),
+  ('dddddddd-0000-4000-8000-000000000203', 'eeeeeeee-0000-4000-8000-000000000203');
+select public.record_basket_saving('dddddddd-0000-4000-8000-000000000203');
+select is(
+  (select count(*)::int from public.savings_events),
+  1,
+  'Only one saving is logged per user per day, even with a new basket'
 );
 select throws_ok(
   $$ select public.record_basket_saving('dddddddd-0000-4000-8000-000000000202') $$,
