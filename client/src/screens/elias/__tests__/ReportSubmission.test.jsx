@@ -50,7 +50,7 @@ function setOnline(value) {
   })
 }
 
-const confirmButton = () => screen.getByRole('button', { name: 'Confirm' })
+const confirmButton = () => screen.getByRole('button', { name: /^Confirm/ })
 
 async function chooseLongLine(user) {
   await screen.findByText(store.name)

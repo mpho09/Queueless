@@ -24,6 +24,16 @@ export async function fetchStore(storeId) {
   return data
 }
 
+/** All stores, for the Stores list. */
+export async function fetchStores() {
+  const { data, error } = await requireClient()
+    .from('stores')
+    .select('id, name, address, opening_hours')
+    .order('name')
+  if (error) throw new ApiError(messages.serverError, 500, error.code)
+  return data ?? []
+}
+
 /** Products sold at this store, for the Price and Stock tabs. */
 export async function fetchListings(storeId) {
   const { data, error } = await requireClient()

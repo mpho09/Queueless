@@ -1,9 +1,8 @@
 import { useId, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, MapPinOff } from 'lucide-react'
+import { ArrowLeft, Ban, TriangleAlert } from 'lucide-react'
 import Button from '../../components/ui/Button.jsx'
-import Card from '../../components/ui/Card.jsx'
 import Select from '../../components/ui/Select.jsx'
 import Toast from '../../components/feedback/Toast.jsx'
 import ErrorState from '../../components/feedback/ErrorState.jsx'
@@ -25,9 +24,9 @@ const STOCK_OPTIONS = [
 ]
 
 const TABS = [
-  { id: 'queue', label: 'Queue', title: 'Report Queue Status', subtext: 'Your report helps other shoppers skip long queues.', reportType: 'Queue' },
-  { id: 'price', label: 'Price', title: 'Update Store Price', subtext: 'Submit observed in-store shelf prices for this branch.', reportType: 'Price' },
-  { id: 'stock', label: 'Stock', title: 'Report Stock Level', subtext: 'Tell other shoppers whether a product is on the shelf.', reportType: 'Stock' },
+  { id: 'queue', label: 'Queue', title: 'Report Queue Status', subtext: 'Your report helps other shoppers skip long queues.' },
+  { id: 'price', label: 'Price', title: 'Update Store Price', subtext: 'Submit observed in-store shelf prices for this branch.' },
+  { id: 'stock', label: 'Stock', title: 'Report Stock Level', subtext: 'Tell other shoppers whether a product is on the shelf.' },
 ]
 
 // Captions under Confirm (Stitch S5). The error messages themselves live in lib/messages.js.
@@ -36,6 +35,8 @@ const CAPTIONS = {
   price: 'You can submit up to 3 price updates per store per hour.',
   stock: 'Price and stock reports share a limit of 3 updates per store per hour.',
 }
+
+const NOT_ALLOWED_BODY = 'Reporting queue or price updates is restricted to logged-in, email-verified Shoppers.'
 
 /** S5: report the queue, a price or the stock level at a store. Route: /stores/:storeId/report */
 export default function ReportSubmission() {
@@ -59,7 +60,7 @@ export default function ReportSubmission() {
     enabled: tabId !== 'queue',
   })
 
-  const { submit, submitting, error, clearError, limitReached, locationMismatch } = useSubmitReport({
+  const { submit, submitting, error, errorCode, clearError, limitReached, locationMismatch } = useSubmitReport({
     storeId,
     store: storeQuery.data,
   })
@@ -67,6 +68,7 @@ export default function ReportSubmission() {
   const priceInvalid = price.trim() !== '' && !isValidPrice(price)
   // Price and Stock reports share one limit, so hitting it blocks both tabs.
   const limitHit = tabId === 'queue' ? limitReached.queue : limitReached.price
+  const isLimitError = errorCode === 'QUEUE_LIMIT' || errorCode === 'PRICE_LIMIT'
 
   const ready = {
     queue: queueLevel !== null,
@@ -109,8 +111,27 @@ export default function ReportSubmission() {
     )
   }
 
+  // Stitch frame 6: a Retailer, an unverified or a logged-out user is not allowed to report.
+  if (errorCode === 'FORBIDDEN') {
+    return (
+      <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 rounded-card border border-border px-6 py-12 text-center">
+        <span className="flex size-14 items-center justify-center rounded-full bg-grey-pill-bg">
+          <Ban aria-hidden="true" className="size-7 text-muted" />
+        </span>
+        <h1 className="text-section font-bold text-ink">{messages.forbidden}</h1>
+        <p className="text-body text-muted">{NOT_ALLOWED_BODY}</p>
+        <div className="mt-2 flex w-full flex-col gap-3">
+          <Button to="/login">Log in to your account</Button>
+          <Button to={`/stores/${storeId}`} variant="secondary">
+            Return to store details
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-4 pb-8">
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-4 pb-8 sm:rounded-2xl sm:border sm:border-border sm:p-8 sm:shadow-sm">
       <div className="flex items-center gap-2">
         <Link
           to={`/stores/${storeId}`}
@@ -119,13 +140,13 @@ export default function ReportSubmission() {
         >
           <ArrowLeft aria-hidden="true" className="size-6" />
         </Link>
-        <h1 className="text-page-title font-bold text-ink">{tab.title}</h1>
+        <h1 className="text-section font-semibold text-ink">{tab.title}</h1>
       </div>
 
-      <Card className="p-4">
-        <h2 className="text-card-title font-semibold text-ink">{storeQuery.data.name}</h2>
-        <p className="text-caption text-muted">{tab.subtext}</p>
-      </Card>
+      <div>
+        <h2 className="text-[22px] leading-7 font-bold text-ink">{storeQuery.data.name}</h2>
+        <p className="mt-1 text-body text-muted">{tab.subtext}</p>
+      </div>
 
       <div role="tablist" aria-label="Report type" className="grid grid-cols-3 gap-1 rounded-button bg-grey-pill-bg p-1">
         {TABS.map((t) => (
@@ -147,6 +168,18 @@ export default function ReportSubmission() {
       </div>
 
       <div role="tabpanel" id="report-panel" aria-labelledby={`report-tab-${tabId}`} className="flex flex-col gap-4">
+        {locationMismatch && (
+          <div role="status" className="flex items-start gap-3 rounded-card border border-amber/40 bg-amber-bg px-4 py-3">
+            <TriangleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-amber" />
+            <div>
+              <p className="text-body font-semibold text-amber-text">{messages.locationMismatch}</p>
+              <p className="text-caption text-amber-text">
+                You appear to be away from {storeQuery.data.name}. Your report will be saved, but marked as unverified for community review.
+              </p>
+            </div>
+          </div>
+        )}
+
         {tabId === 'queue' && (
           <div role="radiogroup" aria-label="Select current queue length" className="grid grid-cols-2 gap-3">
             {QUEUE_LEVELS.map((level) => (
@@ -208,20 +241,20 @@ export default function ReportSubmission() {
           </div>
         )}
 
-        {locationMismatch && (
-          <p role="status" className="flex items-center gap-2 rounded-card border border-amber/40 bg-amber-bg px-3 py-2 text-caption font-medium text-amber-text">
-            <MapPinOff aria-hidden="true" className="size-4 shrink-0 text-amber" />
-            {messages.locationMismatch}
+        {/* Stitch frame 4: the limit message sits in red right above the disabled Confirm button. */}
+        {isLimitError && (
+          <p role="alert" className="text-center text-caption font-medium text-red">
+            {error}
           </p>
         )}
 
         <Button onClick={handleConfirm} disabled={!canConfirm} aria-busy={submitting} className="w-full">
-          {submitting ? 'Submitting…' : 'Confirm'}
+          {submitting ? 'Submitting…' : online ? 'Confirm' : 'Confirm (Offline)'}
         </Button>
         <p className="text-center text-caption text-muted">{CAPTIONS[tabId]}</p>
       </div>
 
-      <Toast message={error} tone="error" onClose={clearError} />
+      {!isLimitError && <Toast message={error} tone="error" onClose={clearError} />}
     </div>
   )
 }

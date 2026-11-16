@@ -18,21 +18,26 @@ export const successToasts = {
  *
  * submit({ reportType: 'Queue' | 'Price' | 'Stock', value, listingId })
  * Returns { submit, submitting, error, clearError, limitReached, locationMismatch }.
- *  - error: the message to show (queue/price limit, forbidden, ...)
+ *  - error / errorCode: the message to show and its code (QUEUE_LIMIT, PRICE_LIMIT, FORBIDDEN, ...)
  *  - limitReached: 'queue' | 'price' after a BR2 error, so the screen can disable Confirm
  */
 export default function useSubmitReport({ storeId, store }) {
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
+  const [errorCode, setErrorCode] = useState(null)
   const [limitReached, setLimitReached] = useState({ queue: false, price: false })
   const [locationMismatch, setLocationMismatch] = useState(false)
 
-  const clearError = useCallback(() => setError(null), [])
+  const clearError = useCallback(() => {
+    setError(null)
+    setErrorCode(null)
+  }, [])
 
   const submit = useCallback(
     async ({ reportType, value, listingId = null }) => {
       setError(null)
+      setErrorCode(null)
       setSubmitting(true)
       try {
         // More than 50 km away: still saved, but flagged so it is never verified.
@@ -50,11 +55,12 @@ export default function useSubmitReport({ storeId, store }) {
         if (reportError.code === 'QUEUE_LIMIT') setLimitReached((prev) => ({ ...prev, queue: true }))
         if (reportError.code === 'PRICE_LIMIT') setLimitReached((prev) => ({ ...prev, price: true }))
         setError(reportError.message)
+        setErrorCode(reportError.code)
         setSubmitting(false)
       }
     },
     [navigate, store, storeId],
   )
 
-  return { submit, submitting, error, clearError, limitReached, locationMismatch }
+  return { submit, submitting, error, errorCode, clearError, limitReached, locationMismatch }
 }

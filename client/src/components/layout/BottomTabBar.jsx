@@ -9,7 +9,7 @@ export default function BottomTabBar() {
       aria-label="Main"
       className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-bg pb-[env(safe-area-inset-bottom)] sm:hidden"
     >
-      <ul className="grid grid-cols-3">
+      <ul className="grid grid-cols-4">
         {navItems.map(({ to, label, Icon, matches }) => {
           const active = matches(pathname)
           return (
