@@ -1,6 +1,7 @@
 // Reads for Home (S1) and Basket (S4). Uses Supabase when it's set up, and the sample data
-// (src/lib/sampleData.js) when it isn't, or when the tables from #8 don't exist yet.
-import { supabase } from './supabase.js'
+// (src/lib/sampleData.js) when it isn't. If a table is missing, sample data is used in development
+// only; on the live site the error is shown instead, so fake stores never reach real users.
+import { isDev, supabase } from './supabase.js'
 import { sampleListings, sampleProducts, sampleStores, sampleSuburbs } from './sampleData.js'
 
 // Postgres / PostgREST codes for "table or view does not exist"
@@ -8,6 +9,11 @@ const MISSING_TABLE_CODES = new Set(['42P01', 'PGRST205', 'PGRST200'])
 
 function isMissingTable(error) {
   return MISSING_TABLE_CODES.has(error?.code)
+}
+
+// Missing tables fall back to sample data only during development.
+function shouldUseSample(error) {
+  return isDev && isMissingTable(error)
 }
 
 function isSampleId(id) {
@@ -18,7 +24,7 @@ export async function fetchSuburbs() {
   if (!supabase) return sampleSuburbs
   const { data, error } = await supabase.from('suburbs').select('id, name, city').order('name')
   if (error) {
-    if (isMissingTable(error)) return sampleSuburbs
+    if (shouldUseSample(error)) return sampleSuburbs
     throw error
   }
   return data
@@ -33,7 +39,7 @@ export async function fetchNearbyStores(suburbId) {
   if (suburbId) query = query.eq('suburb_id', suburbId)
   const { data: stores, error } = await query
   if (error) {
-    if (isMissingTable(error)) return sampleStores
+    if (shouldUseSample(error)) return sampleStores
     throw error
   }
 
@@ -89,7 +95,7 @@ export async function fetchBasketPrices(productIds) {
   ])
   const error = productsRes.error ?? listingsRes.error
   if (error) {
-    if (isMissingTable(error)) return sampleBasketPrices(productIds)
+    if (shouldUseSample(error)) return sampleBasketPrices(productIds)
     throw error
   }
 
