@@ -3,6 +3,7 @@ import AppShell from './components/layout/AppShell.jsx'
 import Home from './pages/Home.jsx'
 import Basket from './pages/Basket.jsx'
 import Savings from './screens/refilwe/Savings.jsx'
+import ReportSubmission from './screens/elias/ReportSubmission.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import NotFound from './pages/NotFound.jsx'
 
@@ -15,7 +16,7 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="search" element={<ComingSoon title="Search results" issue={11} />} />
         <Route path="stores/:storeId" element={<ComingSoon title="Store details" issue={12} />} />
-        <Route path="stores/:storeId/report" element={<ComingSoon title="Report" issue={18} />} />
+        <Route path="stores/:storeId/report" element={<ReportSubmission />} />
         <Route path="basket" element={<Basket />} />
         <Route path="savings" element={<Savings />} />
         <Route path="login" element={<ComingSoon title="Log in" issue={14} />} />
