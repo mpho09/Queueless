@@ -167,17 +167,25 @@ npm run dev          # starts the client (http://localhost:5173) and the API (ht
 
 ## 🧪 Tests
 
-_TODO: no test suite yet._
+Run these from the repo root (Node 20.19+; CI uses Node 22):
 
 ```bash
-# TODO: npm test
+npm run lint        # ESLint
+npm run typecheck   # TypeScript checks the JavaScript
+npm test            # client tests (Jest) then server tests (node --test)
+npm run build       # Vite build
+npm run db:test     # database tests (pgTAP) against the hosted Supabase, Tech Lead only
 ```
 
-| Area   | What's covered |
-| ------ | -------------- |
-| _TODO_ | _TODO_         |
+| Area | What's covered |
+| ---- | -------------- |
+| Client (`client/src`, Jest + Testing Library) | S1 Home, S2 search, S4 basket totals (BR3), price age (BR1), formatting, suburb selector, Savings screen, shared components |
+| Server (`server/tests`, `node --test`) | Savings route (`GET /api/me/savings`) |
+| Database (`supabase/tests`, pgTAP) | Row Level Security, savings (report rules BR2 and D4 are added by #18) |
 
-CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs on every pull request and push to `main`. It checks for leftover merge conflict markers and invalid JSON files.
+The full list of tests, with owners and status, is in [docs/TEST_PLAN.md](docs/TEST_PLAN.md), including the known gaps in lint and typecheck coverage.
+
+CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs on every pull request and push to `main` as one job named `check`: merge-conflict markers, JSON validity, `npm ci`, lint, typecheck, tests and build. The database tests are not part of CI yet.
 
 ## 🚀 Deployment
 

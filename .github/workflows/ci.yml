@@ -7,6 +7,7 @@ on:
     branches: [main]
 
 jobs:
+  # The job name must stay "check": the "Protect main" ruleset requires exactly that name.
   check:
     name: check
     runs-on: ubuntu-latest
@@ -16,7 +17,7 @@ jobs:
 
       - name: Fail on leftover merge conflict markers
         run: |
-          if grep -rnE '^(<<<<<<<|>>>>>>>)( |$)' --exclude-dir=.git .; then
+          if grep -rnE '^(<<<<<<<|>>>>>>>)( |$)' --exclude-dir=.git --exclude-dir=node_modules .; then
             echo "Merge conflict markers found"
             exit 1
           fi
@@ -25,6 +26,27 @@ jobs:
         run: |
           find . -name "*.json" -not -path "./.git/*" -not -path "*/node_modules/*" -print0 \
             | xargs -0 -r -n1 python3 -m json.tool > /dev/null
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test (client and server)
+        run: npm test
+
+      - name: Build
+        run: npm run build
 
       - name: CI passed
         run: echo "All checks passed"

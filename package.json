@@ -12,7 +12,9 @@
     "dev:server": "npm run dev -w server",
     "build": "npm run build -w client",
     "start": "npm run start -w server",
-    "test": "npm test -w client",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "npm test -w client && npm test -w server",
     "db:link": "supabase link",
     "db:migration": "supabase migration new",
     "db:check": "supabase db push --remote --dry-run",
@@ -22,8 +24,18 @@
     "db:reset:hosted": "supabase db reset --remote"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "concurrently": "^10.0.7",
-    "supabase": "^3.1.0"
+    "eslint": "^10.15.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.8",
+    "globals": "^17.14.0",
+    "supabase": "^3.1.0",
+    "typescript": "^7.0.2"
   },
   "engines": {
     "node": ">=20.19"
