@@ -19,6 +19,12 @@ declare
   v_count       int;
   v_listing_store uuid;
 begin
+  -- The client can send any column, so the server decides these two (found in review of #35):
+  --  - created_at: a backdated report would not count toward "the last 60 minutes" (BR2 bypass)
+  --  - is_verified: a report is only verified by the D4 trigger when another shopper matches it
+  NEW.created_at := now();
+  NEW.is_verified := false;
+
   -- Check the value really matches the report type, so bad data never reaches listings.
   if NEW.report_type = 'Queue' then
     if NEW.submitted_value not in ('none', 'short', 'moderate', 'long') then
