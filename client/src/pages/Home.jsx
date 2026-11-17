@@ -67,26 +67,31 @@ export default function Home() {
   )
 
   return (
-    <div className="flex flex-col gap-6 pb-6 sm:gap-12">
-      <h1 className="text-card-title font-semibold sm:text-[40px] sm:leading-tight sm:font-bold">
-        Find the cheapest store near you.
-      </h1>
+    <div className="flex flex-col gap-8 pb-6 sm:gap-14">
+      <div className="flex max-w-2xl flex-col gap-3 sm:gap-4">
+        <h1 className="text-[30px] leading-[38px] font-semibold text-ink sm:text-[52px] sm:leading-[60px]">
+          Find the cheapest store near you.
+        </h1>
+        <p className="text-body text-muted sm:text-[18px] sm:leading-7">
+          Prices, stock and queues from nearby stores, before you leave home.
+        </p>
+      </div>
 
       <form
         role="search"
         onSubmit={handleSearch}
-        className="-mt-2 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-start sm:gap-5 sm:rounded-card sm:border sm:border-border sm:bg-surface-soft sm:p-8"
+        className="glass flex flex-col gap-4 rounded-panel border border-border-strong/50 p-5 shadow-[0_30px_80px_-40px_rgb(82_220_196/0.35)] sm:flex-row sm:items-start sm:gap-5 sm:p-8"
       >
         {suburbSelect}
-        <div className="flex flex-col gap-4 sm:flex-[2] sm:flex-row sm:gap-5 sm:pt-9">
+        <div className="flex flex-col gap-4 sm:flex-[2] sm:flex-row sm:gap-5 sm:pt-7">
           <SearchField ref={searchRef} value={query} onChange={setQuery} className="sm:flex-[2]" />
-          <Button type="submit" className="w-full sm:flex-1">
+          <Button type="submit" className="min-h-14 w-full sm:flex-1">
             {online ? 'Search' : 'Search (Offline)'}
           </Button>
         </div>
       </form>
 
-      <div className="flex flex-col gap-6 sm:grid sm:grid-cols-[3fr_2fr] sm:gap-10">
+      <div className="flex flex-col gap-10 sm:grid sm:grid-cols-[3fr_2fr] sm:gap-12">
         <section aria-labelledby="basket-heading" className="sm:order-2">
           <SectionHeading id="basket-heading">Your active basket</SectionHeading>
           <ActiveBasket loading={suburbs.isPending} />
@@ -114,8 +119,8 @@ export default function Home() {
 
 function SectionHeading({ id, aside, children }) {
   return (
-    <div className="mb-3 flex items-center justify-between gap-4 sm:mb-5 sm:border-b sm:border-border sm:pb-3">
-      <h2 id={id} className="text-body font-semibold sm:text-[24px] sm:leading-8">
+    <div className="mb-4 flex items-center justify-between gap-4 sm:mb-5">
+      <h2 id={id} className="text-section font-semibold text-ink sm:text-[24px] sm:leading-8">
         {children}
       </h2>
       {aside}
@@ -126,7 +131,7 @@ function SectionHeading({ id, aside, children }) {
 function UpdatedAt({ timestamp }) {
   const justNow = Date.now() - timestamp < 60_000
   return (
-    <p className="hidden text-body text-muted sm:block">
+    <p className="hidden text-caption text-muted sm:block">
       {justNow ? 'Updated just now' : `Updated at ${formatTime(timestamp)}`}
     </p>
   )
@@ -146,7 +151,7 @@ function ActiveBasket({ loading }) {
 
   if (loading || prices.isPending) {
     return (
-      <Card className="flex items-start justify-between gap-4 p-4" aria-hidden="true">
+      <Card className="flex items-start justify-between gap-4 p-5" aria-hidden="true">
         <div className="flex flex-1 flex-col gap-3">
           <Skeleton className="h-4 w-3/4" />
           <Skeleton className="h-3 w-1/3" />
@@ -162,7 +167,7 @@ function ActiveBasket({ loading }) {
   return (
     <Link
       to="/basket"
-      className="flex flex-col gap-3 rounded-card border border-border bg-bg p-4 hover:border-primary sm:p-6"
+      className="group flex flex-col gap-4 rounded-card border border-border bg-linear-to-br from-surface-raised to-surface p-5 shadow-hairline transition-colors hover:border-primary/60 sm:p-6"
     >
       <div className="flex items-start justify-between gap-4">
         <p className="text-body text-ink">
@@ -174,11 +179,11 @@ function ActiveBasket({ loading }) {
             </>
           )}
         </p>
-        {cheapest && <p className="shrink-0 text-price font-bold text-savings">{formatZAR(cheapest.total)}</p>}
+        {cheapest && <p className="shrink-0 font-display text-[26px] leading-8 font-semibold tracking-tight text-savings tabular-nums">{formatZAR(cheapest.total)}</p>}
       </div>
       <span className="inline-flex items-center gap-1 text-body font-semibold text-primary">
         View basket
-        <ChevronRight aria-hidden="true" className="size-5" />
+        <ChevronRight aria-hidden="true" className="size-5 transition-transform group-hover:translate-x-0.5" />
       </span>
     </Link>
   )
@@ -190,18 +195,18 @@ function NearbyStores({ query, loading, error, onRetry, cached }) {
   if (query.data.length === 0) return <EmptyState icon={MapPin}>{messages.noStores}</EmptyState>
 
   return (
-    <ul aria-labelledby="stores-heading" className="flex flex-col gap-3 sm:gap-4">
+    <ul aria-labelledby="stores-heading" className="flex flex-col gap-3">
       {query.data.map((store) => (
         <li key={store.id}>
           <Link
             to={`/stores/${store.id}`}
-            className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-card border border-border bg-bg p-3 hover:border-primary sm:p-6"
+            className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-card border border-border bg-surface p-4 shadow-hairline transition-colors hover:border-primary/60 hover:bg-surface-raised sm:p-6"
           >
             <div className="min-w-40 flex-1">
-              <p className="truncate text-body font-medium text-ink sm:text-[22px] sm:leading-7 sm:font-semibold">
+              <p className="truncate font-display text-body font-semibold text-ink sm:text-[20px] sm:leading-7">
                 {store.name}
               </p>
-              <p className="truncate text-caption text-muted sm:mt-1 sm:text-body">
+              <p className="truncate text-caption text-muted sm:mt-1">
                 {store.suburbName}
                 {cached && ` • Cached ${formatDateTime(query.dataUpdatedAt)}`}
               </p>

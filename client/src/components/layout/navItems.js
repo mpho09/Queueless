@@ -1,10 +1,11 @@
-import { Home, PiggyBank, ShoppingBasket } from 'lucide-react'
+import { Home, PiggyBank, ShoppingBasket, Store } from 'lucide-react'
 
 // Main sections, shared by the mobile tab bar and the desktop nav (docs/Implementation plan.md §8).
 export const navItems = [
-  { to: '/', label: 'Home', Icon: Home, matches: (path) => path === '/' || path.startsWith('/search') || path.startsWith('/stores') },
+  { to: '/', label: 'Home', Icon: Home, matches: (path) => path === '/' || path.startsWith('/search') || path.startsWith('/stores/') },
   { to: '/basket', label: 'Basket', Icon: ShoppingBasket, matches: (path) => path.startsWith('/basket') },
   { to: '/savings', label: 'Savings', Icon: PiggyBank, matches: (path) => path.startsWith('/savings') },
+  { to: '/stores', label: 'Stores', Icon: Store, matches: (path) => path === '/stores' },
 ]
 
 const AUTH_PATHS = ['/login', '/signup', '/forgot-password', '/reset-password', '/verify-email']

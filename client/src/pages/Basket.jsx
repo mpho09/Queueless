@@ -15,7 +15,7 @@ import { messages } from '../lib/messages.js'
 import { basketTotals, chainName } from '../utils/basketTotals.js'
 
 const iconButton =
-  'inline-flex size-11 shrink-0 items-center justify-center rounded-full text-muted hover:bg-surface-soft hover:text-ink disabled:cursor-not-allowed disabled:text-border disabled:hover:bg-transparent'
+  'inline-flex size-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-raised hover:text-ink disabled:cursor-not-allowed disabled:text-muted/40 disabled:hover:bg-transparent'
 
 const itemsLabel = (n) => `${n} ${n === 1 ? 'item' : 'items'}`
 
@@ -43,11 +43,11 @@ export default function Basket() {
   const countLabel = online ? itemsLabel(count) : `Cached (${itemsLabel(count)})`
 
   return (
-    <div className="flex flex-col gap-6 pb-6 sm:grid sm:grid-cols-[2fr_3fr] sm:items-start sm:gap-10">
+    <div className="flex flex-col gap-8 pb-6 sm:grid sm:grid-cols-[2fr_3fr] sm:items-start sm:gap-12">
       <section aria-labelledby="basket-title" className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-3">
           <BasketTitle title={basket.title} onRename={basket.rename} disabled={!online} />
-          <span className="shrink-0 rounded-full border border-border bg-surface-soft px-3 py-1 text-caption text-muted">
+          <span className="shrink-0 rounded-full border border-border-strong bg-surface-soft px-3 py-1 text-caption font-medium text-muted">
             {countLabel}
           </span>
         </div>
@@ -63,9 +63,9 @@ export default function Basket() {
               const name = product?.name ?? 'Product no longer available'
               return (
                 <li key={item.productId}>
-                  <Card className="flex items-center gap-3 p-3 sm:p-5">
+                  <Card className="flex items-center gap-3 p-4 sm:p-5">
                     <div className="min-w-0 flex-1">
-                      <p className="text-body font-medium text-ink">{name}</p>
+                      <p className="text-body font-semibold text-ink">{name}</p>
                       {product?.brand && (
                         <p className="text-caption text-muted">
                           {product.brand} • {product.size}
@@ -104,7 +104,7 @@ export default function Basket() {
           ) : (
             <>
               <SavingsBanner totals={totals} cached={!online} />
-              <h2 id="compare-heading" className="text-section font-semibold sm:text-[24px] sm:leading-8">
+              <h2 id="compare-heading" className="text-section font-semibold text-ink sm:text-[24px] sm:leading-8">
                 {online ? 'Compare stores' : 'Compare stores (Cached)'}
               </h2>
               {totals.stores.length === 0 ? (
@@ -156,7 +156,7 @@ function BasketTitle({ title, onRename, disabled }) {
           onChange={(e) => setDraft(e.target.value)}
           onBlur={save}
           onKeyDown={(e) => e.key === 'Escape' && setEditing(false)}
-          className="min-h-11 w-full min-w-0 rounded-input border border-primary px-3 text-section font-bold text-ink outline-none"
+          className="min-h-11 w-full min-w-0 rounded-input border border-primary bg-surface px-3 font-display text-section font-semibold text-ink outline-none"
         />
       </form>
     )
@@ -164,7 +164,7 @@ function BasketTitle({ title, onRename, disabled }) {
 
   return (
     <div className="flex min-w-0 items-center gap-1">
-      <h1 id="basket-title" className="truncate text-page-title font-bold sm:text-[32px] sm:leading-10">
+      <h1 id="basket-title" className="truncate text-page-title font-semibold text-ink sm:text-[34px] sm:leading-10">
         {title}
       </h1>
       <button type="button" aria-label="Rename basket" className={iconButton} disabled={disabled} onClick={start}>
@@ -178,9 +178,9 @@ function SavingsBanner({ totals, cached }) {
   // No banner for a tie: "saving R0.00" isn't a saving.
   if (!totals?.cheapest || !(totals.saving > 0)) return null
   const chain = chainName(totals.cheapest)
-  const saving = <strong className="font-semibold text-savings">{formatZAR(totals.saving)}</strong>
+  const saving = <strong className="font-display font-semibold text-savings tabular-nums">{formatZAR(totals.saving)}</strong>
   return (
-    <div className="flex items-start gap-3 rounded-card border border-savings/30 border-l-4 border-l-savings bg-green-bg p-4 text-body text-ink">
+    <div className="flex items-start gap-3 rounded-card border border-savings/30 bg-linear-to-r from-green-bg to-surface p-5 text-body text-ink shadow-[0_20px_50px_-30px_rgb(134_232_176/0.5)]">
       <CircleCheck aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-savings" />
       {cached ? (
         <p>
@@ -197,9 +197,9 @@ function SavingsBanner({ totals, cached }) {
 
 function EmptyBasket() {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-card border border-border bg-surface-soft px-4 py-10 text-center">
-      <span className="flex size-12 items-center justify-center rounded-full bg-grey-pill-bg">
-        <ShoppingBasket aria-hidden="true" className="size-6 text-muted" />
+    <div className="flex flex-col items-center gap-4 rounded-card border border-dashed border-border-strong bg-surface-soft px-4 py-12 text-center">
+      <span className="flex size-14 items-center justify-center rounded-full bg-primary/10">
+        <ShoppingBasket aria-hidden="true" className="size-6 text-primary" />
       </span>
       <p className="max-w-64 text-body text-ink">{messages.emptyBasket}</p>
       <Button to="/" className="w-full max-w-xs">

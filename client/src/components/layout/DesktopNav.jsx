@@ -5,7 +5,7 @@ import { navItems } from './navItems.js'
 export default function DesktopNav() {
   const { pathname } = useLocation()
   return (
-    <nav aria-label="Main" className="mx-auto hidden h-full items-stretch gap-8 sm:flex">
+    <nav aria-label="Main" className="mx-auto hidden items-center gap-1 rounded-full border border-border bg-surface-soft/70 p-1 sm:flex">
       {navItems.map(({ to, label, matches }) => {
         const active = matches(pathname)
         return (
@@ -13,8 +13,8 @@ export default function DesktopNav() {
             key={to}
             to={to}
             aria-current={active ? 'page' : undefined}
-            className={`flex items-center border-b-2 px-1 text-card-title ${
-              active ? 'border-primary font-semibold text-primary' : 'border-transparent text-muted hover:text-ink'
+            className={`rounded-full px-5 py-2 text-body font-semibold transition-colors ${
+              active ? 'bg-primary/15 text-primary' : 'text-muted hover:text-ink'
             }`}
           >
             {label}

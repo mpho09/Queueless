@@ -13,13 +13,13 @@ export default function AppShell() {
   const tabBar = showsTabBar(pathname)
 
   return (
-    <div className={`flex min-h-screen flex-col ${tabBar ? 'pb-16 sm:pb-0' : ''}`}>
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-bg focus:p-2">
+    <div className={`flex min-h-screen flex-col ${tabBar ? 'pb-28 sm:pb-0' : ''}`}>
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-input focus:bg-surface focus:p-3 focus:text-ink">
         Skip to content
       </a>
       <GlobalHeader />
       <OfflineBanner />
-      <main id="main" className="mx-auto w-full max-w-[1200px] px-4 pt-4 sm:px-6 sm:pt-12">
+      <main id="main" className="mx-auto w-full max-w-[1200px] px-4 pt-6 sm:px-6 sm:pt-14">
         <Suspense fallback={<SkeletonRows />}>
           <Outlet />
         </Suspense>
