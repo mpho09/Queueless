@@ -1,6 +1,6 @@
 # Design refresh: "Midnight Lagoon"
 
-**Owner:** Kabelo (Designer) · **Scope:** visual layer only. No logic, routes, data or copy (except one supporting line on Home) were changed. All 80 tests pass and `npm run build` succeeds.
+**Owner:** Kabelo (Designer) · **Scope:** visual layer only. No logic, routes, data or copy (except one supporting line on Home) were changed. All 147 tests pass and `npm run build` succeeds (checked after merging main on 17 Nov).
 
 ## What changed and why
 
@@ -36,6 +36,8 @@ Because the theme is now dark, a few class meanings flipped. Rules for everyone 
 
 **Pages:** `pages/{Home,Basket,ComingSoon,NotFound}.jsx`
 
+**Restyled after merge (class names only):** Mpho's `screens/mpho/StorePriceRow.jsx` (S2) and Elias's `screens/elias/{QueueTile,ReportSubmission}.jsx` (S5), including a `text-white` on the aqua check mark that failed contrast.
+
 **Refilwe's S6 files (class names only, no logic):** `screens/refilwe/{Dialog,SavingsSummary,SavingsChart,ProfileCard,AccountSettings,Savings,RecentActivity}.jsx`
 
 **Docs:** `docs/PRD.md` §9.1, `docs/IMPLEMENTATION_PLAN.md` §9.1, `docs/screenshots/`
@@ -62,6 +64,7 @@ Visible focus ring on every control, and animations switch off under `prefers-re
 
 ## Known follow-ups
 
+- The original Stitch boards in `docs/designs/` are kept unchanged as the design baseline. Nothing in that folder was edited or removed.
 - The Stitch boards in `docs/designs/` still show the old light theme. Regenerate them from the new tokens, or treat `docs/screenshots/` as the reference.
 - Dark only for now. A light variant is a token override away if the team wants one for daylight use in stores.
 - Login, Sign up and Store Details (#14, #12) are not built yet. They will pick up this look automatically from the shared components.

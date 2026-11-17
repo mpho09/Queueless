@@ -12,7 +12,7 @@ export function SavedThisMonth({ cents, month }) {
       className="flex flex-col gap-1 rounded-card border border-savings/30 bg-linear-to-br from-green-bg to-surface p-5 shadow-[0_24px_60px_-34px_rgb(134_232_176/0.55)] sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:p-6"
     >
       <div>
-        <h2 id={id} className="text-caption font-semibold text-muted sm:text-body">
+        <h2 id={id} className="text-caption font-semibold tracking-wide text-muted uppercase sm:text-body">
           Saved this month
         </h2>
         <p className="font-display text-[34px] leading-10 font-semibold tracking-tight text-savings tabular-nums sm:text-[48px] sm:leading-[56px]">

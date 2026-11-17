@@ -7,7 +7,7 @@ import { formatDate, formatTime, formatZAR } from '../../lib/format.js'
 /** One store's price for a product on S2: name, price, stock, age. The cheapest row is green. */
 export default function StorePriceRow({ listing, cheapest = false, justUpdated = false, cached = false }) {
   const updated = `${formatTime(listing.verifiedAt)}, ${formatDate(listing.verifiedAt)}`
-  const tone = justUpdated ? 'bg-live/5' : cheapest ? 'bg-green-bg' : 'bg-bg'
+  const tone = justUpdated ? 'bg-live/5' : cheapest ? 'bg-green-bg' : 'bg-surface'
 
   return (
     <li className={`flex items-start justify-between gap-3 px-4 py-3 ${tone}`}>

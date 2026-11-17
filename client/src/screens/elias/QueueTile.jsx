@@ -28,11 +28,11 @@ export default function QueueTile({ level, selected, onSelect, disabled = false 
       disabled={disabled}
       onClick={() => onSelect(level)}
       className={`relative flex min-h-32 flex-col items-center justify-center gap-2 rounded-card border-2 px-3 py-4 text-center transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
-        selected ? 'border-primary bg-primary/5' : `border-border bg-bg hover:border-primary/50 max-sm:border-t-4 ${accent}`
+        selected ? 'border-primary bg-primary/5' : `border-border-strong bg-surface hover:border-primary/50 max-sm:border-t-4 ${accent}`
       }`}
     >
       {selected && (
-        <span className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-primary text-white">
+        <span className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-primary text-on-primary">
           <Check aria-hidden="true" className="size-3.5" />
         </span>
       )}

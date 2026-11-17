@@ -159,7 +159,7 @@ export default function ReportSubmission() {
             aria-controls="report-panel"
             onClick={() => setTabId(t.id)}
             className={`min-h-11 rounded-button px-3 text-body font-medium transition-colors ${
-              t.id === tabId ? 'bg-bg text-primary shadow-sm' : 'text-muted hover:text-ink'
+              t.id === tabId ? 'bg-surface-raised text-primary' : 'text-muted hover:text-ink'
             }`}
           >
             {t.label}
@@ -205,8 +205,8 @@ export default function ReportSubmission() {
               onChange={(e) => setPrice(e.target.value)}
               aria-invalid={priceInvalid}
               aria-describedby={priceInvalid ? priceErrorId : undefined}
-              className={`min-h-12 w-full rounded-input border bg-bg px-3 text-body text-ink focus:border-primary ${
-                priceInvalid ? 'border-red' : 'border-border'
+              className={`min-h-12 w-full rounded-input border bg-surface px-3 text-body text-ink focus:border-primary ${
+                priceInvalid ? 'border-red' : 'border-border-strong'
               }`}
             />
             {priceInvalid && (
@@ -231,7 +231,7 @@ export default function ReportSubmission() {
                   aria-checked={stock === option.value}
                   onClick={() => setStock(option.value)}
                   className={`min-h-11 rounded-button border-2 px-4 text-body font-medium transition-colors ${
-                    stock === option.value ? 'border-primary bg-green-bg text-primary' : 'border-border bg-bg text-ink hover:border-primary/50'
+                    stock === option.value ? 'border-primary bg-green-bg text-primary' : 'border-border-strong bg-surface text-ink hover:border-primary/50'
                   }`}
                 >
                   {option.label}
