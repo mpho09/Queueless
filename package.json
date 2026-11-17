@@ -12,7 +12,7 @@
     "dev:server": "npm run dev -w server",
     "build": "npm run build -w client",
     "start": "npm run start -w server",
-    "test": "npm test -w client",
+    "test": "npm test -w client -w server",
     "db:link": "supabase link",
     "db:migration": "supabase migration new",
     "db:check": "supabase db push --remote --dry-run",
