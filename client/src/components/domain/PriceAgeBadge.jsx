@@ -1,7 +1,10 @@
 import { TriangleAlert } from 'lucide-react'
 import { isStale, STALE_LABEL } from '../../utils/priceAge.js'
 
-/** Amber "Unverified for 2 days" pill when a price is over 48 hours old (BR1). Renders nothing otherwise. */
+/**
+ * Amber "Unverified for 2 days" pill when a price is over 48 hours old (BR1). Renders nothing otherwise.
+ * @param {{ verifiedAt: any, now?: any }} props
+ */
 export default function PriceAgeBadge({ verifiedAt, now }) {
   if (!isStale(verifiedAt, now)) return null
   return (

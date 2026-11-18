@@ -12,11 +12,16 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * @param {string} path
+ * @param {{ method?: string, body?: any, headers?: Record<string, string> }} [options]
+ */
 export async function api(path, { method = 'GET', body, headers = {} } = {}) {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     throw new ApiError(messages.offline, 0, 'OFFLINE')
   }
 
+  /** @type {Record<string, string>} */
   const finalHeaders = { Accept: 'application/json', ...headers }
   if (body !== undefined) finalHeaders['Content-Type'] = 'application/json'
 

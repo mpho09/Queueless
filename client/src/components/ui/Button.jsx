@@ -9,7 +9,10 @@ const variants = {
   danger: 'bg-red text-white hover:bg-[#9F1F1F] active:bg-[#9F1F1F]',
 }
 
-/** Capsule button from the design system (24px radius, 48px min height). Pass `to` to render a link. */
+/**
+ * Capsule button from the design system (24px radius, 48px min height). Pass `to` to render a link.
+ * @param {{ variant?: string, to?: string, className?: string, type?: "button" | "submit" | "reset", [key: string]: any }} props
+ */
 export default function Button({ variant = 'primary', to, className = '', type = 'button', ...props }) {
   const classes = `${base} ${variants[variant]} ${className}`
   if (to) return <Link to={to} className={classes} {...props} />

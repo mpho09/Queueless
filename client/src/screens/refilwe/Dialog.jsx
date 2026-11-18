@@ -3,13 +3,14 @@ import { useEffect, useId, useRef } from 'react'
 /**
  * Centred confirm modal, or a bottom sheet on mobile (`sheet`), over a dimmed page.
  * Escape or a tap on the dimmed area closes it; focus moves in and back out again.
+ * @param {{ title: any, titleIcon?: any, onClose: () => void, sheet?: boolean, children?: any }} props
  */
 export default function Dialog({ title, titleIcon, onClose, sheet = false, children }) {
   const titleId = useId()
   const panelRef = useRef(null)
 
   useEffect(() => {
-    const previous = document.activeElement
+    const previous = /** @type {HTMLElement | null} */ (document.activeElement)
     panelRef.current?.querySelector('button, a[href]')?.focus()
 
     function onKeyDown(e) {

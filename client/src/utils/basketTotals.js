@@ -5,11 +5,11 @@ const toCents = (rands) => Math.round(Number(rands) * 100)
 const toRands = (cents) => cents / 100
 
 /**
- * @param {{ productId: string, quantity: number }[]} items  the basket
- * @param {{ products: object[], stores: object[], listings: object[] }} prices
+ * @param {readonly { productId: string, quantity: number }[]} items  the basket
+ * @param {{ products?: any[], stores?: any[], listings?: any[] }} [prices]
  *   products: { id, name }, stores: { id, name, suburbName?, queueLevel? },
  *   listings: { productId, storeId, price, stockStatus }
- * @returns {{ stores: object[], cheapest: object|null, saving: number|null }}
+ * @returns {{ stores: any[], cheapest: any, saving: number|null }}
  *   Each store: total, available[], missing[], complete, cheapest, difference (vs the cheapest complete store).
  */
 export function basketTotals(items, { products = [], stores = [], listings = [] } = {}) {

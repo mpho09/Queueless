@@ -112,6 +112,7 @@ export default function Home() {
   )
 }
 
+/** @param {{ id: string, aside?: any, children?: any }} props */
 function SectionHeading({ id, aside, children }) {
   return (
     <div className="mb-3 flex items-center justify-between gap-4 sm:mb-5 sm:border-b sm:border-border sm:pb-3">

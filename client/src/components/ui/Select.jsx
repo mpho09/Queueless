@@ -1,7 +1,10 @@
 import { useId } from 'react'
 import { ChevronDown } from 'lucide-react'
 
-/** Labelled native select (48px tall, 6px radius). `hint` shows under the field. */
+/**
+ * Labelled native select (48px tall, 6px radius). `hint` shows under the field.
+ * @param {{ label: any, hint?: any, hintIcon?: any, options: any[], value?: any, onChange: (value: string) => void, placeholder?: any, className?: string, [key: string]: any }} props
+ */
 export default function Select({ label, hint, hintIcon, options, value, onChange, placeholder, className = '', ...props }) {
   const id = useId()
   const hintId = `${id}-hint`

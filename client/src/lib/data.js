@@ -49,7 +49,7 @@ export async function fetchNearbyStores(suburbId) {
     id: s.id,
     name: s.name,
     suburbId: s.suburb_id,
-    suburbName: s.suburbs?.name ?? '',
+    suburbName: /** @type {any} */ (s.suburbs)?.name ?? '',
     queueLevel: levels[s.id] ?? 'unknown',
   }))
 }
@@ -101,7 +101,8 @@ export async function fetchBasketPrices(productIds) {
 
   const storesById = new Map()
   for (const l of listingsRes.data) {
-    if (l.stores) storesById.set(l.stores.id, l.stores)
+    const store = /** @type {any} */ (l.stores)
+    if (store) storesById.set(store.id, store)
   }
   const levels = await fetchQueueLevels([...storesById.keys()])
 
