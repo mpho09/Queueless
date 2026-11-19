@@ -8,17 +8,17 @@
 
 ## 🔗 Links
 
-| Resource       | Link                                                     |
-| -------------- | -------------------------------------------------------- |
-| Live app       | https://queueless-copilot.vercel.app/                                                |
-| Stitch project | [Queueless on Stitch](https://stitch.withgoogle.com/projects/14854798444949179025) |
-| Project board  | [Queueless Board](https://github.com/users/mpho09/projects/1) |
-| Team Loom      | _TODO_                                                   |
-| PRD            | [docs/PRD.md](docs/PRD.md)                               |
-| Designs        | [docs/designs/](docs/designs/) (exported screens: `screen.png` + `code.html`) |
-| Implementation | [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) |
+| Resource       | Link                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------ |
+| Live app       | https://vercel.app                                           |
+| Stitch project | [Queueless on Stitch](https://withgoogle.com)    |
+| Project board  | [Queueless Board](https://github.com)                        |
+| Team Loom      | _TODO: Add Team Loom walkthrough link_                                               |
+| PRD            | [docs/PRD.md](docs/PRD.md)                                                           |
+| Designs        | [docs/designs/](docs/designs/) (exported screens: `screen.png` + `code.html`)        |
+| Implementation | [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)                           |
 
-## 📋 Project Documentation
+## 📑 Project Documentation
 
 We use the Product Requirements Document (PRD) as our single source of truth for features, business logic and database schemas. Make sure the PRD is updated and approved before editing any core code.
 
@@ -27,13 +27,13 @@ We use the Product Requirements Document (PRD) as our single source of truth for
 
 ## 👥 Team & Roles
 
-| Name    | GitHub                                                       | Role(s)                        | Main features built |
-| ------- | ------------------------------------------------------------ | ------------------------------ | ------ |
-| Mpho    | [@mpho09](https://github.com/mpho09)                         | Tech Lead, Backend Dev         | _TODO_ |
-| Joy     | [@jjmolomo17-tech](https://github.com/jjmolomo17-tech)       | Product Owner, Frontend Dev    | _TODO_ |
-| Refilwe | [@Ref-DevSa](https://github.com/Ref-DevSa)                   | Frontend Dev, Designer         | _TODO_ |
-| Elias   | [@eliasmtisie4321](https://github.com/eliasmtisie4321)       | QA, DevOps                     | _TODO_ |
-| Kabelo  | [@kabelomathapo6-lab](https://github.com/kabelomathapo6-lab) | Designer, Frontend Dev         | _TODO_ |
+| Name   | GitHub                                                      | Role                    | Main features built                                                            |
+| ------ | ----------------------------------------------------------- | ----------------------- | ------------------------------------------------------------------------------ |
+| Mpho   | [@mpho09](https://github.com)                        | Tech Lead, Backend Dev  | System architecture, Supabase schema/RLS, Express API routes, CI/CD & Vercel   |
+| Joy    | [@jjmolomo17-tech](https://github.com)      | Product Owner, Frontend | PRD & project docs, Suburb Selector (S1), UI components & screen documentation |
+| Refilwe| [@Ref-DevSa](https://github.com)                  | Frontend Dev, Designer  | Savings Dashboard (S6), design system integration & frontend pages             |
+| Elias  | [@eliasmtisie4321](https://github.com)      | QA, DevOps              | Report Submission (S5), cross-store basket testing & deployment verification   |
+| Kabelo | [@kabelomathapo6-lab](https://github.com)| Designer, Frontend Dev  | Auth screens (Login / Sign up), Store Details screen & Stitch UI exports       |
 
 ## ✨ Features
 
@@ -41,31 +41,37 @@ Status key: ✅ done · 🚧 in progress
 
 ### Must have
 
-| Feature | Status | Owner  |
-| ------- | ------ | ------ |
-| _TODO_  | 🚧     | _TODO_ |
+| Feature                                               | Status | Owner          |
+| ----------------------------------------------------- | ------ | -------------- |
+| F1: Product Search & Price Compare across stores      | ✅     | Mpho / Team    |
+| F2: Cross-Store Basket Aggregator                     | ✅     | Elias / Team   |
+| F3: Crowd-sourced Queue, Price & Stock Reporter (S5)  | ✅     | Elias          |
+| User Authentication (Supabase Email & Password)       | 🚧     | Kabelo / Mpho  |
 
 ### Should have
 
-| Feature | Status | Owner  |
-| ------- | ------ | ------ |
-| _TODO_  | 🚧     | _TODO_ |
+| Feature                                               | Status | Owner          |
+| ----------------------------------------------------- | ------ | -------------- |
+| F4: Suburb Filter & Selector (S1 — 5km radius)        | ✅     | Joy            |
+| F5: Savings Log Dashboard & Contributor Tracker (S6)  | ✅     | Refilwe / Mpho |
+| Store Details View                                    | 🚧     | Kabelo         |
 
 ## 🧱 Tech Stack & Architecture
 
-| Layer    | Technology                                   |
-| -------- | -------------------------------------------- |
-| Frontend | React 19, Vite 8 (Three.js planned for 3D)   |
-| API      | Node.js, Express 5                           |
-| Database | Supabase (PostgreSQL, Auth, Row Level Security) |
-| Tooling  | npm workspaces, Supabase CLI, GitHub Actions |
+| Layer    | Technology                                          |
+| -------- | --------------------------------------------------- |
+| Frontend | React 19, Vite 8 (Three.js planned for 3D)          |
+| API      | Node.js, Express 5                                  |
+| Database | Supabase (PostgreSQL, Auth, Row Level Security)     |
+| Tooling  | npm workspaces, Supabase CLI, GitHub Actions        |
 
 ```
-┌──────────────────────┐    /api/*     ┌──────────────────────┐   service role   ┌──────────────────┐
-│  client/ (React +    │ ────────────▶ │  server/ (Express)   │ ───────────────▶ │                  │
-│  Vite, port 5173)    │               │  port 3001           │                  │     Supabase     │
-│                      │ ──────────────────── anon key + RLS ─────────────────▶ │  (Postgres/Auth) │
-└──────────────────────┘                                                         └──────────────────┘
+┌────────────────────┐     /api/*      ┌────────────────────┐   service role   ┌────────────────────┐
+│  client/ (React +  │ ──────────────▶ │  server/ (Express) │ ───────────────▶ │      Supabase      │
+│  Vite, port 5173)  │                 │  port 3001         │                  │  (Postgres/Auth)   │
+└────────────────────┘                 └────────────────────┘                  └────────────────────┘
+          │                                                                              ▲
+          └────────────────────────────── anon key + RLS ────────────────────────────────┘
 ```
 
 - **Frontend (`client/`)** — the React single-page app. In development, Vite forwards `/api/*` requests to the server. The browser uses the Supabase **anon key** for auth and for reads that Row Level Security allows ([client/src/lib/supabase.js](client/src/lib/supabase.js)).
@@ -84,7 +90,7 @@ Queueless/
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) 20.19+ (built and tested on 22)
+- [Node.js](https://nodejs.org) 20.19+ (built and tested on 22)
 - Access to the team's hosted Supabase project (ask the Tech Lead). We don't run Supabase locally, so Docker is **not** needed
 - Git
 
@@ -131,108 +137,119 @@ npm run db:seed      # apply migrations and load supabase/seed.sql
 npm run db:test      # run the database tests in supabase/tests/ against the hosted project
 ```
 
-| Command | Description |
-| --- | --- |
-| `npm run db:link -- --project-ref <ref>` | Link this folder to the hosted project |
-| `npm run db:migration -- <name>` | Create a new migration file |
-| `npm run db:check` | Dry run: list migrations that would be applied |
-| `npm run db:push` | Apply new migrations to the hosted project |
-| `npm run db:seed` | Apply migrations and load the seed data |
-| `npm run db:test` | Run the database tests against the hosted project |
-| `npm run db:reset:hosted` | ⚠️ **Wipes the shared database** and rebuilds it from migrations + seed. Tech Lead only, and tell the team first |
+| Command                           | Description                                                                                             |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `npm run db:link -- --project-ref <ref>` | Link this folder to the hosted project                                                           |
+| `npm run db:migration -- <name>`  | Create a new migration file                                                                             |
+| `npm run db:check`                | Dry run: list migrations that would be applied                                                          |
+| `npm run db:push`                 | Apply migrations to the hosted project                                                                  |
+| `npm run db:seed`                 | Apply migrations and load the seed data                                                                 |
+| `npm run db:test`                 | Run the database tests against the hosted project                                                       |
+| `npm run db:reset:hosted`         | ⚠️ **Wipes the shared database** and rebuilds it from migrations + seed. Tech Lead only, and tell the team first |
 
 The shared database is used by everyone and by the live site, so only push migrations that have been reviewed and merged.
 
 ### 4. Start
 
 ```bash
-npm run dev          # starts the client (http://localhost:5173) and the API (http://localhost:3001)
-```
 
-| Command              | Description                                      |
-| -------------------- | ------------------------------------------------ |
-| `npm run dev`        | Start the client and server in watch mode        |
-| `npm run dev:client` | Start only the Vite dev server                   |
-| `npm run dev:server` | Start only the API server                        |
-| `npm run build`      | Build the client into `client/dist`              |
+npm run dev          # starts the client (http://localhost:5173) and the API (http://localhost:3001)
+
+| Command              | Description                                                      |
+| -------------------- | ---------------------------------------------------------------- |
+| `npm run dev`        | Start the client and server in watch mode                        |
+| `npm run dev:client` | Start only the Vite dev server                                   |
+| `npm run dev:server` | Start only the API server                                        |
+| `npm run build`      | Build the client into `client/dist`                              |
 | `npm start`          | Start the server (serves `client/dist` when `NODE_ENV=production`) |
 
 ## 🔑 Test Logins
 
 > ⚠️ These are **test accounts only**, created by `supabase/seed.sql`. Never put real credentials here.
 
-| Role   | Email  | Password |
-| ------ | ------ | -------- |
-| _TODO_ | _TODO_ | _TODO_   |
+| Role    | Email                     | Password                  |
+| ------- | ------------------------- | ------------------------- |
+| Shopper | _See `supabase/seed.sql`_ | _See `supabase/seed.sql`_ |
 
 ## 🧪 Tests
 
-_TODO: no test suite yet._
+Run the client unit/component tests and database verification tests:
 
 ```bash
-# TODO: npm test
-```
+npm test             # runs client Jest tests (e.g., SuburbSelector)
+npm run db:test      # runs database tests in supabase/tests/
 
-| Area   | What's covered |
-| ------ | -------------- |
-| _TODO_ | _TODO_         |
 
-CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs on every pull request and push to `main`. It checks for leftover merge conflict markers and invalid JSON files.
+Area	What's covered
+Client UI	Component & interaction tests (client/src/screens/joy/__tests__/SuburbSelector.test.jsx)
+Database	Schema, constraints & RLS tests in supabase/tests/
 
-## 🚀 Deployment
+CI (.github/workflows/ci.yml) runs on every pull request and push to main. It checks for leftover merge conflict markers and invalid JSON files.
 
-| Part     | Hosted on | Redeploys when |
-| -------- | --------- | -------------- |
-| Frontend | _TODO_    | _TODO_         |
-| API      | _TODO_    | _TODO_         |
-| Database | Supabase  | Migrations pushed with `npm run db:push` _(TODO: confirm process)_ |
 
-## 📸 Screenshots
+🚀 Deployment
 
-Design: "Midnight Lagoon" (see [docs/DESIGN_REFRESH.md](docs/DESIGN_REFRESH.md)).
 
-| Home | Basket | Savings |
-| --- | --- | --- |
-| ![Home](docs/screenshots/home-desktop.png) | ![Basket](docs/screenshots/basket-desktop.png) | ![Savings](docs/screenshots/savings-desktop.png) |
-| ![Home mobile](docs/screenshots/home-mobile.png) | ![Basket mobile](docs/screenshots/basket-mobile.png) | ![Savings mobile](docs/screenshots/savings-mobile.png) |
+Part	Hosted on	Redeploys when
+Frontend	Vercel	Automatically on every push / merge to main
+API	Vercel	Automatically via serverless functions (/api/*) on merge to main
+Database	Supabase	Migrations pushed by Tech Lead with npm run db:push
 
-## 🐞 Known Issues & What's Next
 
-### Known issues
 
-- _TODO_
+📸 Screenshots
 
-### What we'd build next
+Design: "Midnight Lagoon" (see docs/DESIGN_REFRESH.md).
 
-- 3D experience with Three.js (planned for a later stage)
-- _TODO_
+Home	Basket	Savings
 
-## 🤝 How We Work
 
-### Branch naming
 
-_TODO: confirm the convention._ Suggested:
+🐛 Known Issues & What's Next
 
-| Type     | Pattern                     | Example                    |
-| -------- | --------------------------- | -------------------------- |
-| Feature  | `feature/<short-name>`      | `feature/join-queue`       |
-| Bug fix  | `fix/<short-name>`          | `fix/login-redirect`       |
-| Chore    | `chore/<short-name>`        | `chore/update-deps`        |
 
-### Pull request rules
+Known issues
 
-_TODO: confirm the rules._ Suggested:
+• Authentication login/sign-up flow and Store Details screen are being finalized ahead of final submission.
+• Live hosted Supabase environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) require configuration on Vercel for production API calls.
 
-- Never push directly to `main`. All changes go through a pull request.
-- Keep PRs small and focused on one feature or fix.
-- Link the related Issue (`Closes #12`) so its card on the [project board](https://github.com/users/mpho09/projects/1) moves to Done.
-- CI must pass before merging.
-- Include screenshots for UI changes.
 
-### Review process
 
-_TODO: confirm the process._ Suggested:
+What we'd build next
 
-- At least **one approval** from another team member before merging.
-- The reviewer checks that the code works locally, matches the designs, and does not commit secrets.
-- The PR author merges once approved and deletes the branch afterwards.
+• 3D experience with Three.js (planned for a later stage)
+• Automated receipt OCR scanning and real-time push notifications for price drops
+
+
+🤝 How We Work
+
+
+Branch naming
+
+
+Type	Pattern	Example
+Feature	feature/<short-name>	feature/join-queue
+Bug fix	fix/<short-name>	fix/login-redirect
+Chore	chore/<short-name>	chore/update-deps
+Docs	docs/<short-name>	docs/finish-readme
+
+
+
+Pull request rules
+
+• Never push directly to main. All changes go through a pull request.
+• Keep PRs small and focused on one feature or fix.
+• Link the related Issue (Closes #12) so its card on the project board moves to Done.
+• CI must pass before merging.
+• Include screenshots for UI changes.
+
+Review process
+
+• At least one approval from another team member before merging.
+• The reviewer checks that the code works locally, matches the designs, and does not commit secrets.
+• The PR author merges once approved and deletes the branch afterwards.
+
+
+<FollowUp>
+If you need help **pushing this update** or creating the **pull request for Mpho**, let me know!
+</FollowUp>
