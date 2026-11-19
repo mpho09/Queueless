@@ -183,9 +183,19 @@ CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs on every pull req
 
 | Part     | Hosted on | Redeploys when |
 | -------- | --------- | -------------- |
-| Frontend | _TODO_    | _TODO_         |
-| API      | _TODO_    | _TODO_         |
+| Frontend | Vercel ([live app](https://queueless-copilot.vercel.app/)) | Every push to `main` (pull requests get a preview link) |
+| API      | Vercel serverless function ([api/index.js](api/index.js) runs the Express app, routed by [vercel.json](vercel.json)) | Every push to `main`, together with the frontend |
 | Database | Supabase  | Migrations pushed with `npm run db:push` _(TODO: confirm process)_ |
+
+**Environment variables on Vercel** (Project → Settings → Environment Variables; they only apply on the next deploy):
+
+| Variable | Used by | Notes |
+| -------- | ------- | ----- |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Browser (build time) | Public values. |
+| `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | API | Secret. Never give the service role key a `VITE_` prefix. |
+| `RESEND_API_KEY`, `EMAIL_FROM` | API | Optional; without a key, emails are logged instead of sent. |
+
+To check a deploy, open `/api/health`: it should return `"database":"configured"`.
 
 ## 📸 Screenshots
 
