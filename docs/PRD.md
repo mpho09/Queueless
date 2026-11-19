@@ -249,8 +249,8 @@ flowchart TD
 ### 10.4 Reference and seed data
 * **Reference Data**: Global suburb catalogs mapping localized South African municipal nodes (e.g. "Hatfield", "Arcadia", "Benoni") must exist before student registration tasks open. Managed cleanly by structural administrators natively inside production storage layers.
 * **Seed Testing Profiles**: 
-  * Shopper Account: `tester.joy@queueless.co.za` $\rightarrow$ Password string: `JoyPass2026!`.
-  * Developer Backend Account: `mpho.dev@queueless.co.za` $\rightarrow$ Password string: `MphoLeadBackend2026#`.
+    * Shopper Account: `tester.joy@queueless.co.za` (seed credentials stored in `supabase/seed.sql`).
+  * Developer Backend Account: `mpho.dev@queueless.co.za` (seed credentials stored in `supabase/seed.sql`).
 
 ---
 
@@ -393,99 +393,7 @@ Queueless processes and stores user data tokens in accordance with South Africa'
 
 ---
 
-## 14. Using your PRD with AI
 
-### Step 0: Style guide first (in your AI design tool)
-*Paste Section 9 and Section 8.3, then run this prompt:*
-```text
-You are a senior UI designer. Using ONLY the design values and shared components I pasted, create a one-page style guide for my app "Queueless": colour swatches with hex codes, the text sizes, spacing, buttons (primary, secondary, danger, disabled), text fields (normal, focused, error), cards, header, tab bar or menu, toast, offline banner and empty-state block. Do not design any app screens yet. Do not add colours, fonts or components I did not list.
-```
-
-### Step 1: Generate screens, one at a time
-*Paste Sections 2.1, 8.1, 8.4, 9, and the specific 8.2 spec for the target screen, then run this prompt:*
-```text
-You are a senior UI/UX designer. Design screen "[S# Screen name]" for my web app at 360 px responsive mobile width and 1200 px desktop layout wide frames.
-- Reuse the style guide and shared components exactly. Keep the header and tab bar identical to my other screens.
-- Include every element in the order listed in the spec. Use the exact labels, placeholder text and messages in quotation marks.
-- Fill the screen with the sample content given. Use South African names, places, rand and dates. Never use lorem ipsum.
-- Design the Normal state first, then one extra frame for each other state in the spec (Empty, Loading, Error, Offline, Success).
-- Do not invent features, buttons, screens or text. If something you need is missing, put a grey box labelled "TODO: [what is missing]" and list all TODOs under the design.
-```
-
-### Step 2: Generate MASTER.md (in a chat AI that accepts files, e.g. Claude)
-*Attach your whole PRD and links to your final screens, then run this prompt:*
-```text
-You are a senior software engineer. Using the attached PRD, write MASTER.md: the build plan an AI coding assistant will follow to build this app from an empty folder. Use the PRD's IDs (F#, BR#, US#, S#, M#, T-…) everywhere. Include, in this order:
-1. Summary and scope: product, users, Must and Should features, non-goals, and a "Deferred" list of future features that must NOT be built.
-
-
-
-2. Tech stack with versions, folder structure, and exact setup and install commands.
-3. .env.example with every variable from Section 11.5, marked public or secret.
-4. Database: every entity, field, type, default, uniqueness rule, delete behaviour, relationship and status change from Section 10, written as migration steps.
-5. Permissions: one rule per row of Section 11.4, enforced in the database or server.
-6. Business rules: every BR# with step-by-step logic (pseudocode), and where it runs.
-7. Accounts: every decision in Section 5.
-8. Navigation: every screen and route from Sections 7.2 and 8.1, and which ones show the tab bar.
-9. Design tokens: every value in Section 9 as named tokens; shared components from 8.3.
-10. Notifications (4.5), error messages (12.2), and quality, security and privacy rules (12).
-11. Seed data and test accounts from Section 10.4.
-12. Build phases:
-• Phase 1 is always: setup, folder structure, tokens, .env.example, database and seed data, and one screen that runs.
-• Each later phase covers 1 or 2 features, all Must before any Should, and ends with an app that runs.
-• Each phase lists its F#, US#, S# and BR#, the files to create, and a Definition of Done made of the T- criteria it covers, as checkboxes.
-13. Testing checklist: every T- criterion as a checkbox, marked manual or automated.
-Rules: do not add anything that is not in the PRD. If the PRD is unclear or contradicts itself, list it under "Clarifications needed" at the top and STOP: do not write the build phases until I answer. State at the top: "Built from PRD version [vX.X]".
-```
-
-## 3. Goals, success metrics and non-goals
-
-### 3.1 Goals
-Each goal maps to a quantitative target value that can be validated via system event logging counters or controlled group testing sweeps.
-
-| # | Goal | Metric (what you count) | Target | How you will check it |
-| :--- | :--- | :--- | :--- | :--- |
-| **G1** | Accelerate user product lookup performance | Time elapsed from hitting the submission trigger to rendering matched results inline. | Under 2.0 seconds | Automated client-side telemetry using standard browser performance monitoring hooks. |
-| **G2** | Maximize user community engagement indices | Percentage of active registered shoppers who submit at least 2 crowd-sourced reports monthly. | 40% of unique profiles | Database metrics aggregated from the `ReportLog` transaction tables. |
-| **G3** | Deliver clear, measurable consumer savings | Aggregated price margin gap between targeted cheapest store basket vs worst-case retail alternatives. | Average R150 saved monthly per shopper | Automated script comparison matching checked basket histories against baseline matrix highs. |
-
-### 3.2 Non-goals
-* **No dynamic routing or map visuals**: To minimize cellular data package overheads on low-tier smartphones, the app handles location sorting via simple suburban pick-lists and static distance text blocks rather than heavy embedded map APIs.
-* **No internal payment settlement structures**: Queueless does not process commercial transaction checkouts or coordinate fulfillment logistics; it acts completely as a physical pre-trip planning utility guide.
-* **No automatic receipt optical recognition**: Community price contributions run on simple numerical input keypads instead of machine-learning image processing routines.
-
----
-
-## 4. Features, business rules and notifications
-
-### 4.1 Feature list
-
-| ID | Feature name | What the user can do (list every action) | Priority | Goal (G#) | Stories (US#) | Screens (S#) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **F1** | Product Search & Price Compare | Look up items via name keywords; browse matching catalog items; check real-time price variances ranked lowest-first. | Must | G1 | US1 | S1, S2, S3 |
-| **F2** | Cross-Store Basket Aggregator | Build a virtual product checklist; analyze aggregated gross total costs side-by-side across nearby competing branches. | Must | G3 | US2 | S2, S4 |
-| **F3** | Crowd-sourced Queue Level Reporter | Tap a physical branch storefront profile; choose a checkout congestion level bucket; instantly transmit update entries. | Must | G2 | US3 | S3, S5 |
-| **F4** | Suburb Filter Settings | Choose a specific local shopping suburb to ground product price fields within a relevant geographic area. | Should | G1 | US4 | S1, S2 |
-| **F5** | Savings Log Dashboard | Inspect rolling monthly financial performance summaries and track accumulated points tallies on a personalized profile grid. | Should | G3 | US5 | S6 |
-
-### 4.2 MVP definition
-A responsive web application enabling consumers to search for a product catalog item, compare local prices across at least 3 nearby physical stores, compile items inside an aggregate basket list to locate the lowest-cost gross checkout destination, and submit a 1-tap update on live line wait time intervals.
-
-### 4.3 Future features
-* Built-in client-side barcode scanning utility utilizing native smartphone camera feeds.
-* Conversational interactive WhatsApp integration bot for immediate remote pricing inquiries.
-* Watchlist trigger alerts dispatching push updates when monitored staple items experience a localized drop of more than 15%.
-
-### 4.4 Business rules
-
-| ID | Rule (exact logic, numbers and limits) | Used by (F#, S#) |
-| :--- | :--- | :--- |
-| **BR1** | **Price Age Warning Flag**: Any indexed product price mapping that has not received a verified refresh statement for over 48 hours must inject an amber caution exclamation badge reading: `"Unverified for 2 days"`. | F1, S2, S3 |
-| **BR2** | **Reporter Throttling Caps**: To block data spam loops, a single shopper profile is limited to a maximum threshold of 5 checkout queue entries and 3 item price updates per physical store location inside a rolling 60-minute window. | F3, S5 |
-| **BR3** | **Incomplete Basket Penalty Mitigation**: If a competitive retail outlet does not stock a specific item included in a user's multi-product composite basket, the aggregator component must flag that row panel with `"Missing 1 Item"`, computing sums strictly across its available intersection set. | F2, S4 |
-| **BR4** | **Queue Metric Time Decay Weighting**: The public store checkout queue marker status calculates automatically via a time-weighted database formula where shopper updates submitted within the last 15 minutes hold an 80% weight coefficient, decaying down linearly to 0% weight weight over a 2-hour window. | F1, F3, S3 |
-
----
 
 ## 15. Submission checklist
 
