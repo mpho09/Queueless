@@ -26,7 +26,7 @@ The PRD and the Stitch designs leave these open. This plan uses the **Proposed d
 | D8 | No **Privacy Notice** page content. | PRD §12.4 | Route `/privacy` with a TODO content block. You write the text. |
 | D9 | **Contributor level** names and thresholds are undefined. | S6 | Keep the grey `TODO: contributor level names and thresholds` box from Stitch. |
 | D10 | **Admin and Retailer dashboards** (Feature 7) and the **retailer catalog-sync email** have no screens. | PRD §4, §4.5 | **Deferred.** Retailer sign-ups are created and approved manually in Supabase. |
-| D11 | **Per-account lockout** (5 wrong passwords → 15 min) is not built into Supabase Auth. | PRD §5 | Express route `POST /api/auth/login` counts failures in a `login_attempts` table, then signs in and returns the session to the client. |
+Express route `POST /api/auth/login` counts failures in a `login_attempts` table, then signs in and returns the session to the client. |
 | D12 | PRD says **Jest 29.7**. Vite projects normally use Vitest. | PRD §11.1 | Use **Jest 29.7** as the PRD says (with `babel-jest`), in both workspaces. |
 | D13 | Libraries the PRD doesn't name but the app needs. | — | Client: `react-router` v7 (routes), `@tanstack/react-query` v5 + persister (caching and offline), `lucide-react` (icons). Server: `resend` (email), `node-cron` (scheduled emails). Nothing else. |
 | D14 | PRD §11.1 says "Supabase JS client, no custom middleware", but the repo has an **Express API** (`server/`). | PRD §11.1, README | Keep both. The **client** reads data directly from Supabase (anon key + RLS). The **server** handles only what needs a secret or a schedule: login lockout, account deletion, emails, scheduled jobs. Business rules that protect data (BR2, verification) live in the **database**, so they hold no matter which path writes. |
@@ -131,7 +131,6 @@ Queueless/
 │       ├── lib/supabase.js               (exists)
 │       ├── lib/email.js                  # Resend wrapper
 │       ├── middleware/requireUser.js     # checks the Bearer token with supabase.auth.getUser()
-│       ├── routes/auth.js                # POST /api/auth/login (lockout, D11)
 │       ├── routes/account.js             # POST /api/account/delete
 │       ├── jobs/priceDrop.js             # hourly basket price-drop email (node-cron)
 │       └── __tests__/
@@ -263,11 +262,7 @@ create table notifications (      -- PRD §4.5 in-app
   created_at timestamptz not null default now()
 );
 
-create table login_attempts (     -- D11
-  email text primary key,
-  failed_count int not null default 0,
-  locked_until timestamptz
-);
+
 
 create index on listings(product_id);
 create index on listings(store_id);
@@ -390,7 +385,7 @@ The client sends the device's approximate coordinates, if the user allows it. If
 | Email verification | `supabase/config.toml` → `[auth.email] enable_confirmations = true` (currently `false`). Unverified users are routed to A4 after sign-up and can browse but not save or report. RLS blocks their writes. |
 | Password rules | `≥8 chars, ≥1 uppercase, ≥1 number`, checked in `validation.js`. In `config.toml` set `minimum_password_length = 8` (currently 6) and `password_requirements = "lower_upper_letters_digits"` (the closest built-in option; it also requires a lowercase letter, so show that in the A2 helper text or rely on client validation only). Show/hide eye icon. |
 | Forgot password | A3 → `resetPasswordForEmail(email, { redirectTo: '<site>/reset-password' })`. `config.toml` already has `otp_expiry = 3600` (1 hour). Set `site_url = "http://127.0.0.1:5173"` (currently port 3000) and add `/reset-password` to `additional_redirect_urls`. |
-| Lockout | `POST /api/auth/login` in `server/` (D11): if `locked_until` is in the future, return the lock message; otherwise call `signInWithPassword`. 5 consecutive failures → `locked_until = now() + 15 min` → A1 shows `"Account locked for 15 minutes after 5 incorrect attempts."`. Success resets the count and returns the session; the client calls `supabase.auth.setSession()`. |
+lock message; otherwise call `signInWithPassword`. 5 consecutive failures → `locked_until = now() + 15 min` → A1 shows `"Account locked for 15 minutes after 5 incorrect attempts."`. Success resets the count and returns the session; the client calls `supabase.auth.setSession()`. |
 | Stay logged in 30 days | Supabase Auth sessions: time-box and inactivity timeout 30 days (`[auth.sessions]` in `config.toml`, and the same in the hosted dashboard). |
 | Log out | S6 profile tray → modal "Log out of Queueless?" → `signOut()` → S1. |
 | Delete account | S6 → modal (exact PRD text) → `POST /api/account/delete` marks `profiles.deletion_requested_at`; a pg_cron job (migration `cron`) hard-deletes the auth user (cascades) within 7 days. |
