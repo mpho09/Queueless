@@ -4,7 +4,7 @@ import Home from './pages/Home.jsx'
 import Basket from './pages/Basket.jsx'
 import Savings from './screens/refilwe/Savings.jsx'
 import ReportSubmission from './screens/elias/ReportSubmission.jsx'
-import StorePlaceholder from './screens/elias/StorePlaceholder.jsx'
+import StoreDetails from './screens/mpho/StoreDetails.jsx'
 import StoresList from './screens/elias/StoresList.jsx'
 import SearchResults from './screens/mpho/SearchResults.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
@@ -19,7 +19,7 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="search" element={<SearchResults />} />
         <Route path="stores" element={<StoresList />} />
-        <Route path="stores/:storeId" element={<StorePlaceholder />} />
+        <Route path="stores/:storeId" element={<StoreDetails />} />
         <Route path="stores/:storeId/report" element={<ReportSubmission />} />
         <Route path="basket" element={<Basket />} />
         <Route path="savings" element={<Savings />} />

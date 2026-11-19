@@ -1,5 +1,7 @@
-// Calls for S6. Plan §7: delete account is POST /api/account/delete; log out is supabase signOut().
+// Calls for S6. Plan §7: delete account is POST /api/account/delete; log out goes through
+// authStore (#14), so the header and every screen see the user leave straight away.
 import { api, ApiError } from '../../lib/api.js'
+import { authStore } from '../../lib/authStore.js'
 import { messages } from '../../lib/messages.js'
 import { isDev, supabase } from '../../lib/supabase.js'
 import { sampleSavings } from './sampleSavings.js'
@@ -22,11 +24,9 @@ export async function fetchSavings() {
   }
 }
 
+/** Without Supabase (development with the sample shopper) there is nobody to log out. */
 export async function logOut() {
-  if (supabase) {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-  }
+  if (supabase) await authStore.logOut()
 }
 
 /** Marks the account for deletion; a scheduled job removes it within 7 days (plan §7). */

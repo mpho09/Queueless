@@ -2,6 +2,8 @@
 // (src/lib/sampleData.js) when it isn't. If a table is missing, sample data is used in development
 // only; on the live site the error is shown instead, so fake stores never reach real users.
 import { isDev, supabase } from './supabase.js'
+import { ApiError } from './api.js'
+import { messages } from './messages.js'
 import { sampleListings, sampleProducts, sampleStores, sampleSuburbs } from './sampleData.js'
 
 // Postgres / PostgREST codes for "table or view does not exist"
@@ -20,8 +22,16 @@ function isSampleId(id) {
   return typeof id === 'string' && id.startsWith('sample-')
 }
 
+// On the live site a missing Supabase config is an error, never a reason to show sample data.
+function notConfigured() {
+  return new ApiError(messages.serverError, 0, 'NOT_CONFIGURED')
+}
+
 export async function fetchSuburbs() {
-  if (!supabase) return sampleSuburbs
+  if (!supabase) {
+    if (isDev) return sampleSuburbs
+    throw notConfigured()
+  }
   const { data, error } = await supabase.from('suburbs').select('id, name, city').order('name')
   if (error) {
     if (shouldUseSample(error)) return sampleSuburbs
@@ -32,7 +42,9 @@ export async function fetchSuburbs() {
 
 export async function fetchNearbyStores(suburbId) {
   if (!supabase || isSampleId(suburbId)) {
-    return sampleStores.filter((s) => !suburbId || s.suburbId === suburbId)
+    if (isDev) return sampleStores.filter((s) => !suburbId || s.suburbId === suburbId)
+    if (!supabase) throw notConfigured()
+    suburbId = null // a sample suburb left in the browser from development: show all stores
   }
 
   let query = supabase.from('stores').select('id, name, suburb_id, suburbs(name)').order('name')
@@ -54,7 +66,8 @@ export async function fetchNearbyStores(suburbId) {
   }))
 }
 
-// BR4 queue level per store; until the view exists (#12) every store shows Unknown.
+// BR4 queue level per store from the view store_queue_status (#12, migration queue_view).
+// If the view isn't pushed yet, every store shows Unknown.
 async function fetchQueueLevels(storeIds) {
   const levels = {}
   if (storeIds.length === 0) return levels
@@ -84,7 +97,12 @@ function sampleBasketPrices(productIds) {
  */
 export async function fetchBasketPrices(productIds) {
   if (productIds.length === 0) return { products: [], stores: [], listings: [] }
-  if (!supabase || productIds.some(isSampleId)) return sampleBasketPrices(productIds)
+  if (!supabase || productIds.some(isSampleId)) {
+    if (isDev) return sampleBasketPrices(productIds)
+    if (!supabase) throw notConfigured()
+    productIds = productIds.filter((id) => !isSampleId(id)) // sample items left from development
+  }
+  if (productIds.length === 0) return { products: [], stores: [], listings: [] }
 
   const [productsRes, listingsRes] = await Promise.all([
     supabase.from('products').select('id, product_name, brand_label, volumetric_size').in('id', productIds),

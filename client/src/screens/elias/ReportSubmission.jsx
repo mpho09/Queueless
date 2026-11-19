@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useLocation, useParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, Ban, TriangleAlert } from 'lucide-react'
 import Button from '../../components/ui/Button.jsx'
@@ -45,7 +45,9 @@ export default function ReportSubmission() {
   const priceId = useId()
   const priceErrorId = `${priceId}-error`
 
-  const [tabId, setTabId] = useState('queue')
+  // S3 opens the tab the shopper tapped: "Update Store Price" → price, "Report Queue Status" → queue.
+  const { state } = useLocation()
+  const [tabId, setTabId] = useState(() => (TABS.some((t) => t.id === state?.tab) ? state.tab : 'queue'))
   const [queueLevel, setQueueLevel] = useState(null)
   const [listingId, setListingId] = useState('')
   const [price, setPrice] = useState('')

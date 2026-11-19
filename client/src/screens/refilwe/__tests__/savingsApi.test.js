@@ -14,6 +14,9 @@ jest.mock('../../../lib/supabase.js', () => ({
   },
 }))
 
+// authStore reads lib/supabase.js as soon as it loads; these tests don't need it.
+jest.mock('../../../lib/authStore.js', () => ({ authStore: { logOut: async () => {} } }))
+
 function respondWith(status, body = {}) {
   global.fetch = jest.fn().mockResolvedValue({ ok: status < 400, status, json: async () => body })
 }

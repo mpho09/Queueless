@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { useCallback, useRef, useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { CircleDollarSign, LogOut, Settings, Shield, TriangleAlert } from 'lucide-react'
 import Button from '../../components/ui/Button.jsx'
@@ -7,8 +7,10 @@ import Card from '../../components/ui/Card.jsx'
 import ErrorState from '../../components/feedback/ErrorState.jsx'
 import { Skeleton } from '../../components/feedback/Skeleton.jsx'
 import Toast from '../../components/feedback/Toast.jsx'
+import { useAuth } from '../../hooks/useAuth.js'
 import { useOnline } from '../../hooks/useOnline.js'
 import { messages } from '../../lib/messages.js'
+import { supabase } from '../../lib/supabase.js'
 import AccountSettings from './AccountSettings.jsx'
 import Dialog from './Dialog.jsx'
 import ProfileCard from './ProfileCard.jsx'
@@ -26,9 +28,15 @@ const menuItem =
 /**
  * S6 Savings Analytics Dashboard (#20): profile, saved this month, points, reports,
  * 4-month chart, recent activity and account settings (log out, delete account).
+ * Logged-in users only: a guest is sent to Log in (A1) and comes back here afterwards.
  */
 export default function Savings() {
-  const savings = useSavings()
+  const auth = useAuth()
+  // Without Supabase (development only) S6 shows the sample shopper, so there is nobody to log in.
+  const authOn = Boolean(supabase)
+  const savings = useSavings({ enabled: !authOn || auth.isLoggedIn })
+  // Set while logging out or deleting, so the guest redirect doesn't win over "go to Home".
+  const leaving = useRef(false)
   const online = useOnline()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -42,16 +50,26 @@ export default function Savings() {
   async function run(action) {
     setBusy(true)
     setError(null)
+    leaving.current = true
     try {
       await action()
       setDialog(null)
       queryClient.removeQueries({ queryKey: ['savings'] })
       navigate('/')
     } catch (e) {
+      leaving.current = false
       setDialog(null)
       setError(e?.message || messages.serverError)
     } finally {
       setBusy(false)
+    }
+  }
+
+  if (authOn && !leaving.current) {
+    const toLogin = { from: '/savings' }
+    if (!auth.loading && !auth.isLoggedIn) return <Navigate to="/login" replace state={toLogin} />
+    if (savings.error?.status === 401) {
+      return <Navigate to="/login" replace state={{ ...toLogin, message: messages.sessionExpired }} />
     }
   }
 
