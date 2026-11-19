@@ -54,7 +54,8 @@ export async function fetchNearbyStores(suburbId) {
   }))
 }
 
-// BR4 queue level per store; until the view exists (#12) every store shows Unknown.
+// BR4 queue level per store from the view store_queue_status (#12, migration queue_view).
+// If the view isn't pushed yet, every store shows Unknown.
 async function fetchQueueLevels(storeIds) {
   const levels = {}
   if (storeIds.length === 0) return levels
