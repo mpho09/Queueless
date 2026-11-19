@@ -31,7 +31,7 @@ We use the Product Requirements Document (PRD) as our single source of truth for
 | ------- | ------------------------------------------------------------ | ------------------------------ | ------ |
 | Mpho    | [@mpho09](https://github.com/mpho09)                         | Tech Lead, Backend Dev         | _TODO_ |
 | Joy     | [@jjmolomo17-tech](https://github.com/jjmolomo17-tech)       | Product Owner, Frontend Dev    | _TODO_ |
-| Refilwe | [@Ref-DevSa](https://github.com/Ref-DevSa)                   | Frontend Dev, Designer         | _TODO_ |
+| Refilwe| [@Ref-DevSa](https://github.com)                  | Frontend Dev, Designer  | Frontend foundation + Home S1 (#22); Basket S4 + BR3 totals (#23); Savings S6, savings API, price-drop job, email helper (#28–#33), Delete account (#20) |
 | Elias   | [@eliasmtisie4321](https://github.com/eliasmtisie4321)       | QA, DevOps                     | _TODO_ |
 | Kabelo  | [@kabelomathapo6-lab](https://github.com/kabelomathapo6-lab) | Designer, Frontend Dev         | _TODO_ |
 
