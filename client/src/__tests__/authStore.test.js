@@ -133,15 +133,32 @@ describe('logIn', () => {
 })
 
 describe('signUp', () => {
-  test('sends the lowercased email and a redirect back to /login for the verification link', async () => {
+  test('sends the lowercased email, the profile details and a redirect back to /login', async () => {
     const client = fakeClient()
-    const result = await createAuthStore(client, options).signUp('New@Example.com', 'Secret1')
+    const result = await createAuthStore(client, options).signUp('New@Example.com', 'Secret1', {
+      displayName: '  Thabo ',
+      is16OrOlder: true,
+      privacyConsent: true,
+    })
     expect(client.auth.signUp).toHaveBeenCalledWith({
       email: 'new@example.com',
       password: 'Secret1',
-      options: { emailRedirectTo: 'https://queueless.test/login' },
+      options: {
+        emailRedirectTo: 'https://queueless.test/login',
+        data: { display_name: 'Thabo', is_16_or_older: true, privacy_consent: true },
+      },
     })
     expect(result).toEqual({ needsVerification: true })
+  })
+
+  test('missing checkboxes are sent as false, so the database rejects the sign-up instead of skipping the profile', async () => {
+    const client = fakeClient()
+    await createAuthStore(client, options).signUp('a@b.co', 'Secret1')
+    expect(client.auth.signUp.mock.calls[0][0].options.data).toEqual({
+      display_name: '',
+      is_16_or_older: false,
+      privacy_consent: false,
+    })
   })
 
   test('if Supabase logs the user straight in, no verification is needed', async () => {

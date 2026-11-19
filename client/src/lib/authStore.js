@@ -66,13 +66,25 @@ export function createAuthStore(client, { getOrigin = () => window.location.orig
     },
     getSnapshot: () => state,
 
-    /** Creates the account and sends the verification email. Resolves { needsVerification }. */
-    async signUp(email, password) {
+    /**
+     * Creates the account and sends the verification email. Resolves { needsVerification }.
+     * The two checkboxes go to the database as user metadata; the profiles_trigger migration
+     * creates the profile from them and rejects the sign-up if either one is not ticked.
+     * @param {{ displayName?: string, is16OrOlder: boolean, privacyConsent: boolean }} details
+     */
+    async signUp(email, password, { displayName, is16OrOlder, privacyConsent } = {}) {
       guard()
       const { data, error } = await client.auth.signUp({
         email: clean(email),
         password,
-        options: { emailRedirectTo: `${getOrigin()}/login` },
+        options: {
+          emailRedirectTo: `${getOrigin()}/login`,
+          data: {
+            display_name: String(displayName ?? '').trim(),
+            is_16_or_older: is16OrOlder === true,
+            privacy_consent: privacyConsent === true,
+          },
+        },
       })
       if (error) throw toAuthError(error, { action: 'signUp' })
       return { needsVerification: !data?.session }
