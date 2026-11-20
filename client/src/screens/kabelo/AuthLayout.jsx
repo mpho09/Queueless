@@ -29,7 +29,31 @@ export function Banner({ tone = 'error', children }) {
 
 /** Where to go after logging in: the page the person came from, never an external or account page. */
 export function safeReturnPath(from) {
-  if (typeof from !== 'string' || !from.startsWith('/') || from.startsWith('//')) return '/'
-  if (['/login', '/signup', '/forgot-password', '/reset-password', '/verify-email'].includes(from.split('?')[0])) return '/'
-  return from
+  if (typeof from !== 'string' || !from.startsWith('/')) return '/'
+
+  try {
+    const url = new URL(from, window.location.origin)
+
+    // Never allow redirects to another website.
+    if (url.origin !== window.location.origin) return '/'
+
+    // Normalize the pathname before checking account routes.
+    const pathname = url.pathname
+      .toLowerCase()
+      .replace(/\/+$/, '') || '/'
+
+    const blockedPaths = [
+      '/login',
+      '/signup',
+      '/forgot-password',
+      '/reset-password',
+      '/verify-email',
+    ]
+
+    if (blockedPaths.includes(pathname)) return '/'
+
+    return `${url.pathname}${url.search}${url.hash}`
+  } catch {
+    return '/'
+  }
 }
