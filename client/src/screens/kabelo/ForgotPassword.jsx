@@ -60,21 +60,37 @@ export default function ForgotPassword() {
           readOnly={sent}
           onChange={(event) => setEmail(event.target.value)}
         />
+       
         {sent ? (
-          <Button variant="secondary" className="w-full" disabled={busy} onClick={() => send(true)}>
-            {busy ? 'Sending…' : 'Resend reset link'}
-          </Button>
-        ) : (
-          <Button type="submit" className="w-full" disabled={busy || !email.trim()}>
-            {busy ? 'Sending…' : 'Send reset link'}
-          </Button>
-        )}
-      </form>
+  <>
+    <Button
+      variant="secondary"
+      className="w-full"
+      disabled={busy}
+      onClick={() => send(true)}
+    >
+      {busy ? 'Sending…' : 'Resend reset link'}
+    </Button>
 
-      <Link to="/login" className="mt-6 flex min-h-11 items-center justify-center text-body font-semibold text-primary hover:underline">
-        Back to log in
-      </Link>
-      <Toast message={toast} onClose={() => setToast(null)} />
-    </AuthLayout>
-  )
-}
+    <Button
+      type="button"
+      variant="secondary"
+      className="w-full"
+      onClick={() => {
+        setSent(false)
+        setError(null)
+        setToast(null)
+      }}
+    >
+      Use a different email
+    </Button>
+  </>
+) : (
+  <Button
+    type="submit"
+    className="w-full"
+    disabled={busy || !email.trim()}
+  >
+    {busy ? 'Sending…' : 'Send reset link'}
+  </Button>
+)}
