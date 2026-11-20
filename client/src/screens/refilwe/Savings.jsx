@@ -12,6 +12,7 @@ import { useOnline } from '../../hooks/useOnline.js'
 import { messages } from '../../lib/messages.js'
 import { supabase } from '../../lib/supabase.js'
 import AccountSettings from './AccountSettings.jsx'
+import ChangeEmailDialog from './ChangeEmailDialog.jsx'
 import Dialog from './Dialog.jsx'
 import ProfileCard from './ProfileCard.jsx'
 import RecentActivity from './RecentActivity.jsx'
@@ -44,12 +45,14 @@ export default function Savings() {
   const online = useOnline()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  // null | 'menu' | 'logout' | 'delete'
+  // null | 'menu' | 'logout' | 'delete' | 'email'
   const [dialog, setDialog] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
+  const [sent, setSent] = useState(null) // the "check both inboxes" toast after Change email
   const closeDialog = useCallback(() => setDialog(null), [])
   const closeError = useCallback(() => setError(null), [])
+  const closeSent = useCallback(() => setSent(null), [])
 
   // "Report verified" (PRD §4.5): show the newest unread one as the S6 toast, then mark them all read
   // so the header dot clears and the toast doesn't come back.
@@ -127,6 +130,8 @@ export default function Savings() {
 
       <AccountSettings
         disabled={!online || busy}
+        canChangeEmail={authOn}
+        onChangeEmail={() => setDialog('email')}
         onLogOut={() => setDialog('logout')}
         onDelete={() => setDialog('delete')}
       />
@@ -199,8 +204,22 @@ export default function Savings() {
         </Dialog>
       )}
 
+      {dialog === 'email' && (
+        <ChangeEmailDialog
+          currentEmail={auth.user?.email ?? data.profile.email}
+          disabled={!online}
+          onClose={closeDialog}
+          onSent={() => {
+            setDialog(null)
+            setSent(savingsText.changeEmailSent)
+          }}
+        />
+      )}
+
       {error ? (
         <Toast message={error} tone="error" onClose={closeError} />
+      ) : sent ? (
+        <Toast message={sent} onClose={closeSent} duration={NOTICE_MS} />
       ) : (
         <Toast
           message={noticeMessage}
