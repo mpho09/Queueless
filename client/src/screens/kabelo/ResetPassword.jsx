@@ -81,6 +81,7 @@ export default function ResetPassword() {
           onChange={(event) => {
             setPassword(event.target.value)
             setPasswordError(null)
+            setConfirmError(null)
           }}
           error={passwordError ?? undefined}
           hint="At least 8 characters, 1 uppercase letter and 1 number"
