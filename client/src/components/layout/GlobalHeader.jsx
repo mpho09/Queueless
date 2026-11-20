@@ -15,7 +15,7 @@ const iconButton =
  * From 640px up, the Home / Basket / Savings links sit in the centre.
  */
 export default function GlobalHeader() {
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const navigate = useNavigate()
   const basketCount = useBasketCount()
   const unreadCount = useNotifications().unread.length
@@ -49,7 +49,7 @@ export default function GlobalHeader() {
           {!authScreen && !loading && !isLoggedIn && (
             <Link
               to="/login"
-              state={{ from: pathname }}
+              state={{ from: pathname + search }}
               className="inline-flex min-h-11 items-center rounded-full border border-border-strong px-4 text-body font-semibold text-primary transition-colors hover:border-primary hover:bg-surface-raised"
             >
               Log in
