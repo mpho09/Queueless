@@ -7,7 +7,7 @@ import { supabase } from './supabase.js'
 
 /** Thrown by sign-up, log-in, log-out and reset. `message` is ready to show; `code` is for logic. */
 export class AuthError extends Error {
-  /** @param {string} message @param {'INVALID_CREDENTIALS'|'EMAIL_NOT_CONFIRMED'|'WEAK_PASSWORD'|'RATE_LIMITED'|'OFFLINE'|'NETWORK'|'NOT_CONFIGURED'|'UNKNOWN'} code */
+  /** @param {string} message @param {'INVALID_CREDENTIALS'|'EMAIL_NOT_CONFIRMED'|'EMAIL_TAKEN'|'WEAK_PASSWORD'|'RATE_LIMITED'|'OFFLINE'|'NETWORK'|'NOT_CONFIGURED'|'UNKNOWN'} code */
   constructor(message, code) {
     super(message)
     this.name = 'AuthError'
@@ -21,6 +21,7 @@ export function toAuthError(error, { action } = {}) {
   if (code === 'invalid_credentials') return new AuthError(messages.loginFailed, 'INVALID_CREDENTIALS')
   if (code === 'email_not_confirmed') return new AuthError(messages.emailNotVerified, 'EMAIL_NOT_CONFIRMED')
   if (code === 'weak_password') return new AuthError(messages.passwordRules, 'WEAK_PASSWORD')
+  if (code === 'user_already_exists' || code === 'email_exists') return new AuthError(messages.emailTaken, 'EMAIL_TAKEN')
   if (code === 'over_request_rate_limit' || error?.status === 429) {
     return new AuthError(action === 'logIn' ? messages.accountLocked : messages.serverError, 'RATE_LIMITED')
   }
@@ -110,6 +111,17 @@ export function createAuthStore(client, { getOrigin = () => window.location.orig
       guard()
       const { error } = await client.auth.resetPasswordForEmail(clean(email), { redirectTo: `${getOrigin()}/reset-password` })
       if (error) throw toAuthError(error, { action: 'resetPassword' })
+    },
+
+    /** Sends the sign-up verification email again (A4 "Resend email"). The link brings them to Log in. */
+    async resendVerification(email) {
+      guard()
+      const { error } = await client.auth.resend({
+        type: 'signup',
+        email: clean(email),
+        options: { emailRedirectTo: `${getOrigin()}/login` },
+      })
+      if (error) throw toAuthError(error, { action: 'resendVerification' })
     },
   }
 }

@@ -15,6 +15,8 @@ export const messages = {
   accountLocked: 'Account locked for 15 minutes after 5 incorrect attempts.',
   emailNotVerified: 'Please verify your email, then log in.',
   passwordRules: 'Password must include at least 1 uppercase letter and 1 number',
+  // Not in the PRD (§12.2 has no text for it): Supabase's "email already registered" on Sign up (#14).
+  emailTaken: 'An account with this email already exists. Log in instead.',
   invalidPrice: 'Enter a valid price, e.g. 34.99',
   queueLimit: 'Submission limit reached. You can submit up to 5 queue reports per store per hour.',
   priceLimit: 'Submission limit reached. You can submit up to 3 price updates per store per hour.',

@@ -7,6 +7,8 @@ import ReportSubmission from './screens/elias/ReportSubmission.jsx'
 import StoreDetails from './screens/mpho/StoreDetails.jsx'
 import StoresList from './screens/elias/StoresList.jsx'
 import SearchResults from './screens/mpho/SearchResults.jsx'
+import Signup from './screens/mpho/Signup.jsx'
+import VerifyEmail from './screens/mpho/VerifyEmail.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import NotFound from './pages/NotFound.jsx'
 
@@ -24,10 +26,10 @@ export default function App() {
         <Route path="basket" element={<Basket />} />
         <Route path="savings" element={<Savings />} />
         <Route path="login" element={<ComingSoon title="Log in" issue={14} />} />
-        <Route path="signup" element={<ComingSoon title="Sign up" issue={14} />} />
+        <Route path="signup" element={<Signup />} />
         <Route path="forgot-password" element={<ComingSoon title="Forgot password" issue={14} />} />
         <Route path="reset-password" element={<ComingSoon title="Set a new password" issue={14} />} />
-        <Route path="verify-email" element={<ComingSoon title="Verify your email" issue={14} />} />
+        <Route path="verify-email" element={<VerifyEmail />} />
         <Route path="privacy" element={<ComingSoon title="Privacy Notice" issue={14} />} />
         <Route path="*" element={<NotFound />} />
       </Route>

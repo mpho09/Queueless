@@ -47,5 +47,5 @@ test('exposes the four account actions', () => {
     return null
   }
   render(<Grab />)
-  for (const name of ['signUp', 'logIn', 'logOut', 'resetPassword']) expect(typeof auth[name]).toBe('function')
+  for (const name of ['signUp', 'logIn', 'logOut', 'resetPassword', 'resendVerification']) expect(typeof auth[name]).toBe('function')
 })

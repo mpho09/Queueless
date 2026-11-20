@@ -14,6 +14,7 @@ function fakeClient(overrides = {}) {
     signInWithPassword: jest.fn().mockResolvedValue({ data: { user: { id: 'u1', email: 'joy@example.com' } }, error: null }),
     signOut: jest.fn().mockResolvedValue({ error: null }),
     resetPasswordForEmail: jest.fn().mockResolvedValue({ error: null }),
+    resend: jest.fn().mockResolvedValue({ error: null }),
     ...overrides,
   }
   return { auth, authEvent: (event, session) => onChange(event, session) }
@@ -166,6 +167,16 @@ describe('signUp', () => {
     expect(await createAuthStore(client, options).signUp('a@b.co', 'Secret1')).toEqual({ needsVerification: false })
   })
 
+  test('an email that is already registered → the "already exists" text', async () => {
+    for (const code of ['user_already_exists', 'email_exists']) {
+      const client = fakeClient({ signUp: jest.fn().mockResolvedValue({ data: {}, error: { code, status: 422 } }) })
+      await expect(createAuthStore(client, options).signUp('a@b.co', 'Secret12')).rejects.toMatchObject({
+        code: 'EMAIL_TAKEN',
+        message: messages.emailTaken,
+      })
+    }
+  })
+
   test('a weak password → the password rules text', async () => {
     const client = fakeClient({ signUp: jest.fn().mockResolvedValue({ data: {}, error: { code: 'weak_password', status: 422 } }) })
     await expect(createAuthStore(client, options).signUp('a@b.co', 'abc')).rejects.toMatchObject({
@@ -222,5 +233,25 @@ describe('toAuthError', () => {
     expect(toAuthError({ name: 'AuthRetryableFetchError' })).toMatchObject({ code: 'NETWORK', message: messages.serverError })
     expect(toAuthError({ code: 'something_new' })).toMatchObject({ code: 'UNKNOWN', message: messages.serverError })
     expect(toAuthError(undefined)).toBeInstanceOf(AuthError)
+  })
+})
+
+describe('resendVerification', () => {
+  test('sends the sign-up email again to the lowercased address, linking back to /login', async () => {
+    const client = fakeClient()
+    await createAuthStore(client, options).resendVerification(' Joy@Example.com ')
+    expect(client.auth.resend).toHaveBeenCalledWith({
+      type: 'signup',
+      email: 'joy@example.com',
+      options: { emailRedirectTo: 'https://queueless.test/login' },
+    })
+  })
+
+  test('too many resends → the server error text, not the log-in lock text', async () => {
+    const client = fakeClient({ resend: jest.fn().mockResolvedValue({ error: { code: 'over_email_send_rate_limit', status: 429 } }) })
+    await expect(createAuthStore(client, options).resendVerification('a@b.co')).rejects.toMatchObject({
+      code: 'RATE_LIMITED',
+      message: messages.serverError,
+    })
   })
 })
