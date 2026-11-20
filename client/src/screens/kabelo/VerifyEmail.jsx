@@ -70,7 +70,7 @@ export default function VerifyEmail() {
         <Button className="w-full" disabled={busy || !email} onClick={resend}>
           {busy ? 'Sending…' : 'Resend email'}
         </Button>
-        <Button to="/" variant="secondary" className="w-full">
+        <Button to={returnTo} variant="secondary" className="w-full">
           Continue browsing
         </Button>
       </div>
