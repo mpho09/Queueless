@@ -5,12 +5,13 @@ import Button from '../../components/ui/Button.jsx'
 import TextField from '../../components/ui/TextField.jsx'
 import Toast from '../../components/feedback/Toast.jsx'
 import { useAuth } from '../../hooks/useAuth.js'
-import { Banner } from './AuthLayout.jsx'
+import { Banner, safeReturnPath } from './AuthLayout.jsx'
 
 /** A4 Verify your email (/verify-email): shown after sign-up and to people who log in before verifying. */
 export default function VerifyEmail() {
   const { user, resendVerification } = useAuth()
   const location = useLocation()
+  const returnTo = safeReturnPath(location.state?.from)
   const known = location.state?.email || user?.email || ''
   const [typed, setTyped] = useState('')
   const [error, setError] = useState(null)
@@ -18,7 +19,7 @@ export default function VerifyEmail() {
   const [toast, setToast] = useState(null)
   const email = known || typed.trim()
 
-  if (user?.email_confirmed_at) return <Navigate to="/" replace />
+  if (user?.email_confirmed_at) return <Navigate to={returnTo} replace />
 
   async function resend() {
     if (busy || !email) return
