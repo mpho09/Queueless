@@ -16,13 +16,15 @@ export class AuthError extends Error {
 }
 
 /** Supabase error → AuthError, using the exact texts from messages.js. */
-export function toAuthError(error, { action } = {}) {
+export function toAuthError(error) {
   const code = error?.code
   if (code === 'invalid_credentials') return new AuthError(messages.loginFailed, 'INVALID_CREDENTIALS')
   if (code === 'email_not_confirmed') return new AuthError(messages.emailNotVerified, 'EMAIL_NOT_CONFIRMED')
   if (code === 'weak_password') return new AuthError(messages.passwordRules, 'WEAK_PASSWORD')
-  if (code === 'over_request_rate_limit' || error?.status === 429) {
-    return new AuthError(action === 'logIn' ? messages.accountLocked : messages.serverError, 'RATE_LIMITED')
+  // Supabase's rate limit is not our "5 wrong tries = 15 minutes" rule (that needs the server-side
+  // lockout, plan D11), so every 429 gets the general text. messages.accountLocked is kept for D11.
+  if (code === 'over_request_rate_limit' || code === 'over_email_send_rate_limit' || error?.status === 429) {
+    return new AuthError(messages.tooManyTries, 'RATE_LIMITED')
   }
   if (error?.name === 'AuthRetryableFetchError') return new AuthError(messages.serverError, 'NETWORK')
   return new AuthError(messages.serverError, 'UNKNOWN')
@@ -86,22 +88,41 @@ export function createAuthStore(client, { getOrigin = () => window.location.orig
           },
         },
       })
-      if (error) throw toAuthError(error, { action: 'signUp' })
+      if (error) throw toAuthError(error)
       return { needsVerification: !data?.session }
+    },
+
+    /** Sends the verification email again (A4 "Resend email"). */
+    async resendVerification(email) {
+      guard()
+      const { error } = await client.auth.resend({
+        type: 'signup',
+        email: clean(email),
+        options: { emailRedirectTo: `${getOrigin()}/login` },
+      })
+      if (error) throw toAuthError(error)
     },
 
     /** Resolves the user, or throws an AuthError (wrong details, unverified email, too many tries…). */
     async logIn(email, password) {
       guard()
       const { data, error } = await client.auth.signInWithPassword({ email: clean(email), password })
-      if (error) throw toAuthError(error, { action: 'logIn' })
+      if (error) throw toAuthError(error)
       return data.user
     },
 
+    /**
+     * Always works, even with no signal: when offline (or Supabase can't be reached) it signs out of
+     * this device only (`scope: 'local'`), so someone on a shared phone can still log out.
+     */
     async logOut() {
-      guard()
-      const { error } = await client.auth.signOut()
-      if (error) throw toAuthError(error, { action: 'logOut' })
+      if (!client) throw new AuthError(messages.serverError, 'NOT_CONFIGURED')
+      const offline = typeof navigator !== 'undefined' && navigator.onLine === false
+      let { error } = await client.auth.signOut(offline ? { scope: 'local' } : undefined)
+      if (error && !offline && (error.name === 'AuthRetryableFetchError' || error.status >= 500 || error.status === 0)) {
+        ;({ error } = await client.auth.signOut({ scope: 'local' }))
+      }
+      if (error) throw toAuthError(error)
       setState({ user: null })
     },
 
@@ -109,7 +130,14 @@ export function createAuthStore(client, { getOrigin = () => window.location.orig
     async resetPassword(email) {
       guard()
       const { error } = await client.auth.resetPasswordForEmail(clean(email), { redirectTo: `${getOrigin()}/reset-password` })
-      if (error) throw toAuthError(error, { action: 'resetPassword' })
+      if (error) throw toAuthError(error)
+    },
+
+    /** Saves a new password for the person who opened the reset link (that link signs them in). */
+    async updatePassword(password) {
+      guard()
+      const { error } = await client.auth.updateUser({ password })
+      if (error) throw toAuthError(error)
     },
   }
 }

@@ -14,6 +14,7 @@ export const messages = {
   loginFailed: 'Incorrect email or password.',
   accountLocked: 'Account locked for 15 minutes after 5 incorrect attempts.',
   emailNotVerified: 'Please verify your email, then log in.',
+  tooManyTries: 'Too many attempts. Please wait a few minutes and try again.',
   passwordRules: 'Password must include at least 1 uppercase letter and 1 number',
   invalidPrice: 'Enter a valid price, e.g. 34.99',
   queueLimit: 'Submission limit reached. You can submit up to 5 queue reports per store per hour.',

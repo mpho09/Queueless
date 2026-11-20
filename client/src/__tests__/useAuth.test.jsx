@@ -40,12 +40,12 @@ test('shows loading, then the guest, then the user after a log-in event, then th
   expect(screen.getByText('Guest')).toBeInTheDocument()
 })
 
-test('exposes the four account actions', () => {
+test('exposes the account actions', () => {
   let auth
   function Grab() {
     auth = useAuth()
     return null
   }
   render(<Grab />)
-  for (const name of ['signUp', 'logIn', 'logOut', 'resetPassword']) expect(typeof auth[name]).toBe('function')
+  for (const name of ['signUp', 'logIn', 'logOut', 'resendVerification', 'resetPassword', 'updatePassword']) expect(typeof auth[name]).toBe('function')
 })

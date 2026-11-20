@@ -521,6 +521,8 @@ Load Sora (500/600/700) and Manrope (400/500/600/700) from Google Fonts in `inde
 | Missing price | `Price unavailable at this branch` |
 | Location | `Location mismatch alert` |
 | Login | `Incorrect email or password.` / lockout text |
+| Too many attempts (Supabase rate limit, until the D11 lockout exists) | `Too many attempts. Please wait a few minutes and try again.` |
+| Unverified email on log-in | `Please verify your email, then log in.` |
 | Password | `Password must include at least 1 uppercase letter and 1 number` |
 | Price field | `Enter a valid price, e.g. 34.99` |
 | Form fields | Red border + message under the field; the typed value is kept |

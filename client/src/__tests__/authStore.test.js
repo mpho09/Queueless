@@ -14,6 +14,8 @@ function fakeClient(overrides = {}) {
     signInWithPassword: jest.fn().mockResolvedValue({ data: { user: { id: 'u1', email: 'joy@example.com' } }, error: null }),
     signOut: jest.fn().mockResolvedValue({ error: null }),
     resetPasswordForEmail: jest.fn().mockResolvedValue({ error: null }),
+    resend: jest.fn().mockResolvedValue({ error: null }),
+    updateUser: jest.fn().mockResolvedValue({ data: { user: { id: 'u1' } }, error: null }),
     ...overrides,
   }
   return { auth, authEvent: (event, session) => onChange(event, session) }
@@ -121,14 +123,13 @@ describe('logIn', () => {
     })
   })
 
-  test('too many tries → the locked-account text', async () => {
-    const client = fakeClient({
-      signInWithPassword: jest.fn().mockResolvedValue({ data: {}, error: { code: 'over_request_rate_limit', status: 429 } }),
-    })
-    await expect(createAuthStore(client, options).logIn('joy@example.com', 'x')).rejects.toMatchObject({
-      code: 'RATE_LIMITED',
-      message: messages.accountLocked,
-    })
+  test('any 429 → the general "too many attempts" text, never the 5-attempts lockout text', async () => {
+    for (const error of [{ code: 'over_request_rate_limit', status: 429 }, { status: 429 }, { code: 'over_email_send_rate_limit', status: 429 }]) {
+      const client = fakeClient({ signInWithPassword: jest.fn().mockResolvedValue({ data: {}, error }) })
+      const thrown = await createAuthStore(client, options).logIn('joy@example.com', 'x').catch((e) => e)
+      expect(thrown).toMatchObject({ code: 'RATE_LIMITED', message: messages.tooManyTries })
+      expect(thrown.message).not.toBe(messages.accountLocked)
+    }
   })
 })
 
@@ -187,6 +188,68 @@ describe('logOut and resetPassword', () => {
     expect(store.getSnapshot().user).toBeNull()
   })
 
+  test('offline, logOut still works: it signs out of this device only', async () => {
+    const client = fakeClient()
+    const store = createAuthStore(client, options)
+    store.subscribe(() => {})
+    await flush()
+    client.authEvent('SIGNED_IN', { user: { id: 'u1' } })
+    Object.defineProperty(navigator, 'onLine', { configurable: true, get: () => false })
+    await store.logOut()
+    expect(client.auth.signOut).toHaveBeenCalledWith({ scope: 'local' })
+    expect(store.getSnapshot().user).toBeNull()
+  })
+
+  test('online, logOut uses the normal sign-out', async () => {
+    const client = fakeClient()
+    await createAuthStore(client, options).logOut()
+    expect(client.auth.signOut).toHaveBeenCalledTimes(1)
+    expect(client.auth.signOut.mock.calls[0][0]).toBeUndefined()
+  })
+
+  test('if Supabase cannot be reached, logOut falls back to signing out of this device', async () => {
+    const signOut = jest
+      .fn()
+      .mockResolvedValueOnce({ error: { name: 'AuthRetryableFetchError', status: 0 } })
+      .mockResolvedValueOnce({ error: null })
+    const store = createAuthStore(fakeClient({ signOut }), options)
+    await store.logOut()
+    expect(signOut).toHaveBeenNthCalledWith(2, { scope: 'local' })
+    expect(store.getSnapshot().user).toBeNull()
+  })
+
+  test('a real sign-out error is still thrown', async () => {
+    const client = fakeClient({ signOut: jest.fn().mockResolvedValue({ error: { status: 400, code: 'bad_jwt' } }) })
+    await expect(createAuthStore(client, options).logOut()).rejects.toMatchObject({ message: messages.serverError })
+  })
+
+  test('resendVerification asks Supabase to send the sign-up email again', async () => {
+    const client = fakeClient()
+    await createAuthStore(client, options).resendVerification(' Joy@Example.com ')
+    expect(client.auth.resend).toHaveBeenCalledWith({
+      type: 'signup',
+      email: 'joy@example.com',
+      options: { emailRedirectTo: 'https://queueless.test/login' },
+    })
+  })
+
+  test('resending too often → the general too-many-attempts text', async () => {
+    const client = fakeClient({ resend: jest.fn().mockResolvedValue({ error: { code: 'over_email_send_rate_limit', status: 429 } }) })
+    await expect(createAuthStore(client, options).resendVerification('a@b.co')).rejects.toMatchObject({ message: messages.tooManyTries })
+  })
+
+  test('updatePassword saves the new password; a weak one gives the password rules text', async () => {
+    const client = fakeClient()
+    await createAuthStore(client, options).updatePassword('NewSecret1')
+    expect(client.auth.updateUser).toHaveBeenCalledWith({ password: 'NewSecret1' })
+
+    const weak = fakeClient({ updateUser: jest.fn().mockResolvedValue({ data: {}, error: { code: 'weak_password', status: 422 } }) })
+    await expect(createAuthStore(weak, options).updatePassword('abc')).rejects.toMatchObject({
+      code: 'WEAK_PASSWORD',
+      message: messages.passwordRules,
+    })
+  })
+
   test('resetPassword sends the link to /reset-password', async () => {
     const client = fakeClient()
     await createAuthStore(client, options).resetPassword(' Joy@Example.com ')
@@ -211,7 +274,15 @@ describe('guards', () => {
 
   test('with no Supabase client, actions fail clearly instead of crashing', async () => {
     const store = createAuthStore(null, options)
-    for (const action of [() => store.logIn('a@b.co', 'x'), () => store.signUp('a@b.co', 'x'), () => store.logOut(), () => store.resetPassword('a@b.co')]) {
+    const actions = [
+      () => store.logIn('a@b.co', 'x'),
+      () => store.signUp('a@b.co', 'x'),
+      () => store.logOut(),
+      () => store.resetPassword('a@b.co'),
+      () => store.resendVerification('a@b.co'),
+      () => store.updatePassword('x'),
+    ]
+    for (const action of actions) {
       await expect(action()).rejects.toMatchObject({ code: 'NOT_CONFIGURED' })
     }
   })
