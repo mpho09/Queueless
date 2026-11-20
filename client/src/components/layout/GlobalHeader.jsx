@@ -3,6 +3,7 @@ import { ArrowLeft, ShoppingBasket, User } from 'lucide-react'
 import DesktopNav from './DesktopNav.jsx'
 import Logo from './Logo.jsx'
 import { isAuthPath } from './navItems.js'
+import { useAuth } from '../../hooks/useAuth.js'
 import { useBasketCount } from '../../hooks/useBasketCount.js'
 import { useNotifications } from '../../screens/refilwe/useNotifications.js'
 
@@ -18,6 +19,7 @@ export default function GlobalHeader() {
   const navigate = useNavigate()
   const basketCount = useBasketCount()
   const unreadCount = useNotifications().unread.length
+  const { isLoggedIn, loading } = useAuth()
   const isHome = pathname === '/'
   const authScreen = isAuthPath(pathname)
 
@@ -43,7 +45,17 @@ export default function GlobalHeader() {
         {!authScreen && <DesktopNav />}
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
-          {!authScreen && (
+          {/* Guests get "Log in"; people who are logged in get their profile (Savings and Settings). */}
+          {!authScreen && !loading && !isLoggedIn && (
+            <Link
+              to="/login"
+              state={{ from: pathname }}
+              className="inline-flex min-h-11 items-center rounded-full border border-border-strong px-4 text-body font-semibold text-primary transition-colors hover:border-primary hover:bg-surface-raised"
+            >
+              Log in
+            </Link>
+          )}
+          {!authScreen && isLoggedIn && (
             <Link
               to="/savings"
               aria-label={

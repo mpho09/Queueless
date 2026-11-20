@@ -98,7 +98,9 @@ test('a guest never asks for notifications', async () => {
   mockAuth = { user: null, isLoggedIn: false, loading: false }
   mockUnread = [VERIFIED]
   renderApp('/')
-  expect(await screen.findByRole('link', { name: 'Your profile and savings' })).toBeInTheDocument()
+  // Guests see "Log in" instead of the profile icon (#14), so there is nowhere for a dot to appear.
+  expect(await screen.findByRole('link', { name: 'Log in' })).toBeInTheDocument()
+  expect(screen.queryByRole('link', { name: /Your profile and savings/ })).not.toBeInTheDocument()
   expect(screen.queryByTestId('unread-dot')).not.toBeInTheDocument()
 })
 

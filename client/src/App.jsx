@@ -7,7 +7,12 @@ import ReportSubmission from './screens/elias/ReportSubmission.jsx'
 import StoreDetails from './screens/mpho/StoreDetails.jsx'
 import StoresList from './screens/elias/StoresList.jsx'
 import SearchResults from './screens/mpho/SearchResults.jsx'
-import ComingSoon from './pages/ComingSoon.jsx'
+import Login from './screens/kabelo/Login.jsx'
+import Signup from './screens/kabelo/Signup.jsx'
+import ForgotPassword from './screens/kabelo/ForgotPassword.jsx'
+import ResetPassword from './screens/kabelo/ResetPassword.jsx'
+import VerifyEmail from './screens/kabelo/VerifyEmail.jsx'
+import Privacy from './screens/kabelo/Privacy.jsx'
 import NotFound from './pages/NotFound.jsx'
 
 // Route table from docs/Implementation plan.md §8.
@@ -23,12 +28,12 @@ export default function App() {
         <Route path="stores/:storeId/report" element={<ReportSubmission />} />
         <Route path="basket" element={<Basket />} />
         <Route path="savings" element={<Savings />} />
-        <Route path="login" element={<ComingSoon title="Log in" issue={14} />} />
-        <Route path="signup" element={<ComingSoon title="Sign up" issue={14} />} />
-        <Route path="forgot-password" element={<ComingSoon title="Forgot password" issue={14} />} />
-        <Route path="reset-password" element={<ComingSoon title="Set a new password" issue={14} />} />
-        <Route path="verify-email" element={<ComingSoon title="Verify your email" issue={14} />} />
-        <Route path="privacy" element={<ComingSoon title="Privacy Notice" issue={14} />} />
+        <Route path="login" element={<Login />} />
+        <Route path="signup" element={<Signup />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
+        <Route path="verify-email" element={<VerifyEmail />} />
+        <Route path="privacy" element={<Privacy />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

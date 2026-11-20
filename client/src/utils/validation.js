@@ -9,3 +9,20 @@ export function isValidPrice(value) {
   const text = String(value).trim()
   return PRICE_PATTERN.test(text) && Number(text) > 0
 }
+
+// ── Account forms (#14) ────────────────────────────────────────────────────────────────────
+
+/** What is missing from a password. PRD §5: at least 8 characters, 1 uppercase letter and 1 number. */
+export function passwordProblems(password) {
+  const text = String(password ?? '')
+  return {
+    tooShort: text.length < 8,
+    noUppercase: !/[A-Z]/.test(text),
+    noNumber: !/[0-9]/.test(text),
+  }
+}
+
+/** true when the password meets every rule above. */
+export function isValidPassword(password) {
+  return !Object.values(passwordProblems(password)).some(Boolean)
+}
