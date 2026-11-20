@@ -21,6 +21,26 @@ export function toAuthError(error) {
   if (code === 'invalid_credentials') return new AuthError(messages.loginFailed, 'INVALID_CREDENTIALS')
   if (code === 'email_not_confirmed') return new AuthError(messages.emailNotVerified, 'EMAIL_NOT_CONFIRMED')
   if (code === 'weak_password') return new AuthError(messages.passwordRules, 'WEAK_PASSWORD')
+  if (code === 'same_password') {
+  return new AuthError(
+    'Choose a password different from your current one.',
+    'WEAK_PASSWORD'
+  )
+}
+
+if (code === 'user_already_exists' || code === 'email_exists') {
+  return new AuthError(
+    'An account with this email already exists.',
+    'UNKNOWN'
+  )
+}
+
+if (code === 'reauthentication_needed') {
+  return new AuthError(
+    'Please log in again before making this change.',
+    'INVALID_CREDENTIALS'
+  )
+}
   // Supabase's rate limit is not our "5 wrong tries = 15 minutes" rule (that needs the server-side
   // lockout, plan D11), so every 429 gets the general text. messages.accountLocked is kept for D11.
   if (code === 'over_request_rate_limit' || code === 'over_email_send_rate_limit' || error?.status === 429) {
