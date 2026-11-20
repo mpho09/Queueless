@@ -34,7 +34,11 @@ const clean = (email) => String(email ?? '').trim().toLowerCase() // PRD: emails
 
 export function createAuthStore(client, { getOrigin = () => window.location.origin } = {}) {
   // `loading` is true until Supabase has told us whether someone is logged in.
-  let state = { user: null, loading: Boolean(client) }
+  let state = {
+  user: null,
+  loading: Boolean(client),
+  passwordRecovery: false,
+}
   const listeners = new Set()
   let started = false
 
