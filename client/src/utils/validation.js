@@ -9,3 +9,14 @@ export function isValidPrice(value) {
   const text = String(value).trim()
   return PRICE_PATTERN.test(text) && Number(text) > 0
 }
+
+/** PRD §5 password rules: at least 8 characters, 1 uppercase letter and 1 number (#14). */
+export function isValidPassword(value) {
+  const text = String(value ?? '')
+  return text.length >= 8 && /[A-Z]/.test(text) && /\d/.test(text)
+}
+
+/** A plausible email address: something@something.something, no spaces. Supabase checks the rest. */
+export function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value ?? '').trim())
+}
