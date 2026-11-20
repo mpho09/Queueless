@@ -25,16 +25,17 @@ const options = { getOrigin: () => 'https://queueless.test' }
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 afterEach(() => {
+  sessionStorage.clear() // the password-recovery flag lives here
   Object.defineProperty(navigator, 'onLine', { configurable: true, get: () => true })
 })
 
 describe('session state', () => {
   test('starts loading, then settles on a guest when nobody is logged in', async () => {
     const store = createAuthStore(fakeClient(), options)
-    expect(store.getSnapshot()).toEqual({ user: null, loading: true })
+    expect(store.getSnapshot()).toEqual({ user: null, loading: true, passwordRecovery: false })
     store.subscribe(() => {})
     await flush()
-    expect(store.getSnapshot()).toEqual({ user: null, loading: false })
+    expect(store.getSnapshot()).toEqual({ user: null, loading: false, passwordRecovery: false })
   })
 
   test('picks up a session that already exists (page refresh)', async () => {
@@ -43,7 +44,7 @@ describe('session state', () => {
     const store = createAuthStore({ auth }, options)
     store.subscribe(() => {})
     await flush()
-    expect(store.getSnapshot()).toEqual({ user, loading: false })
+    expect(store.getSnapshot()).toEqual({ user, loading: false, passwordRecovery: false })
   })
 
   test('follows log-in and log-out events, and tells subscribers', async () => {
@@ -82,7 +83,7 @@ describe('session state', () => {
   test('with no Supabase client (no .env), it is a guest and not loading', () => {
     const store = createAuthStore(null, options)
     store.subscribe(() => {})
-    expect(store.getSnapshot()).toEqual({ user: null, loading: false })
+    expect(store.getSnapshot()).toEqual({ user: null, loading: false, passwordRecovery: false })
   })
 
   test('if reading the session fails, loading still ends', async () => {
@@ -90,7 +91,7 @@ describe('session state', () => {
     const store = createAuthStore({ auth }, options)
     store.subscribe(() => {})
     await flush()
-    expect(store.getSnapshot()).toEqual({ user: null, loading: false })
+    expect(store.getSnapshot()).toEqual({ user: null, loading: false, passwordRecovery: false })
   })
 })
 
@@ -188,15 +189,30 @@ describe('logOut and resetPassword', () => {
     expect(store.getSnapshot().user).toBeNull()
   })
 
-  test('offline, logOut still works: it signs out of this device only', async () => {
-    const client = fakeClient()
+  test('offline, logOut forgets the session on this device without calling the server', async () => {
+    // supabase-js's signOut({ scope: 'local' }) still calls the server and keeps the session if
+    // that fails, so offline we must not call signOut at all.
+    const client = fakeClient({ _removeSession: jest.fn().mockResolvedValue(undefined) })
     const store = createAuthStore(client, options)
     store.subscribe(() => {})
     await flush()
     client.authEvent('SIGNED_IN', { user: { id: 'u1' } })
     Object.defineProperty(navigator, 'onLine', { configurable: true, get: () => false })
     await store.logOut()
-    expect(client.auth.signOut).toHaveBeenCalledWith({ scope: 'local' })
+    expect(client.auth.signOut).not.toHaveBeenCalled()
+    expect(client.auth._removeSession).toHaveBeenCalledTimes(1)
+    expect(store.getSnapshot().user).toBeNull()
+  })
+
+  test('offline, without _removeSession, logOut removes the stored session keys itself', async () => {
+    const storage = { removeItem: jest.fn().mockResolvedValue(undefined) }
+    const client = fakeClient({ storageKey: 'sb-test-auth-token', storage })
+    const store = createAuthStore(client, options)
+    Object.defineProperty(navigator, 'onLine', { configurable: true, get: () => false })
+    await store.logOut()
+    expect(client.auth.signOut).not.toHaveBeenCalled()
+    expect(storage.removeItem).toHaveBeenCalledWith('sb-test-auth-token')
+    expect(storage.removeItem).toHaveBeenCalledWith('sb-test-auth-token-user')
     expect(store.getSnapshot().user).toBeNull()
   })
 
@@ -207,14 +223,13 @@ describe('logOut and resetPassword', () => {
     expect(client.auth.signOut.mock.calls[0][0]).toBeUndefined()
   })
 
-  test('if Supabase cannot be reached, logOut falls back to signing out of this device', async () => {
-    const signOut = jest
-      .fn()
-      .mockResolvedValueOnce({ error: { name: 'AuthRetryableFetchError', status: 0 } })
-      .mockResolvedValueOnce({ error: null })
-    const store = createAuthStore(fakeClient({ signOut }), options)
+  test('if Supabase cannot be reached, logOut forgets the session on this device', async () => {
+    const signOut = jest.fn().mockResolvedValue({ error: { name: 'AuthRetryableFetchError', status: 0 } })
+    const _removeSession = jest.fn().mockResolvedValue(undefined)
+    const store = createAuthStore(fakeClient({ signOut, _removeSession }), options)
     await store.logOut()
-    expect(signOut).toHaveBeenNthCalledWith(2, { scope: 'local' })
+    expect(signOut).toHaveBeenCalledTimes(1)
+    expect(_removeSession).toHaveBeenCalledTimes(1)
     expect(store.getSnapshot().user).toBeNull()
   })
 
@@ -238,16 +253,53 @@ describe('logOut and resetPassword', () => {
     await expect(createAuthStore(client, options).resendVerification('a@b.co')).rejects.toMatchObject({ message: messages.tooManyTries })
   })
 
-  test('updatePassword saves the new password; a weak one gives the password rules text', async () => {
+  /** A store whose user has just opened a password-reset link. */
+  async function recoveringStore(client) {
+    const store = createAuthStore(client, options)
+    store.subscribe(() => {})
+    await flush()
+    client.authEvent('PASSWORD_RECOVERY', { user: { id: 'u1' } })
+    return store
+  }
+
+  test('updatePassword saves the new password after a reset link; a weak one gives the password rules text', async () => {
     const client = fakeClient()
-    await createAuthStore(client, options).updatePassword('NewSecret1')
+    const store = await recoveringStore(client)
+    expect(store.getSnapshot().passwordRecovery).toBe(true)
+    await store.updatePassword('NewSecret1')
     expect(client.auth.updateUser).toHaveBeenCalledWith({ password: 'NewSecret1' })
+    expect(store.getSnapshot().passwordRecovery).toBe(false) // a reset link changes the password once
 
     const weak = fakeClient({ updateUser: jest.fn().mockResolvedValue({ data: {}, error: { code: 'weak_password', status: 422 } }) })
-    await expect(createAuthStore(weak, options).updatePassword('abc')).rejects.toMatchObject({
+    await expect((await recoveringStore(weak)).updatePassword('abc')).rejects.toMatchObject({
       code: 'WEAK_PASSWORD',
       message: messages.passwordRules,
     })
+  })
+
+  test('a logged-in session that did not come from a reset link cannot change the password', async () => {
+    const client = fakeClient()
+    const store = createAuthStore(client, options)
+    store.subscribe(() => {})
+    await flush()
+    client.authEvent('SIGNED_IN', { user: { id: 'u1' } })
+    expect(store.getSnapshot().passwordRecovery).toBe(false)
+    await expect(store.updatePassword('NewSecret1')).rejects.toMatchObject({ code: 'REAUTH_NEEDED' })
+    expect(client.auth.updateUser).not.toHaveBeenCalled()
+  })
+
+  test('signing out ends password recovery', async () => {
+    const client = fakeClient()
+    const store = await recoveringStore(client)
+    client.authEvent('SIGNED_OUT', null)
+    expect(store.getSnapshot().passwordRecovery).toBe(false)
+  })
+
+  test('common Supabase errors get their own message, not the server error', () => {
+    expect(toAuthError({ code: 'same_password', status: 422 })).toMatchObject({ code: 'SAME_PASSWORD', message: messages.samePassword })
+    expect(toAuthError({ code: 'email_exists', status: 422 })).toMatchObject({ code: 'EMAIL_TAKEN', message: messages.emailTaken })
+    expect(toAuthError({ code: 'user_already_exists', status: 422 })).toMatchObject({ code: 'EMAIL_TAKEN' })
+    expect(toAuthError({ code: 'reauthentication_needed', status: 401 })).toMatchObject({ code: 'REAUTH_NEEDED', message: messages.reauthNeeded })
   })
 
   test('resetPassword sends the link to /reset-password', async () => {

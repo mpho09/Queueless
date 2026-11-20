@@ -12,7 +12,7 @@ import AuthLayout, { Banner } from './AuthLayout.jsx'
  * session, and they choose a new password. TODO: design (plan D7, there is no Stitch board for this page).
  */
 export default function ResetPassword() {
-  const { user, loading, updatePassword } = useAuth()
+  const { user, loading, passwordRecovery, updatePassword } = useAuth()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [passwordError, setPasswordError] = useState(null)
@@ -32,8 +32,9 @@ export default function ResetPassword() {
     )
   }
 
-  // The link was opened too late, or already used: there is no session to change a password for.
-  if (!loading && !user) {
+  // The link was opened too late or already used (no session), or the person didn't come from a
+  // reset link at all: being logged in is not enough to set a new password without the old one.
+  if (!loading && (!user || !passwordRecovery)) {
     return (
       <AuthLayout title="Set a new password">
         <Banner tone="error">This reset link has expired or was already used. Request a new one.</Banner>

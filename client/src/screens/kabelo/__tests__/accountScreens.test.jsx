@@ -19,6 +19,7 @@ function guest(overrides = {}) {
     user: null,
     loading: false,
     isLoggedIn: false,
+    passwordRecovery: false,
     logIn: jest.fn().mockResolvedValue({ id: 'u1' }),
     signUp: jest.fn().mockResolvedValue({ needsVerification: true }),
     resendVerification: jest.fn().mockResolvedValue(undefined),
@@ -260,6 +261,26 @@ describe('A3 Forgot password', () => {
     await waitFor(() => expect(mockAuth.resetPassword).toHaveBeenCalledTimes(2))
   })
 
+  test('a mistyped email can be corrected after sending', async () => {
+    const user = userEvent.setup()
+    renderAt('/forgot-password', <ForgotPassword />)
+    await user.type(screen.getByLabelText('Email'), 'jon@exmaple.co.za')
+    await user.click(screen.getByRole('button', { name: 'Send reset link' }))
+    await user.click(await screen.findByRole('button', { name: 'Use a different email' }))
+
+    const field = screen.getByLabelText('Email')
+    expect(field).not.toHaveAttribute('readonly')
+    await user.clear(field)
+    await user.type(field, 'jon@example.co.za')
+    await user.click(screen.getByRole('button', { name: 'Send reset link' }))
+    expect(mockAuth.resetPassword).toHaveBeenLastCalledWith('jon@example.co.za')
+  })
+
+  test('keeps the Back to log in link', () => {
+    renderAt('/forgot-password', <ForgotPassword />)
+    expect(screen.getByRole('link', { name: 'Back to log in' })).toHaveAttribute('href', '/login')
+  })
+
   test('shows the error and stays on the form when sending fails', async () => {
     mockAuth = guest({ resetPassword: jest.fn().mockRejectedValue(new AuthError(messages.tooManyTries, 'RATE_LIMITED')) })
     const user = userEvent.setup()
@@ -272,7 +293,15 @@ describe('A3 Forgot password', () => {
 })
 
 describe('Set a new password', () => {
-  const link = { user: { id: 'u1' }, isLoggedIn: true } // opening the reset link signs the person in
+  // Opening the reset link signs the person in and Supabase fires PASSWORD_RECOVERY.
+  const link = { user: { id: 'u1' }, isLoggedIn: true, passwordRecovery: true }
+
+  test('a logged-in session that did not come from a reset link cannot set a new password', () => {
+    mockAuth = guest({ user: { id: 'u1' }, isLoggedIn: true })
+    renderAt('/reset-password', <ResetPassword />)
+    expect(screen.getByRole('alert')).toHaveTextContent('This reset link has expired or was already used.')
+    expect(screen.queryByLabelText('New password')).not.toBeInTheDocument()
+  })
 
   test('an expired or used link says so and offers a new one', () => {
     renderAt('/reset-password', <ResetPassword />)
