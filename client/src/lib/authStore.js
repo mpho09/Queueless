@@ -52,7 +52,7 @@ export function createAuthStore(client, { getOrigin = () => window.location.orig
     if (started || !client) return
     started = true
     // Only set state in this callback; calling Supabase again from inside it can deadlock.
-    client.auth.onAuthStateChange((_event, session) => setState({ user: session?.user ?? null, loading: false }))
+    client.auth.onAuthStateChange((event, session) => {   setState({     user: session?.user ?? null,     loading: false,     ...(event === 'PASSWORD_RECOVERY' ? { passwordRecovery: true } : {}),     ...(event === 'SIGNED_OUT' ? { passwordRecovery: false } : {}),   }) })
     client.auth
       .getSession()
       .then(({ data }) => setState({ user: data?.session?.user ?? null, loading: false }))
