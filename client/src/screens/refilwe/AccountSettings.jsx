@@ -6,9 +6,9 @@ const row =
 
 /**
  * Settings list: Change email, Privacy Notice, Delete account, Log out.
- * Change email needs log-in (#14), so it stays disabled until then.
+ * `canChangeEmail` is false without a real account (development with the sample shopper).
  */
-export default function AccountSettings({ onLogOut, onDelete, disabled }) {
+export default function AccountSettings({ onChangeEmail, onLogOut, onDelete, disabled, canChangeEmail = true }) {
   return (
     <section aria-labelledby="settings-heading" className="overflow-hidden rounded-card border border-border bg-surface shadow-hairline">
       <h2
@@ -20,7 +20,7 @@ export default function AccountSettings({ onLogOut, onDelete, disabled }) {
       </h2>
       <ul className="divide-y divide-border border-t border-border">
         <li>
-          <button type="button" className={row} disabled>
+          <button type="button" className={`${row} text-ink`} disabled={disabled || !canChangeEmail} onClick={onChangeEmail}>
             Change email
             <ChevronRight aria-hidden="true" className="size-5 shrink-0" />
           </button>

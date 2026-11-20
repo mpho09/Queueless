@@ -157,6 +157,11 @@ test('Escape closes a dialog', async () => {
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 })
 
+test('with the sample shopper (no Supabase) there is no real account, so Change email is disabled', async () => {
+  renderSavings()
+  expect(await screen.findByRole('button', { name: 'Change email' })).toBeDisabled()
+})
+
 test('offline: account actions are disabled', async () => {
   renderSavings()
   await screen.findByText('Joy Mokoena')

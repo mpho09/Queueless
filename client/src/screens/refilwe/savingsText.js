@@ -11,4 +11,13 @@ export const savingsText = {
   logOutBody: 'You will need to sign in again to submit reports and view your personal savings history.',
   deleteTitle: 'Delete your account?',
   deleteBody: 'Your profile, email logs and saved baskets will be permanently deleted within 7 days.',
+  // Change email (PRD §5: verified through the existing address). New texts, not in the PRD yet.
+  changeEmailTitle: 'Change email',
+  changeEmailBody:
+    "We'll send a confirmation link to your current email and to the new one. Your email changes once you've confirmed both.",
+  changeEmailLabel: 'New email',
+  changeEmailSubmit: 'Send confirmation links',
+  changeEmailInvalid: 'Enter a valid email address.',
+  changeEmailSame: 'That is already your email.',
+  changeEmailSent: 'Confirmation links sent. Check both inboxes to finish changing your email.',
 }

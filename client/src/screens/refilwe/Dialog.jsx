@@ -10,7 +10,7 @@ export default function Dialog({ title, titleIcon, onClose, sheet = false, child
 
   useEffect(() => {
     const previous = document.activeElement
-    panelRef.current?.querySelector('button, a[href]')?.focus()
+    panelRef.current?.querySelector('input, button, a[href]')?.focus() // a form's field first
 
     function onKeyDown(e) {
       if (e.key === 'Escape') onClose()
