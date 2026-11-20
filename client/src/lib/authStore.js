@@ -116,30 +116,43 @@ export function createAuthStore(client, { getOrigin = () => window.location.orig
      * this device only (`scope: 'local'`), so someone on a shared phone can still log out.
      */
     async logOut() {
-      if (!client) throw new AuthError(messages.serverError, 'NOT_CONFIGURED')
-      const offline = typeof navigator !== 'undefined' && navigator.onLine === false
-      let { error } = await client.auth.signOut(offline ? { scope: 'local' } : undefined)
-      if (error && !offline && (error.name === 'AuthRetryableFetchError' || error.status >= 500 || error.status === 0)) {
-        ;({ error } = await client.auth.signOut({ scope: 'local' }))
-      }
-      if (error) throw toAuthError(error)
-      setState({ user: null })
-    },
+  if (!client) throw new AuthError(messages.serverError, 'NOT_CONFIGURED')
 
-    /** Sends the reset link (valid for 1 hour, set in Supabase). Same result whether or not the email exists. */
-    async resetPassword(email) {
-      guard()
-      const { error } = await client.auth.resetPasswordForEmail(clean(email), { redirectTo: `${getOrigin()}/reset-password` })
-      if (error) throw toAuthError(error)
-    },
+  const offline = typeof navigator !== 'undefined' && navigator.onLine === false
 
-    /** Saves a new password for the person who opened the reset link (that link signs them in). */
-    async updatePassword(password) {
-      guard()
-      const { error } = await client.auth.updateUser({ password })
-      if (error) throw toAuthError(error)
-    },
+  // If offline, clear the local session without attempting a network request.
+  if (offline) {
+    const storageKey = client.auth.storageKey
+    const storage = client.auth.storage
+
+    if (storageKey && storage?.removeItem) {
+      await storage.removeItem(storageKey)
+    }
+
+    setState({ user: null, passwordRecovery: false })
+    return
   }
-}
 
-export const authStore = createAuthStore(supabase)
+  let { error } = await client.auth.signOut()
+
+  // If the server cannot be reached, remove the local session directly.
+  if (error && (
+    error.name === 'AuthRetryableFetchError' ||
+    error.status >= 500 ||
+    error.status === 0
+  )) {
+    const storageKey = client.auth.storageKey
+    const storage = client.auth.storage
+
+    if (storageKey && storage?.removeItem) {
+      await storage.removeItem(storageKey)
+    }
+
+    setState({ user: null, passwordRecovery: false })
+    return
+  }
+
+  if (error) throw toAuthError(error)
+
+  setState({ user: null, passwordRecovery: false })
+},
