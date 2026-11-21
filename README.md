@@ -30,7 +30,8 @@ We use the Product Requirements Document (PRD) as our single source of truth for
 | Name    | GitHub                                                       | Role(s)                        | Main features built |
 | ------- | ------------------------------------------------------------ | ------------------------------ | ------ |
 | Mpho    | [@mpho09](https://github.com/mpho09)                         | Tech Lead, Backend Dev         | Database schema, RLS, seed and RLS tests (#25); Search Results S2 + `search_products()` (#34); live-site sample-data guard (#42); Store Details S3 + BR4 queue view (#45); profile created on sign-up (#44) |
-| Joy     | [@jjmolomo17-tech](https://github.com/jjmolomo17-tech)       |  Product Owner, Frontend Dev | Suburb selector on Home (#27) |
+| Joy     | [@jjmolomo17-tech](https://github.com/jjmolomo17-tech)       | Product Owner, Frontend & Backend Dev | Suburb selector on Home (#27); Suburbs directory & user suburb preference API `GET /api/suburbs`, `PATCH /api/me/suburb` (#58) |
+
 | Refilwe | [@Ref-DevSa](https://github.com/Ref-DevSa)                   | Frontend Dev, Designer         | Frontend foundation + Home S1 (#22); Basket S4 + BR3 totals (#23); Savings S6, savings API, price-drop rule + email helper (#28–#33); S6 log-in guard (#48); Delete account + daily purge (#47) |
 | Elias   | [@eliasmtisie4321](https://github.com/eliasmtisie4321)       | QA, DevOps                     | Report Submission S5 + Stores list + report rules (#35); Vercel deployment (#37) |
 | Kabelo  | [@kabelomathapo6-lab](https://github.com/kabelomathapo6-lab) | Designer, Frontend Dev         | "Midnight Lagoon" dark design (#36); auth helpers `requireUser`, `useAuth`, `authStore` (#41) |
