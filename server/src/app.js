@@ -9,6 +9,7 @@ import { requireUser } from './middleware/requireUser.js'
 import { createSavingsRouter } from './routes/savings.js'
 import { createAccountRouter } from './routes/account.js'
 import { createSuburbsRouter } from './routes/suburbs.js'
+import { createJobsRouter } from './routes/jobs.js'
 
 const app = express()
 app.use(express.json())
@@ -23,5 +24,8 @@ app.use('/api', createSuburbsRouter({ requireUser }))
 // Routes that need a logged-in user get `requireUser`, which answers 401 without a valid token.
 app.use('/api', createSavingsRouter({ requireUser }))
 app.use('/api', createAccountRouter({ requireUser }))
+
+// Scheduled jobs: called by Vercel Cron (vercel.json) with the CRON_SECRET, never by users.
+app.use('/api', createJobsRouter())
 
 export default app

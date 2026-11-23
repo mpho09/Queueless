@@ -2,6 +2,7 @@
   "installCommand": "npm install",
   "buildCommand": "npm run build",
   "outputDirectory": "client/dist",
+  "crons": [{ "path": "/api/jobs/price-drop", "schedule": "0 6 * * *" }],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
