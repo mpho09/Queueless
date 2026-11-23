@@ -3,8 +3,9 @@
 //
 // runPriceDropCheck takes its database and email pieces as arguments, so it works with any
 // scheduler. Vercel (our host, #15) has no always-on server, so an in-process timer like
-// node-cron would never fire there; the schedule (e.g. Vercel Cron calling an API route, or
-// Supabase pg_cron) and loading the baskets + emails are wired up once #14 and #15 land.
+// node-cron would never fire there. Instead Vercel Cron (vercel.json) calls
+// GET /api/jobs/price-drop (routes/jobs.js) once a day, which loads the baskets with
+// jobs/priceDropData.js (migration price_drop_watch) and runs this check.
 
 /** Same format as the app: 123450 → "R1,234.50" */
 export function formatZARCents(cents) {
